@@ -1,28 +1,9 @@
 "use client"
 import { useEffect, useRef } from 'react'
-import Image from 'next/image'
+import Link from 'next/link'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-
-const PROJECTS = [
-  {
-    title: 'AI Fitness Tracker',
-    desc: 'Full-stack app with Java Servlets, MySQL, and ChatGPT API for natural language diet input.',
-    href: '#',
-    media: '/placeholder/project1.jpg'
-  },
-  {
-    title: 'Pipelined Processor (Verilog)',
-    desc: '5-stage pipeline with hazard detection/forwarding; verified via waveforms in Vivado.',
-    href: '#',
-    media: '/placeholder/project2.jpg'
-  },
-  {
-    title: 'Audio Amplifier Circuit',
-    desc: 'Multi-stage amplifier with filters and LED volume, validated on lab equipment.',
-    href: '#',
-    media: '/placeholder/project3.jpg'
-  }
-]
+import { PROJECTS } from '@/content/projects'
+// import ViewTransition from '@/components/ViewTransition'
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement | null>(null)
@@ -122,25 +103,33 @@ export default function Projects() {
     return () => io.disconnect()
   }, [prefersReduced])
 
+  // No custom click interception; use standard navigation to full page
+
   return (
     <section ref={sectionRef} id="projects" aria-labelledby="projects-title" className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <h2 id="projects-title" className="mb-10">Projects</h2>
       <div ref={gridRef} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 relative">
         {PROJECTS.map((p, i) => (
-          <a
-            key={p.title}
-            href={p.href}
-            ref={(el) => { if (el) cardsRef.current[i] = el }}
+          <Link
+            key={p.slug}
+            href={`/projects/${p.slug}`}
+            ref={(el) => { if (el) (cardsRef.current[i] = el as unknown as HTMLAnchorElement) }}
             className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-fg/30 rounded-2xl overflow-hidden glass hover-highlight reveal transition-transform duration-500 [transform:translate(calc(var(--s-x,0px)),_calc(var(--r-t,16px)_+_var(--p-t,0px)_+_var(--s-y,0px)))_scale(calc(var(--r-s,0.985)*var(--p-s,1)*var(--s-s,1)))] will-change-transform"
+            aria-label={`${p.title}`}
           >
+            {/* Removed ViewTransition wrapper for plain navigation */}
             <div className="aspect-video w-full overflow-hidden">
-              <div className="h-full w-full bg-gradient-to-br from-white/10 to-white/0 group-hover:scale-[1.02] transition-transform" />
+              {p.cardImage ? (
+                <img src={p.cardImage} alt="" className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform" />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-br from-white/10 to-white/0 group-hover:scale-[1.02] transition-transform" />
+              )}
             </div>
             <div className="p-5">
               <h3 className="text-xl font-semibold">{p.title}</h3>
               <p className="mt-1 text-muted text-sm">{p.desc}</p>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </section>

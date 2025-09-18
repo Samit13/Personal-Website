@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import InterestsChart from '@/components/InterestsChart'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -58,6 +59,10 @@ export default function About() {
     { label: 'Driving', icon: '🛞' },
     { label: 'Gym', icon: '🏋️' },
     { label: 'Frisbee', icon: '🥏' },
+    { label: "Rubik's Cube", icon: '🧩' },
+    { label: 'Physics', icon: '⚛️' },
+    { label: 'UFC', icon: '🥊' },
+    { label: 'Technology', icon: '🤖' },
   ]
 
   return (
@@ -83,19 +88,9 @@ export default function About() {
           </div>
         </div>
 
-        {/* Right — interests as glass pills in a responsive grid */}
+        {/* Right — interests bubble chart */}
         <div className="md:col-span-8" data-col="right">
-          <ul role="list" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 [perspective:1200px]">
-            {INTERESTS.map((item) => (
-              <li
-                key={item.label}
-                className="glass rounded-xl px-4 py-3 flex items-center gap-3 transition-transform duration-200 hover:scale-[1.03] hover:-translate-y-0.5 hover:bg-white/10 ring-1 ring-white/10 hover:ring-white/20 border border-white/5 transform-gpu [transform-style:preserve-3d] [will-change:transform]"
-              >
-                <span aria-hidden className="text-lg">{item.icon}</span>
-                <span className="text-base text-fg/90">{item.label}</span>
-              </li>
-            ))}
-          </ul>
+          <InterestsChart items={INTERESTS} />
         </div>
       </div>
     </section>
