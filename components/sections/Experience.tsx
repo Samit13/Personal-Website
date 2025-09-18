@@ -49,30 +49,6 @@ export default function Experience() {
         const total = rect.height + vh
         const p = clamp(scrolled / total)
         if (progressEl) progressEl.style.setProperty('--p', String(p))
-
-        // Vertical stack/collapse animation (0=stacked, 1=expanded)
-        if (!prefersReduced) {
-          // Start unfolding when section top hits ~60% viewport, finish by ~25%
-          const start = vh * 0.60
-          const end = vh * 0.25
-          const progressS = (start - rect.top) / Math.max(1, (start - end))
-          const s = clamp(progressS, 0, 1)
-
-          const listRect = list.getBoundingClientRect()
-          const cy = listRect.top + Math.min(listRect.height, vh) / 2
-
-          items.forEach((el, i) => {
-            const r = el.getBoundingClientRect()
-            const ec = r.top + r.height / 2
-            const dy = cy - ec
-            const stackY = dy * (1 - s)
-            const stackScale = 0.96 + 0.04 * s // 0.96 when stacked, 1 when expanded
-            el.style.setProperty('--s-y', `${stackY}px`)
-            el.style.setProperty('--s-s', `${stackScale}`)
-            // ensure layering when stacked so top items appear on top
-            ;(el as HTMLElement).style.zIndex = s < 0.999 ? String(200 - i) : ''
-          })
-        }
       })
     }
     onScroll()
@@ -112,17 +88,19 @@ export default function Experience() {
           <p className="mt-2 text-muted">Scroll the timeline — tap any card for details.</p>
         </header>
 
-        <div className="relative">
+        <div className="relative grid grid-cols-[8px_1fr] gap-4">
           {/* Vertical rail */}
-          <div className="absolute left-0 top-0 h-full timeline-rail" aria-hidden />
-          {/* Progress line */}
-          <div ref={progressRef} className="absolute left-0 top-0 timeline-progress" aria-hidden />
+          <div className="relative">
+            <div className="timeline-rail absolute left-1/2 top-0 h-full -translate-x-1/2" aria-hidden />
+            {/* Progress line */}
+            <div ref={progressRef} className="timeline-progress absolute left-1/2 top-0 -translate-x-1/2" aria-hidden />
+          </div>
 
-          <ul ref={listRef} role="list" className="ml-6 max-w-3xl space-y-6">
+          <ul ref={listRef} role="list" className="max-w-3xl space-y-6">
             {EXPERIENCE.map((job) => (
               <li key={job.slug} className="relative">
                 {/* Rail dot */}
-                <span aria-hidden className="timeline-dot absolute -left-6 top-4" />
+                <span aria-hidden className="timeline-dot absolute -left-8 top-4" />
 
                 <Link
                   href={`/experience/${job.slug}`}
@@ -134,7 +112,7 @@ export default function Experience() {
                   <ViewTransition
                     name={`exp-${job.slug}`}
                     as="article"
-                    className="glass hover-highlight hover-shine reveal rounded-2xl px-4 py-3.5 ring-1 ring-white/10 border border-white/5 shadow-2xl shadow-black/40 transition-transform transition-colors duration-300 transform-gpu [transform-style:preserve-3d] [will-change:transform] hover:scale-[1.03] hover:-translate-y-0.5 [transform:translate(calc(var(--s-x,0px)),_calc(var(--r-t,16px)_+_var(--p-t,0px)_+_var(--s-y,0px)))_scale(calc(var(--r-s,0.985)*var(--p-s,1)*var(--s-s,1)))]"
+                    className="glass hover-highlight hover-shine reveal rounded-2xl px-4 py-3.5 ring-1 ring-white/10 border border-white/5 shadow-2xl shadow-black/40 transition-colors duration-300 transform-gpu [transform-style:preserve-3d] [will-change:transform]"
                     data-reveal
                   >
                     <div className="flex items-baseline justify-between gap-4">

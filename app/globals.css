@@ -291,10 +291,22 @@ li[data-inview="true"] .timeline-dot {
 /* On small screens, scale sphere down proportionally */
 @media (max-width: 640px) { .ring3d .ring-core-3d { width: calc(var(--core-size) * 0.72); height: calc(var(--core-size) * 0.72); } }
 
+
 /* Easy size presets for the center sphere */
 .ring3d--core-md { --core-size: 160px; }
 .ring3d--core-lg { --core-size: 600px; }
 .ring3d--core-xl { --core-size: 260px; }
+/* On small screens, reduce the base core size when the large core is requested (must come AFTER presets to win the cascade) */
+@media (max-width: 640px) {
+  .ring3d--core-lg { --core-size: 280px; }
+}
+/* Extra-small phones */
+@media (max-width: 400px) {
+  .ring3d--core-lg { --core-size: 360px; }
+}
+@media (max-width: 360px) {
+  .ring3d--core-lg { --core-size: 340px; }
+}
 /* Vertical offset presets to reduce header gap */
 .ring3d--offset-sm { --offsetY: -60px; }
 .ring3d--offset-md { --offsetY: 110px; }
@@ -320,4 +332,13 @@ li[data-inview="true"] .timeline-dot {
 
 @media (max-width: 640px) {
   .ring3d { --radius: 150px; }
+}
+
+/* Ensure the glass sphere is noticeably smaller on phones by overriding width/height directly */
+@media (max-width: 640px) {
+  .ring3d.ring3d--core-lg .ring-core-3d {
+    /* Bound by viewport width so it scales down reliably across devices */
+    width: clamp(200px, 28vw, 160px);
+    height: clamp(200px, 28vw, 160px);
+  }
 }

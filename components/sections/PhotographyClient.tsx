@@ -141,8 +141,8 @@ export default function PhotographyClient({ photos }: { photos: string[] }) {
     <>
       {/* 3D rotating ring with natural-sized images */}
     {slides.length > 0 && (
-  <div className="perspective-1200 mt-32 md:mt-48 mb-6 md:mb-8 relative z-10">
-    <div ref={ringRef} className="ring3d ring3d--h-sm ring3d--sm ring3d--tilt-down ring3d--core-lg" role="region" aria-label="3D photo ring">
+  <div className="perspective-1200 mt-0 sm:mt-20 md:mt-48 mb-6 md:mb-8 relative z-10">
+  <div ref={ringRef} className="ring3d ring3d--h-sm ring3d--sm ring3d--tilt-down ring3d--core-lg" role="region" aria-label="3D photo ring">
             {/* Center 3D glass sphere */}
             <div className="ring-core-3d" aria-hidden>
               <GlassSphere className="h-full w-full" rotateSpeed={0.2} />
