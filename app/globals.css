@@ -1,0 +1,323 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base tweaks */
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  /* Pure black site background as requested */
+  background: #000;
+  /* Prevent occasional horizontal scroll caused by wide/transformed elements */
+  overflow-x: hidden;
+  /* Stop horizontal rubber-band/scroll chaining */
+  overscroll-behavior-x: none;
+}
+
+/* Modern browsers support clip which avoids creating a scroll container at all */
+@supports (overflow-x: clip) {
+  html, body { overflow-x: clip; }
+}
+
+/* Scroll smoothing */
+html { scroll-behavior: smooth; }
+
+/* Typography */
+@layer base {
+  h1 { @apply text-5xl md:text-7xl font-semibold tracking-[-0.02em]; }
+  h2 { @apply text-3xl md:text-5xl font-semibold tracking-[-0.02em]; }
+  h3 { @apply text-2xl md:text-3xl font-semibold; }
+  p { @apply text-base md:text-lg text-muted; }
+}
+
+/* Glass utility */
+@layer utilities {
+  .glass {
+    background: rgba(255,255,255,0.03);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    backdrop-filter: saturate(140%) blur(14px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 30px rgba(0,0,0,0.35);
+  }
+
+  /* Glassy border utility: crisp gradient stroke with subtle glow */
+  .glass-border {
+    position: relative;
+    border-radius: inherit;
+    background: rgba(255,255,255,0.02);
+    /* Add a subtle black fade just inside the edge */
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.10),
+      inset 0 0 18px rgba(0,0,0,0.35),
+      0 10px 24px rgba(0,0,0,0.35);
+  }
+  .glass-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px; /* stroke thickness */
+    background:
+      linear-gradient(135deg,
+        rgba(255,255,255,0.60) 0%,
+        rgba(255,255,255,0.25) 30%,
+        rgba(255,255,255,0.10) 60%,
+        rgba(255,255,255,0.25) 100%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+  .glass-border:hover::before { filter: brightness(1.15); }
+
+  /* Subtle text glow to increase contrast for big headings */
+  .text-elevate {
+    text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+  }
+
+  /* Subtle light glow for the main hero title */
+  .title-glow {
+    /* Very gentle outer glow, layered for softness */
+    text-shadow:
+      0 0 10px rgba(255,255,255,0.14),
+      0 0 30px rgba(255,255,255,0.10),
+      0 0 60px rgba(255,255,255,0.06);
+  }
+
+  /* Centralized highlight styles for cards/overlays */
+  .highlight {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    /* emulate Tailwind ring-1 ring-white/20 */
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.20);
+  }
+  .hover-highlight:hover {
+    background: rgba(255, 255, 255, 0.10);
+    /* stronger ring on hover */
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.20);
+  }
+
+  /* Hide scrollbar track but keep scroll functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+}
+
+/* Modal overlay/card animations */
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes overlayOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.975); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cardOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+
+.modal-overlay { animation: overlayIn 320ms ease-out both; }
+.modal-card { animation: cardIn 360ms cubic-bezier(0.16, 1, 0.3, 1) both; will-change: transform, opacity; }
+
+html[data-modal-closing] .modal-overlay { animation: overlayOut 240ms ease-in forwards; }
+html[data-modal-closing] .modal-card { animation: cardOut 260ms cubic-bezier(0.4, 0, 1, 1) forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay, .modal-card { animation: none !important; }
+}
+
+/* View Transitions tuning (supported browsers) */
+::view-transition-group(exp-),
+::view-transition-new(exp-),
+::view-transition-old(exp-) {
+  animation-duration: 360ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Experience stacked cards — smooth CSS-only scroll effect */
+.exp-list {
+  --exp-base: 7rem;
+  --exp-step: 3.25rem;
+}
+.exp-list > li { will-change: transform; transform-origin: 50% 0; }
+.exp-list > li:nth-child(1) { top: calc(var(--exp-base) + 0 * var(--exp-step)); }
+.exp-list > li:nth-child(2) { top: calc(var(--exp-base) + 1 * var(--exp-step)); }
+.exp-list > li:nth-child(3) { top: calc(var(--exp-base) + 2 * var(--exp-step)); }
+.exp-list > li:nth-child(4) { top: calc(var(--exp-base) + 3 * var(--exp-step)); }
+.exp-list > li:nth-child(5) { top: calc(var(--exp-base) + 4 * var(--exp-step)); }
+.exp-list > li:nth-child(6) { top: calc(var(--exp-base) + 5 * var(--exp-step)); }
+
+/* Experience sticky card positions (avoid inline styles) */
+.exp-list > li:nth-child(1) { top: 7rem; }
+.exp-list > li:nth-child(2) { top: 10.25rem; }
+.exp-list > li:nth-child(3) { top: 13.5rem; }
+.exp-list > li:nth-child(4) { top: 16.75rem; }
+
+
+/* --- Enhanced Timeline UI --- */
+@keyframes dotPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 2px rgba(255,255,255,0.20), 0 0 0 rgba(255,255,255,0); }
+  50% { transform: scale(1.1); box-shadow: 0 0 0 2px rgba(255,255,255,0.30), 0 0 16px rgba(255,255,255,0.35); }
+  100% { transform: scale(1.05); box-shadow: 0 0 0 2px rgba(255,255,255,0.25), 0 0 12px rgba(255,255,255,0.30); }
+}
+
+/* Rails */
+.timeline-rail { width: 1px; background: rgba(255,255,255,0.12); box-shadow: 0 0 20px rgba(255,255,255,0.08); }
+.timeline-progress { width: 1px; background: linear-gradient(to bottom, rgba(255,255,255,0.70), rgba(255,255,255,0.25)); height: calc(var(--p,0) * 100%); box-shadow: 0 0 12px rgba(255,255,255,0.30); }
+
+/* Dots */
+.timeline-dot {
+  width: 10px; height: 10px; border-radius: 9999px;
+  background: rgba(255,255,255,0.40);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.10) inset, 0 0 0 2px rgba(255,255,255,0.10);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 320ms ease, background-color 320ms ease;
+}
+li[data-inview="true"] .timeline-dot {
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.25), 0 0 12px rgba(255,255,255,0.40);
+  transform: scale(1.05);
+  animation: dotPulse 1200ms ease-out both;
+}
+
+  /* Card reveal: uses CSS vars so other transforms (parallax) can compose */
+  .reveal {
+    /* reveal variables */
+    --r-t: 16px; /* translateY start */
+    --r-s: 0.985; /* scale start */
+    /* parallax variables (set by JS) */
+    --p-t: 0px;
+    --p-s: 1;
+    /* stacking variables (set by JS) */
+    --s-x: 0px;
+    --s-y: 0px;
+    --s-s: 1;
+    opacity: 0;
+    filter: blur(6px);
+    transform:
+      translate(
+        var(--s-x, 0px),
+        calc(var(--r-t, 16px) + var(--p-t, 0px) + var(--s-y, 0px))
+      )
+      scale(calc(var(--r-s, 0.985) * var(--p-s, 1) * var(--s-s, 1)));
+    transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1), opacity 420ms ease, filter 520ms ease, box-shadow 320ms ease, background-color 320ms ease;
+    will-change: transform;
+    /* Prevent interacting with invisible content */
+    pointer-events: none;
+  }
+  .reveal[data-inview="true"] {
+    opacity: 1;
+    filter: blur(0);
+    --r-t: 0px;
+    --r-s: 1;
+    pointer-events: auto;
+  }
+
+/* Hover shine */
+.hover-shine { position: relative; overflow: hidden; }
+.hover-shine::after {
+  content: ""; position: absolute; inset: -20%; pointer-events: none;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.12) 50%, transparent 70%);
+  transform: translateX(-120%) skewX(-18deg);
+  transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-shine:hover::after { transform: translateX(120%) skewX(-18deg); }
+
+/* (Old photography marquee and 3D ring removed for simplicity) */
+/* 3D photo ring (reintroduced, minimal) */
+.perspective-1200 { perspective: 1200px; }
+.ring3d {
+  position: relative;
+  transform-style: preserve-3d;
+  --angleDeg: 0;
+  /* Slight upward tilt: rotateX with a small negative angle lifts the front edge */
+  --tiltX: -10deg;
+  /* Center sphere size (can be overridden via modifier classes) */
+  --core-size: 440px;
+  /* Vertical offset to pull the ring up or down without affecting layout height */
+  --offsetY: 0px;
+  transform: translateY(var(--offsetY)) rotateX(var(--tiltX)) rotateY(calc(var(--angleDeg) * 1deg));
+}
+.photos-header-hover .ring3d { pointer-events: none; }
+.ring3d .ring-spacer { visibility: hidden; display: block; }
+.ring3d .ring-item {
+  position: absolute; top: 50%; left: 50%;
+  transform-style: preserve-3d; will-change: transform;
+  /* No explicit width/height, the child img's natural size controls it */
+}
+.ring3d .ring-inner {
+  /* Counter-rotate Y by ring angle and slot angle; leave X tilt so items share perspective */
+  transform: rotateY(calc(var(--angleDeg) * -1deg)) rotateY(var(--thetaNeg, 0deg)) scale(var(--item-scale));
+}
+.ring3d .ring-item img { display: block; }
+
+/* Size controls */
+.ring3d { --item-scale: 1; }
+.ring3d .ring-inner { transform: rotateY(calc(var(--angleDeg) * -1deg)) rotateY(var(--thetaNeg, 0deg)) scale(var(--item-scale)); }
+.ring3d--sm { --item-scale: 0.3; }
+.ring3d--xs { --item-scale: 0.65; }
+/* Optional fixed heights to reduce whitespace without inline styles */
+.ring3d--h-sm { height: 160px; }
+.ring3d--h-xs { height: 130px; }
+
+/* Tilt helpers */
+.ring3d--tilt-up { --tiltX: -12deg; }
+.ring3d--tilt-down { --tiltX: 12deg; }
+
+/* Center glass sphere */
+.ring3d .ring-core-3d {
+  position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; will-change: transform;
+  /* Counter-rotate so the canvas faces the camera (avoid oval skew), then place into depth */
+    transform: translate(-50%, -50%) rotateY(calc(var(--angleDeg) * -1deg)) rotateX(calc(var(--tiltX) * -1)) translateZ(calc(var(--radius) * var(--core-depth, 0.2)));
+  width: var(--core-size); height: var(--core-size); pointer-events: none;
+}
+.ring3d .ring-core-3d::before {
+  content: ""; position: absolute; inset: -20%; border-radius: 9999px; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255,255,255,0.12), rgba(255,255,255,0.04) 55%, transparent 70%);
+  filter: blur(8px);
+}
+.ring3d .ring-core-3d canvas { filter: drop-shadow(0 8px 24px rgba(255,255,255,0.10)); }
+/* On small screens, scale sphere down proportionally */
+@media (max-width: 640px) { .ring3d .ring-core-3d { width: calc(var(--core-size) * 0.72); height: calc(var(--core-size) * 0.72); } }
+
+/* Easy size presets for the center sphere */
+.ring3d--core-md { --core-size: 160px; }
+.ring3d--core-lg { --core-size: 600px; }
+.ring3d--core-xl { --core-size: 260px; }
+/* Vertical offset presets to reduce header gap */
+.ring3d--offset-sm { --offsetY: -60px; }
+.ring3d--offset-md { --offsetY: 110px; }
+.ring3d--offset-lg { --offsetY: -140px; }
+/* Depth presets for the center sphere (0 = center, 1 = at ring cards) */
+.ring3d--core-front { --core-depth: 0.3; }
+.ring3d--core-veryfront { --core-depth: 0.45; }
+.ring3d--core-back { --core-depth: 0.1; }
+
+/* 12 slots around the circle; adjust translateZ (radius) for spacing */
+.ring3d { --radius: 500px; }
+.ring3d .ring-item { transform: translate(-50%, -50%) rotateY(var(--theta, 0deg)) translateZ(var(--radius)); }
+.ring3d .ring-pos-1  { --theta: 0deg;   --thetaNeg: 0deg; }
+.ring3d .ring-pos-2  { --theta: 36deg;  --thetaNeg: -36deg; }
+.ring3d .ring-pos-3  { --theta: 72deg;  --thetaNeg: -72deg; }
+.ring3d .ring-pos-4  { --theta: 108deg; --thetaNeg: -108deg; }
+.ring3d .ring-pos-5  { --theta: 144deg; --thetaNeg: -144deg; }
+.ring3d .ring-pos-6  { --theta: 180deg; --thetaNeg: -180deg; }
+.ring3d .ring-pos-7  { --theta: 216deg; --thetaNeg: -216deg; }
+.ring3d .ring-pos-8  { --theta: 252deg; --thetaNeg: -252deg; }
+.ring3d .ring-pos-9  { --theta: 288deg; --thetaNeg: -288deg; }
+.ring3d .ring-pos-10 { --theta: 324deg; --thetaNeg: -324deg; }
+
+@media (max-width: 640px) {
+  .ring3d { --radius: 150px; }
+}
