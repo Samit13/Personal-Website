@@ -182,14 +182,71 @@ export const PROJECTS: Project[] = [
     desc: 'Full-stack app with Java Servlets, MySQL, and ChatGPT API for natural language diet input.',
     summary:
       'Users log workouts and meals in natural language. A GPT-powered parser extracts macros and intents, with trend dashboards and reminders.',
-    href: 'https://example.com',
     tech: ['Java', 'Servlets', 'MySQL', 'OpenAI API', 'Tailwind', 'Chart.js'],
+    tags: ['Java', 'Servlets', 'MySQL', 'NLP', 'OpenAI API', 'Next.js', 'TypeScript', 'Tailwind', 'Charts'],
     highlights: [
-      'Built NL diet parser with function calling to normalize foods/macros',
-      'Implemented OAuth and sessions with role-based views',
-      'Shipped responsive UI with charts and offline caching',
+      'Natural-language meal logging and macro extraction',
+      'Auth + role-based views with account management',
+      'Trends dashboard and reminders',
     ],
-    media: ['/placeholder/project1.jpg'],
+    media: [
+      { type: 'image', src: '/projects/ai-fitness-tracker/personalhealthlogo.png', alt: 'AI Fitness Tracker meal logging preview' },
+    ],
+    sections: [
+      {
+        title: 'About the Project',
+        paragraphs: [
+          'AI Fitness Tracker lets you log meals and workouts using plain English. It parses foods, serving sizes, and macros to maintain daily totals and trends.',
+          'Important: The production/full version (not included in this site) is a Java Servlets + MySQL application with server-side authentication, persistent storage, and richer features (e.g., reminders, role-based views).',
+          'This portfolio includes a small, client-only demo that re-implements natural-language meal parsing in the browser so you can quickly try it out without a backend.',
+        ],
+      },
+      {
+        title: 'Features',
+        bullets: [
+          'Natural-language meal logging (e.g., "2 eggs and toast with butter, coffee")',
+          'Macro extraction: calories, protein, carbs, fat with a lightweight rules engine',
+          'Daily totals, editable log, and simple charts',
+          'Auth and roles in the original server version (Java + MySQL)',
+        ],
+      },
+      {
+        title: 'Technical Implementation',
+        bullets: [
+          'Full App (not included): Java Servlets backend with a normalized MySQL schema for users, meals, and nutrition entries (SQL), plus auth and reminders',
+          'Parsing: tokenization + quantity/unit detection + ingredient lookup with fallback heuristics (with optional GPT-assisted parsing)',
+          'Demo (this site): Client-only React/TypeScript parser, localStorage persistence, and computed totals',
+          'UI: Tailwind styling and accessible forms; charts placeholder ready for plug-in',
+        ],
+      },
+      {
+        title: 'Challenges & Solutions',
+        bullets: [
+          'Ambiguous inputs → Fallback database with portion defaults and user adjustments',
+          'Unit variety → Normalize to grams/ml; map to standard servings where possible',
+          'Porting from NetBeans/Tomcat → Browser-based demo removes server dependency for easy showcase',
+        ],
+      },
+      {
+        title: 'Technologies Used',
+        bullets: [
+          'Java, Servlets, MySQL (original full-stack)',
+          'Next.js, React, TypeScript (demo reimplementation)',
+          'Tailwind CSS for UI; Chart.js (optional) for trends',
+          'OpenAI API (optional) for advanced parsing and suggestions',
+        ],
+      },
+      {
+        title: 'Try the Live Demo',
+        bullets: [
+          'Open the in-browser demo to test natural-language meal logging and macro parsing.',
+          'This is a simplified, mini demo; the real app uses Java Servlets + MySQL and is not included here.',
+          'Data in this demo is stored locally in your browser (no server).',
+        ],
+      },
+    ],
+    // No downloads for this case study; keep Live Demo CTA instead
+    downloads: [],
   },
   {
     slug: 'pipelined-processor',

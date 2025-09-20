@@ -27,5 +27,12 @@ Replace placeholders in `app/(site)/page.tsx` and in components under `component
 - Verify `prefers-reduced-motion` behavior and keyboard navigation
 - Confirm WebGL loads lazily and clamps DPR ≤ 1.5 (see `useWebGL.ts`)
 
+## Live demo: AI Fitness Tracker
+
+- Route: `/ai-fitness-tracker`
+- What it is: a client-only demo that lets you type meals in natural language (e.g., "2 eggs and toast with butter, coffee") and estimates calories, protein, carbs, and fat using a small in-browser parser. Data is stored in `localStorage` only.
+- Where to change: see `app/ai-fitness-tracker/page.tsx`. The lightweight nutrition reference is defined at the top (`NDB`, `ALIASES`). Update or expand to support more foods/units.
+- Project page: `/projects/ai-fitness-tracker` includes an "Open Demo" button.
+
 ## License
 MIT

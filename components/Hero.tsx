@@ -30,7 +30,7 @@ export default function Hero() {
       )
 
       // Lightweight scroll-driven effect using ScrollTrigger (no manual listeners)
-      gsap.timeline({
+      const scrubTl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
@@ -41,16 +41,31 @@ export default function Hero() {
       })
       .fromTo(
         titleRef.current,
-        { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)' },
+        { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', immediateRender: false },
         { scale: 0.68, y: -10, opacity: 0.55, filter: 'brightness(0.1)', ease: 'none' },
         0
       )
       .fromTo(
         subRef.current,
-        { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)' },
+        { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', immediateRender: false },
         { scale: 0.74, y: -8, opacity: 0.58, filter: 'brightness(0.2)', ease: 'none' },
         0
       )
+
+      // Ensure hero resets to a crisp state whenever we re-enter the top of the page
+      const resetHero = () => {
+        gsap.to(titleRef.current, { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', duration: 0.2, overwrite: 'auto' })
+        gsap.to(subRef.current, { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', duration: 0.2, overwrite: 'auto' })
+      }
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: 'top top',
+        onEnter: resetHero,
+        onEnterBack: resetHero,
+      })
+
+      // In case the page loads deep-linked (e.g., /#projects), refresh after first paint
+      requestAnimationFrame(() => ScrollTrigger.refresh())
     })
     return () => ctx.revert()
   }, [prefersReduced])

@@ -21,8 +21,7 @@ html, body {
   html, body { overflow-x: clip; }
 }
 
-/* Scroll smoothing */
-html { scroll-behavior: smooth; }
+/* Removed global smooth scroll to avoid input/anchor latency; use per-link behavior if needed */
 
 /* Typography */
 @layer base {
@@ -211,7 +210,8 @@ li[data-inview="true"] .timeline-dot {
         calc(var(--r-t, 16px) + var(--p-t, 0px) + var(--s-y, 0px))
       )
       scale(calc(var(--r-s, 0.985) * var(--p-s, 1) * var(--s-s, 1)));
-    transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1), opacity 420ms ease, filter 520ms ease, box-shadow 320ms ease, background-color 320ms ease;
+    /* Important: avoid transitioning transform while scroll-driven CSS vars update to prevent lag/flicker */
+    transition: opacity 420ms ease, filter 520ms ease, box-shadow 320ms ease, background-color 320ms ease;
     will-change: transform;
     /* Prevent interacting with invisible content */
     pointer-events: none;
@@ -222,6 +222,24 @@ li[data-inview="true"] .timeline-dot {
     --r-t: 0px;
     --r-s: 1;
     pointer-events: auto;
+  }
+
+  /* Simple card fade-up for Projects */
+  .card-fadeup {
+    --c-delay: 0ms;
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+    transition:
+      opacity 360ms ease,
+      transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+      filter 360ms ease,
+      box-shadow 240ms ease,
+      background-color 240ms ease;
+    transition-delay: var(--c-delay);
+  }
+  .card-fadeup[data-inview="true"] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 
 /* Hover shine */

@@ -4,12 +4,14 @@ export type Job = {
   role: string
   time: string
   bullets: string[]
+  logo?: string // public path to a small PNG logo (e.g., /logos/companies/honeywell.png)
 }
 
 export const EXPERIENCE: Job[] = [
     {
     slug: 'esotaira-mechanical-designer-capstone',
     company: 'Esotaira',
+  logo: '/logos/companies/esotaira.png',
     role: 'Capstone - Mechanical Designer',
     time: 'Aug 2025 - Dec 2025',
     bullets: [
@@ -36,6 +38,7 @@ export const EXPERIENCE: Job[] = [
   {
     slug: 'honeywell-software-intern',
     company: 'Honeywell',
+  logo: '/logos/companies/honeywell.png',
     role: 'Intern — Software Engineer',
     time: 'May 2025 – Aug 2025',
     bullets: [
@@ -48,6 +51,7 @@ export const EXPERIENCE: Job[] = [
   {
     slug: 'flourish-fullstack-mobile-intern',
     company: 'Flourish: Grow with Self-Care',
+  logo: '/logos/companies/flourish.png',
     role: 'Intern — Full Stack Mobile Engineer',
     time: 'Jan 2025 – May 2025',
     bullets: [
@@ -59,6 +63,7 @@ export const EXPERIENCE: Job[] = [
   {
     slug: 'thermo-fisher-persistent-data-mentee',
     company: 'Thermo Fisher Scientific — Persistent Systems',
+  logo: '/logos/companies/thermofisher.png',
     role: 'Intern — Data Engineer Mentee',
     time: 'May 2024 – Aug 2024',
     bullets: [

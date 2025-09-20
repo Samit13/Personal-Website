@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { EXPERIENCE } from '@/content/experience'
 import ViewTransition from '@/components/ViewTransition'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import Image from 'next/image'
 
 // Timeline with scroll-driven reveals and a vertical progress rail
 export default function Experience() {
@@ -116,7 +117,19 @@ export default function Experience() {
                     data-reveal
                   >
                     <div className="flex items-baseline justify-between gap-4">
-                      <h3 className="text-2xl md:text-3xl leading-tight">{job.company}</h3>
+                      <h3 className="text-2xl md:text-3xl leading-tight flex items-center gap-3">
+                        {job.logo ? (
+                          <Image
+                            src={job.logo}
+                            alt={`${job.company} logo`}
+                            width={48}
+                            height={48}
+                            className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-sm bg-white/5 p-0.5 border border-white/10"
+                            priority={false}
+                          />
+                        ) : null}
+                        <span>{job.company}</span>
+                      </h3>
                       <span className="text-sm text-muted whitespace-nowrap">{job.time}</span>
                     </div>
                     <div className="pointer-events-none max-h-0 opacity-0 translate-y-1 overflow-hidden transition-all duration-300 ease-out group-hover:max-h-40 group-hover:opacity-100 group-hover:translate-y-0">

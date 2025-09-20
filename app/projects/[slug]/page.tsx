@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { PROJECTS, getProjectBySlug, type MediaItem } from '@/content/projects'
 import VideoHero from '@/components/VideoHero'
 import Reveal from '@/components/Reveal'
+import Image from 'next/image'
 
 export function generateStaticParams() {
   return PROJECTS.map((p) => ({ slug: p.slug }))
@@ -50,7 +51,23 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
       {/* Cinematic hero */}
       {hero ? (
         <section aria-label="Project hero" className="mb-10">
-          {hero.type === 'image' ? (
+          {params.slug === 'ai-fitness-tracker' ? (
+            <div className="relative overflow-hidden rounded-2xl">
+              <Image
+                src="/projects/ai-fitness-tracker/AIfitnesstrackertitle.png?v=2"
+                alt="AI Fitness Tracker Title"
+                width={600}
+                height={400}
+                className="h-[36vh] md:h-[42vh] w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute inset-0 flex items-end">
+                <div className="w-full p-5 md:p-8">
+                  <h1 className="text-3xl md:text-5xl font-semibold leading-tight">{proj.title}</h1>
+                </div>
+              </div>
+            </div>
+          ) : hero.type === 'image' ? (
             <div className="relative overflow-hidden rounded-2xl">
               <img src={hero.src} alt={(hero as any).alt || ''} className="h-[36vh] md:h-[42vh] w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -76,6 +93,10 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           ) : null}
         </section>
       ) : null}
+
+      {/* (Removed centered logo block; logo will appear in About column) */}
+
+      {/* Live Demo CTA moved to bottom for AI Fitness Tracker */}
 
       {/* Tags moved under About/body per request */}
 
@@ -108,7 +129,23 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                     </div>
                   ) : null}
                 </div>
-                {previewMedia ? (
+                {params.slug === 'ai-fitness-tracker' ? (
+                  <figure className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.03] p-0 w-fit mx-auto">
+                    {/* soft radial glow behind the logo */}
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute -inset-16 bg-[radial-gradient(60%_60%_at_50%_40%,rgba(59,130,246,0.18),transparent_70%)] blur-2xl opacity-70"
+                    />
+                    <Image
+                      src="/projects/ai-fitness-tracker/personalhealthlogo.png?v=2"
+                      alt="Personal Health mark"
+                      width={300}
+                      height={300}
+                      className="block h-auto drop-shadow-xl rounded-3xl"
+                      priority
+                    />
+                  </figure>
+                ) : previewMedia ? (
                   <div className="rounded-xl overflow-hidden border border-white/10 bg-white/5">
                     {previewMedia.type === 'image' ? (
                       <img src={previewMedia.src} alt={(previewMedia as any).alt || ''} className="w-full h-auto object-cover" />
@@ -287,6 +324,21 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                       ))}
                     </div>
                   ) : null}
+                </div>
+              </div>
+            </Reveal>
+          ) : null}
+
+          {/* Live Demo CTA for AI Fitness Tracker */}
+          {proj.slug === 'ai-fitness-tracker' ? (
+            <Reveal as="section" className="mb-4">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-5 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-semibold">Try the Live Demo</h2>
+                  <p className="text-sm text-white/70">This is a mini, client-only demo for the case study. The full app (not included) uses Java Servlets + MySQL with richer features.</p>
+                </div>
+                <div className="flex gap-2">
+                  <a href="/ai-fitness-tracker" className="inline-flex items-center rounded-md border border-white/15 bg-white/10 px-4 py-2 text-sm hover:bg-white/15">Open Demo</a>
                 </div>
               </div>
             </Reveal>
