@@ -54,6 +54,8 @@ export default function Projects() {
             href={`/projects/${p.slug}`}
             prefetch
             ref={(el) => { if (el) (cardsRef.current[i] = el as unknown as HTMLAnchorElement) }}
+            onMouseEnter={() => { try { router.prefetch?.(`/projects/${p.slug}`) } catch {} }}
+            onFocus={() => { try { router.prefetch?.(`/projects/${p.slug}`) } catch {} }}
             className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-fg/30 rounded-2xl overflow-hidden glass hover-highlight card-fadeup will-change-transform"
             style={{ ['--c-delay' as any]: `${Math.min(i, 5) * 60}ms` }}
             aria-label={`${p.title}`}
@@ -61,7 +63,7 @@ export default function Projects() {
             {/* Removed ViewTransition wrapper for plain navigation */}
             <div className="aspect-video w-full overflow-hidden">
               {p.cardImage ? (
-                <img src={p.cardImage} alt="" className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform" />
+                <img src={p.cardImage} alt="" className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform" loading={i < 3 ? 'eager' : 'lazy'} decoding="async" />
               ) : (
                 <div className="h-full w-full bg-gradient-to-br from-white/10 to-white/0 group-hover:scale-[1.02] transition-transform" />
               )}

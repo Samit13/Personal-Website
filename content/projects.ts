@@ -184,6 +184,8 @@ export const PROJECTS: Project[] = [
       'Users log workouts and meals in natural language. A GPT-powered parser extracts macros and intents, with trend dashboards and reminders.',
     tech: ['Java', 'Servlets', 'MySQL', 'OpenAI API', 'Tailwind', 'Chart.js'],
     tags: ['Java', 'Servlets', 'MySQL', 'NLP', 'OpenAI API', 'Next.js', 'TypeScript', 'Tailwind', 'Charts'],
+    // Use the provided logo as the project card image in the grid
+    cardImage: '/projects/ai-fitness-tracker/aifitnesstrackericonimage.png',
     highlights: [
       'Natural-language meal logging and macro extraction',
       'Auth + role-based views with account management',
@@ -248,34 +250,7 @@ export const PROJECTS: Project[] = [
     // No downloads for this case study; keep Live Demo CTA instead
     downloads: [],
   },
-  {
-    slug: 'pipelined-processor',
-    title: 'Pipelined Processor (Verilog)',
-    desc: '5-stage pipeline with hazard detection/forwarding; verified via waveforms in Vivado.',
-    summary:
-      'Implements IF/ID/EX/MEM/WB, with bypassing, branch prediction, and performance counters to evaluate IPC under mixed workloads.',
-    tech: ['Verilog', 'Vivado', 'SystemVerilog TB', 'Git'],
-    highlights: [
-      'Achieved 1.2 IPC on benchmark suite with simple predictor',
-      'Developed hazard unit and forwarding network with clean timing',
-      'Automated waveform checks and regression tests',
-    ],
-    media: ['/placeholder/project2.jpg'],
-  },
-  {
-    slug: 'audio-amplifier-circuit',
-    title: 'Audio Amplifier Circuit',
-    desc: 'Multi-stage amplifier with filters and LED volume, validated on lab equipment.',
-    summary:
-      'Analog front-end with preamp, tone control, and output stage. Designed for low noise and flat response across audible band.',
-    tech: ['LTspice', 'OP-AMP', 'Analog Filters', 'PCB'],
-    highlights: [
-      'Designed active filters with Bode matching to specs',
-      'Built PCB and validated with oscilloscope and audio analyzer',
-      'Added LED VU meter using peak detector',
-    ],
-    media: ['/placeholder/project3.jpg'],
-  },
+  
   {
     slug: 'espressif-ble-sensor-hub',
     title: 'Espressif BLE Sensor Hub',

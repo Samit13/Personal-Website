@@ -4,14 +4,15 @@ import Link from 'next/link'
 import { gsap } from 'gsap'
 import { featuredAcademics, type AcademicItem, type AcademicKind } from '@/content/academics'
 
-const LABEL: Record<AcademicKind, string> = {
+type KindNoEssay = Exclude<AcademicKind, 'essay'>
+
+const LABEL: Record<KindNoEssay, string> = {
   thesis: 'Thesis',
   project: 'Projects',
   assignment: 'Assignments',
-  essay: 'Essays',
 }
 
-function Card({ item }: { item: AcademicItem }) {
+function Card({ item }: { item: AcademicItem & { kind: KindNoEssay } }) {
   return (
     <Link
       href={`/coursework/${item.slug}`}
@@ -20,7 +21,7 @@ function Card({ item }: { item: AcademicItem }) {
       className="group block glass rounded-2xl ring-1 ring-white/10 border border-white/5 hover:highlight transition-colors overflow-hidden"
     >
       <div className="p-5">
-        <div className="text-xs uppercase tracking-wide text-white/60 mb-1">{LABEL[item.kind]}</div>
+  <div className="text-xs uppercase tracking-wide text-white/60 mb-1">{LABEL[item.kind]}</div>
         <h3 className="text-lg font-semibold group-hover:underline underline-offset-4 decoration-white/30">{item.title}</h3>
         {item.description && <p className="mt-1 text-muted text-sm">{item.description}</p>}
         {(item.course || item.term) && (
@@ -32,21 +33,24 @@ function Card({ item }: { item: AcademicItem }) {
 }
 
 export default function Coursework() {
-  const groups: Record<AcademicKind, AcademicItem[]> = {
-    thesis: [], project: [], assignment: [], essay: []
+  const groups: Record<KindNoEssay, AcademicItem[]> = {
+    thesis: [], project: [], assignment: []
   }
-  for (const a of featuredAcademics) groups[a.kind].push(a)
+  for (const a of featuredAcademics) {
+    if (a.kind === 'essay') continue
+    groups[a.kind].push(a)
+  }
 
   const sectionRef = useRef<HTMLElement | null>(null)
   const stageRef = useRef<HTMLDivElement | null>(null)
   const svgRef = useRef<SVGSVGElement | null>(null)
-  const pathRefs = useRef<Record<AcademicKind, SVGPathElement | null>>({ thesis: null, project: null, assignment: null, essay: null })
-  const orbRefs = useRef<Record<AcademicKind, SVGCircleElement | null>>({ thesis: null, project: null, assignment: null, essay: null })
+  const pathRefs = useRef<Record<KindNoEssay, SVGPathElement | null>>({ thesis: null, project: null, assignment: null })
+  const orbRefs = useRef<Record<KindNoEssay, SVGCircleElement | null>>({ thesis: null, project: null, assignment: null })
   const [pathReady, setPathReady] = useState(false)
 
-  type Filter = 'all' | AcademicKind
+  type Filter = 'all' | KindNoEssay
   const [filter, setFilter] = useState<Filter>('all')
-  const kinds: AcademicKind[] = ['thesis', 'project', 'assignment', 'essay']
+  const kinds: KindNoEssay[] = ['thesis', 'project', 'assignment']
 
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -80,7 +84,7 @@ export default function Coursework() {
       svg.setAttribute('height', String(bounds.height))
       svg.setAttribute('viewBox', `0 0 ${bounds.width} ${bounds.height}`)
 
-      const activeKinds: AcademicKind[] = filter === 'all' ? kinds.filter(k => groups[k].length > 0) : [filter]
+  const activeKinds: KindNoEssay[] = filter === 'all' ? kinds.filter(k => groups[k].length > 0) : [filter]
       let any = false
       for (const k of kinds) {
         const pathEl = pathRefs.current[k]
@@ -128,7 +132,7 @@ export default function Coursework() {
     if (!section) return
 
     const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const activeKinds: AcademicKind[] = filter === 'all' ? kinds.filter(k => pathRefs.current[k]) : [filter]
+  const activeKinds: KindNoEssay[] = filter === 'all' ? kinds.filter(k => pathRefs.current[k]) : [filter]
 
     if (prefersReduced) {
       for (const k of activeKinds) {
@@ -246,10 +250,7 @@ export default function Coursework() {
               <stop offset="0%" stopColor="#7CFFBE" />
               <stop offset="100%" stopColor="#D7FFEE" />
             </linearGradient>
-            <linearGradient id="ac-essay" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#FF9FD0" />
-              <stop offset="100%" stopColor="#FFE0F1" />
-            </linearGradient>
+            
             <filter id="ac-glow2" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
               <feMerge>
@@ -273,7 +274,7 @@ export default function Coursework() {
             <div className="mb-10" data-kind-section="thesis">
               <h3 className="mb-4 text-xl font-semibold">Thesis</h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {groups.thesis.map((i) => <Card key={i.title} item={i} />)}
+                {groups.thesis.map((i) => <Card key={i.title} item={i as AcademicItem & { kind: KindNoEssay }} />)}
               </div>
             </div>
           )}
@@ -282,26 +283,18 @@ export default function Coursework() {
             <div className="mb-10" data-kind-section="project">
               <h3 className="mb-4 text-xl font-semibold">Projects</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {groups.project.map((i) => <Card key={i.title} item={i} />)}
+                {groups.project.map((i) => <Card key={i.title} item={i as AcademicItem & { kind: KindNoEssay }} />)}
               </div>
             </div>
           )}
 
-          {(filter === 'all' || filter === 'assignment' || filter === 'essay') && (groups.assignment.length > 0 || groups.essay.length > 0) && (
+          {(filter === 'all' || filter === 'assignment') && (groups.assignment.length > 0) && (
             <div className="grid md:grid-cols-2 gap-8">
               {(filter === 'all' || filter === 'assignment') && groups.assignment.length > 0 && (
                 <div data-kind-section="assignment">
                   <h3 className="mb-4 text-xl font-semibold">Assignments</h3>
                   <div className="grid grid-cols-1 gap-4">
-                    {groups.assignment.map((i) => <Card key={i.title} item={i} />)}
-                  </div>
-                </div>
-              )}
-              {(filter === 'all' || filter === 'essay') && groups.essay.length > 0 && (
-                <div data-kind-section="essay">
-                  <h3 className="mb-4 text-xl font-semibold">Essays</h3>
-                  <div className="grid grid-cols-1 gap-4">
-                    {groups.essay.map((i) => <Card key={i.title} item={i} />)}
+                    {groups.assignment.map((i) => <Card key={i.title} item={i as AcademicItem & { kind: KindNoEssay }} />)}
                   </div>
                 </div>
               )}

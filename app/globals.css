@@ -109,6 +109,99 @@ html, body {
   .hide-scrollbar::-webkit-scrollbar { display: none; }
 }
 
+/* More breathing room for long-form sections */
+@layer components {
+  /* Only affect long-form writeups that use the prose container */
+  .prose h2 { margin-top: 3rem; margin-bottom: 0.5rem; }
+  .prose h3 { margin-top: 2.5rem; margin-bottom: 0.4rem; }
+  @media (min-width: 768px) {
+    .prose h2 { margin-top: 4rem; margin-bottom: 0.75rem; }
+    .prose h3 { margin-top: 3rem; margin-bottom: 0.6rem; }
+  }
+  /* Extra separation when a heading follows a block element */
+  .prose p + h2,
+  .prose ul + h2,
+  .prose ol + h2,
+  .prose table + h2,
+  .prose figure + h2 { margin-top: 3.5rem; }
+  .prose p + h3,
+  .prose ul + h3,
+  .prose ol + h3,
+  .prose table + h3,
+  .prose figure + h3 { margin-top: 3rem; }
+  @media (min-width: 768px) {
+    .prose p + h2,
+    .prose ul + h2,
+    .prose ol + h2,
+    .prose table + h2,
+    .prose figure + h2 { margin-top: 3rem; }
+    .prose p + h3,
+    .prose ul + h3,
+    .prose ol + h3,
+    .prose table + h3,
+    .prose figure + h3 { margin-top: 4rem; }
+  }
+
+  /* Tables inside writeups: visible borders and subtle zebra */
+  .prose table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid rgba(255,255,255,0.15); border-radius: 0.75rem; overflow: hidden; background: rgba(255,255,255,0.03); }
+  .prose thead th { text-align: left; font-weight: 600; background: rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.15); padding: 0.6rem 0.75rem; }
+  .prose tbody td { padding: 0.55rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .prose tbody tr:nth-child(odd) td { background: rgba(255,255,255,0.03); }
+  .prose tbody tr:last-child td { border-bottom: none; }
+
+  /* Charts inserted in Results & Analysis */
+  .prose figure.chart { margin: 1.25rem 0 0.25rem 0; }
+  .prose figure.chart img { display: block; width: 100%; height: auto; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.03); box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+
+  /* Paragraph rhythm and readability */
+  .prose p { margin-top: 0.35rem; margin-bottom: 0.9rem; line-height: 1.7; overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; }
+  @media (min-width: 768px) { .prose p { line-height: 1.8; margin-bottom: 1.05rem; } }
+  .prose em { color: #e2e6eb; }
+  .prose strong { color: #ffffff; }
+
+  /* Lists */
+  .prose ul, .prose ol { margin: 0.5rem 0 1rem 1.25rem; }
+  .prose li { margin: 0.3rem 0; }
+  .prose ul { list-style: disc; }
+  .prose ol { list-style: decimal; }
+
+  /* Blockquotes */
+  .prose blockquote {
+    margin: 1rem 0; padding: 0.75rem 1rem; color: #cdd2d8;
+    border-left: 3px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.03);
+    border-radius: 0.25rem;
+  }
+
+  /* Code */
+  .prose code { background: rgba(255,255,255,0.08); padding: 0.12rem 0.38rem; border-radius: 0.35rem; }
+  .prose pre { background: rgba(18,18,20,0.95); padding: 0.9rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.12); overflow: auto; }
+
+  /* Collapsible code toggle */
+  .prose details.code-toggle { margin-top: 1rem; margin-bottom: 2rem; }
+  .prose details.code-toggle > summary {
+    list-style: none; cursor: pointer; -webkit-user-select: none; user-select: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 0.8rem; border-radius: 0.5rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    transition: background-color 200ms ease, border-color 200ms ease, transform 120ms ease;
+  }
+  .prose details.code-toggle > summary:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.18); }
+  .prose details.code-toggle > summary:active { transform: translateY(1px); }
+  /* Remove default marker in Safari/Firefox */
+  .prose details.code-toggle > summary::-webkit-details-marker { display: none; }
+  /* Add a chevron */
+  .prose details.code-toggle > summary::before {
+    content: '\25B6'; /* ▶ */
+    font-size: 0.9em; opacity: 0.8; transform: translateY(1px);
+    transition: transform 200ms ease;
+  }
+  .prose details.code-toggle[open] > summary::before { transform: rotate(90deg) translateX(-1px); }
+  /* Space between summary and code */
+  .prose details.code-toggle[open] > summary { margin-bottom: 0.6rem; }
+}
+
 /* Modal overlay/card animations */
 @keyframes overlayIn {
   from { opacity: 0; }

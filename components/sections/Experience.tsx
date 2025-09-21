@@ -16,6 +16,15 @@ export default function Experience() {
   const prefersReduced = useReducedMotion()
 
   useEffect(() => {
+    // Prefetch experience detail routes to reduce first-click latency
+    try {
+      EXPERIENCE.forEach((job) => {
+        // Best-effort; ignore if router.prefetch not available
+        // @ts-ignore typedRoutes is enabled but prefetch may be optional
+        router.prefetch?.(`/experience/${job.slug}`)
+      })
+    } catch {}
+
     const section = sectionRef.current
     const list = listRef.current
     if (!section || !list) return
@@ -105,6 +114,7 @@ export default function Experience() {
 
                 <Link
                   href={`/experience/${job.slug}`}
+                  prefetch
                   scroll={false}
                   className="group block"
                   aria-label={`${job.company} — ${job.time}`}
@@ -125,7 +135,7 @@ export default function Experience() {
                             width={48}
                             height={48}
                             className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-sm bg-white/5 p-0.5 border border-white/10"
-                            priority={false}
+                            priority
                           />
                         ) : null}
                         <span>{job.company}</span>

@@ -29,6 +29,7 @@ export default function ExperiencePage({ params }: { params: { slug: string } })
                   width={56}
                   height={56}
                   className="h-12 w-12 md:h-14 md:w-14 object-contain rounded-sm bg-white/5 p-0.5 border border-white/10"
+                  priority
                 />
               ) : null}
               <span>{job.company}</span>
