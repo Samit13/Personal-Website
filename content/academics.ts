@@ -128,7 +128,6 @@ export const featuredAcademics: AcademicItem[] = [
       <p>In this project, I explored a large space of processor configurations and designed heuristics for different optimization goals: <em>EDP</em>, <em>EDAP</em>, <em>ED<sup>2</sup>P</em>, and <em>ED<sup>2</sup>AP</em>. By exploiting architectural characteristics and tailoring the algorithm, I was able to find the “best” configuration across different optimizations. This project helped me better understand how microarchitectural choices affect performance, energy, and area in the real world systems.</p>
 
       <h2>Project Code</h2>
-      <p class="text-muted" style="margin-top: 0.25rem;">In the written thesis, this section appears as an Appendix.</p>
       <p>The proposal code (<code>YOURCODEHERE-final.cpp</code>) implements the heuristic search, generating candidate processor configurations and calling into <code>431project.cpp</code> to evaluate them against benchmarks. It relies on <code>431projectUtils.cpp</code> to decode indices and enforce architectural constraints, ensuring only valid configurations are tested, while the shared header file (<code>431project.h</code>) ties these components together. The full project also includes a <code>Makefile</code> to compile everything into a single executable and a <code>worker.sh</code> script to automate multiple runs and manage evaluation limits. Here, only the proposal code is shown, as it contains the core algorithm driving the exploration process. The results it produces — including best configurations and performance metrics — form the basis for the analysis and discussion presented on this site.</p>
       <details class="code-toggle">
     <summary>Show C++ source (toggle)</summary>
@@ -433,10 +432,159 @@ std::string YourProposalFunction(
     kind: 'project',
     slug: 'pipelined-mips-cpu-5-stage',
     title: 'Pipelined MIPS CPU (5‑stage)',
-    description: 'Hazard detection/forwarding, branch prediction; verified with waveform suites in Vivado.',
+  description: 'A 32‑bit MIPS‑style processor implemented in Verilog with a five‑stage pipeline, hazard detection, and data forwarding for efficient execution.',
     course: 'ECE 350',
     term: 'Fall 2024',
-    link: '#'
+    hero: {
+      src: '/projects/5stagepipeline/5stagepipelineiconimage.png',
+      alt: 'Block diagram icon for the 5‑stage pipelined MIPS CPU',
+      width: 1280,
+      height: 720
+    },
+    contentHtml: `
+  <h2>Overview</h2>
+  <p>I built a small computer processor. It runs in five staged steps and can process multiple instructions at the same time. Formally, it is a 32‑bit MIPS‑style CPU implemented in Verilog with the classic <em>five‑stage pipeline</em> (IF, ID, EX, MEM, WB). Correctness and throughput are maintained by a hazard detection unit that inserts stalls when required and a forwarding network that supplies the most recent values to the ALU inputs.</p>
+
+  <h2>Highlights</h2>
+  <ul>
+    <li>Five‑stage pipeline: IF → ID → EX → MEM → WB</li>
+    <li>Data forwarding on both ALU operands (EX/MEM and MEM/WB sources)</li>
+    <li>Load‑use hazard detection with single‑cycle stall insertion</li>
+    <li>32‑bit datapath and register file (2R/1W), negative‑edge write timing</li>
+    <li>Instruction subset: R‑type add/sub, <code>lw</code>, <code>sw</code></li>
+    <li>Modular Verilog design with clear pipeline registers and control separation</li>
+  </ul>
+
+  <h2>Microarchitecture</h2>
+  <figure class="not-prose">
+    <svg viewBox="0 0 920 200" width="100%" role="img" aria-label="Five-stage pipeline with forwarding paths">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="strokeWidth">
+          <polygon points="0 0, 10 3.5, 0 7" fill="currentColor" />
+        </marker>
+      </defs>
+      <g fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="30" y="60" width="140" height="60" rx="8"></rect>
+        <text x="100" y="95" text-anchor="middle">IF</text>
+        <rect x="210" y="60" width="140" height="60" rx="8"></rect>
+        <text x="280" y="95" text-anchor="middle">ID</text>
+        <rect x="390" y="60" width="140" height="60" rx="8"></rect>
+        <text x="460" y="95" text-anchor="middle">EX</text>
+        <rect x="570" y="60" width="140" height="60" rx="8"></rect>
+        <text x="640" y="95" text-anchor="middle">MEM</text>
+        <rect x="750" y="60" width="140" height="60" rx="8"></rect>
+        <text x="820" y="95" text-anchor="middle">WB</text>
+
+        <!-- stage pipes -->
+        <line x1="170" y1="90" x2="210" y2="90" marker-end="url(#arrowhead)" />
+        <line x1="350" y1="90" x2="390" y2="90" marker-end="url(#arrowhead)" />
+        <line x1="530" y1="90" x2="570" y2="90" marker-end="url(#arrowhead)" />
+        <line x1="710" y1="90" x2="750" y2="90" marker-end="url(#arrowhead)" />
+
+        <!-- forwarding A/B (schematic) -->
+        <path d="M 640 60 C 640 20, 460 20, 460 60" stroke="currentColor" marker-end="url(#arrowhead)" />
+        <path d="M 820 60 C 820 10, 460 10, 460 60" stroke="currentColor" marker-end="url(#arrowhead)" />
+        <path d="M 640 120 C 640 160, 460 160, 460 120" stroke="currentColor" marker-end="url(#arrowhead)" />
+        <path d="M 820 120 C 820 170, 460 170, 460 120" stroke="currentColor" marker-end="url(#arrowhead)" />
+      </g>
+      <g fill="currentColor" font-size="12">
+        <text x="455" y="40" text-anchor="middle">MEM → EX (forward)</text>
+        <text x="455" y="24" text-anchor="middle">WB → EX (forward)</text>
+        <text x="455" y="152" text-anchor="middle">MEM → EX (forward)</text>
+        <text x="455" y="176" text-anchor="middle">WB → EX (forward)</text>
+      </g>
+    </svg>
+    <figcaption>Five‑stage pipeline with schematic forwarding paths from MEM/WB back to EX operands.</figcaption>
+  </figure>
+
+      <h2>Pipeline operation</h2>
+      <ol>
+        <li><strong>IF — Instruction Fetch:</strong> The program counter (PC) addresses instruction memory; <code>pc_adder</code> advances the PC by 4.</li>
+        <li><strong>ID — Decode and Register Read:</strong> The control unit derives control signals; the register file provides <code>rs</code> and <code>rt</code>; immediates are sign‑extended.</li>
+        <li><strong>EX — Execute:</strong> The ALU performs arithmetic (add/sub). The write‑back register (rt vs. rd) is selected, and forwarded operands may be chosen.</li>
+        <li><strong>MEM — Data Memory:</strong> Load and store instructions access data memory using the ALU result as the address.</li>
+        <li><strong>WB — Write‑Back:</strong> The ALU or memory result is committed to the register file.</li>
+      </ol>
+
+      <h2>Hazard handling</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Hazard</th>
+            <th>Condition</th>
+            <th>Resolution</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>EX data</td>
+            <td>Producer in MEM/WB, consumer in EX</td>
+            <td>Forward via <code>forward_reg</code> (select EX/MEM or MEM/WB result)</td>
+          </tr>
+          <tr>
+            <td>Load‑use</td>
+            <td><code>lw</code> in EX, dependent consumer in ID</td>
+            <td><code>hazard_reg</code> asserts <code>stall</code>, inserts 1 bubble</td>
+          </tr>
+          <tr>
+            <td>RF timing</td>
+            <td>Read/Write same cycle</td>
+            <td>RF writes on negedge; reads are combinational</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Pipeline timing example</h2>
+      <p>A short trace showing a single‑cycle stall on a load‑use dependency followed by forwarding:</p>
+      <div class="overflow-x-auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Instr</th>
+              <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>I1: lw r1, 0(r2)</td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td></tr>
+            <tr><td>I2: add r3, r1, r4</td><td></td><td>IF</td><td>ID</td><td>STALL</td><td>EX*</td><td>MEM</td><td>WB</td></tr>
+            <tr><td>I3: sw r3, 4(r5)</td><td></td><td></td><td>IF</td><td>ID</td><td>EX*</td><td>MEM</td><td>WB</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><em>EX* indicates operands supplied via forwarding (from MEM/WB or EX/MEM as appropriate).</em></p>
+
+      <h2>Correctness and performance mechanisms</h2>
+      <ul>
+        <li><strong>Data hazards:</strong> The <code>forward_reg</code> unit selects among ID/EX operands, MEM results, or WB results for each ALU input (<em>forwardA</em> and <em>forwardB</em>), ensuring the ALU receives the most recent values.</li>
+        <li><strong>Load‑use hazards:</strong> The <code>hazard_reg</code> unit asserts <code>stall</code> when an instruction in EX is a load and the following instruction requires the loaded value in the next cycle.</li>
+        <li><strong>Register file timing:</strong> Writes occur on the negative clock edge and reads are combinational to avoid read‑write conflicts within a cycle.</li>
+      </ul>
+
+      <h2>Design decisions</h2>
+      <ul>
+        <li>Pipeline registers carry only the fields needed by downstream stages, minimizing fan‑out and simplifying control.</li>
+        <li>Forwarding muxes are 3‑way (ID/EX, EX/MEM, MEM/WB), eliminating unnecessary bubbles for ALU‑ALU dependencies.</li>
+        <li>Single‑cycle data memory keeps the MEM stage simple; <code>lw</code> is the only case that forces a bubble on immediate use.</li>
+      </ul>
+
+      <h2>Architectural components</h2>
+      <ul>
+        <li>Pipeline registers: <code>if_id</code>, <code>id_ex</code>, <code>ex_mem</code>, <code>mem_wb</code></li>
+        <li>Instruction set slice: R‑type add/sub, <code>lw</code>, <code>sw</code></li>
+        <li>Modules: <code>program_counter</code>, <code>pc_adder</code>, <code>inst_mem</code>, <code>register_file</code>, <code>control_unit</code>, <code>imm_extend</code>, <code>alu</code>, <code>data_mem</code>, muxes (2×1, 3×1)</li>
+        <li>Verification: Simulated with a small instruction/data memory; waveforms confirm forwarding decisions and stall timing.</li>
+      </ul>
+
+  <h2>Example execution</h2>
+  <p>The bundled program sequence loads two words, performs an addition, and introduces a dependent load to exercise a single‑cycle stall followed by forwarding. The waveforms illustrate the asserted <code>stall</code> and the subsequent selection of forwarded operands.</p>
+
+  <h2>Source code</h2>
+  <p>The complete Verilog source is available below. No files download automatically; use the provided buttons to access the material.</p>
+      <div class="not-prose mt-2 flex flex-wrap gap-2">
+        <a href="/academics/pipelined-mips-cpu-5-stage/datapath.v" download class="inline-flex items-center rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm hover:bg-white/10">Download datapath.v</a>
+        <a href="/academics/pipelined-mips-cpu-5-stage/datapath.v" target="_blank" rel="noopener noreferrer" class="inline-flex items-center rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm hover:bg-white/10">Open in new tab</a>
+      </div>
+    `
   },
   {
     kind: 'project',

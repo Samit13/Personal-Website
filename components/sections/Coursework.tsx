@@ -132,20 +132,34 @@ export default function Coursework() {
     if (!section) return
 
     const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const activeKinds: KindNoEssay[] = filter === 'all' ? kinds.filter(k => pathRefs.current[k]) : [filter]
+    // Only include kinds whose path has non-empty "d" data
+    const activeKinds: KindNoEssay[] = (() => {
+      const hasD = (k: KindNoEssay) => {
+        const d = pathRefs.current[k]?.getAttribute('d') || ''
+        return d.trim().length > 0
+      }
+      if (filter === 'all') return kinds.filter(hasD)
+      const f = filter as KindNoEssay
+      return hasD(f) ? [f] : []
+    })()
 
     if (prefersReduced) {
       for (const k of activeKinds) {
         const p = pathRefs.current[k]
         const o = orbRefs.current[k]
         if (!p || !o) continue
-        const totalLen = p.getTotalLength()
-        p.style.strokeDasharray = `${totalLen}`
-        p.style.strokeDashoffset = '0'
-        const pt = p.getPointAtLength(totalLen)
-        o.setAttribute('cx', pt.x.toFixed(1))
-        o.setAttribute('cy', pt.y.toFixed(1))
-        o.style.opacity = '0.75'
+        try {
+          const totalLen = p.getTotalLength()
+          p.style.strokeDasharray = `${totalLen}`
+          p.style.strokeDashoffset = '0'
+          const pt = p.getPointAtLength(totalLen)
+          o.setAttribute('cx', pt.x.toFixed(1))
+          o.setAttribute('cy', pt.y.toFixed(1))
+          o.style.opacity = '0.75'
+        } catch {
+          // Ignore paths without valid data
+          continue
+        }
       }
       return
     }
@@ -153,8 +167,12 @@ export default function Coursework() {
     for (const k of activeKinds) {
       const p = pathRefs.current[k]
       if (p) {
-        const total = p.getTotalLength()
-        p.style.strokeDasharray = `${total}`
+        try {
+          const total = p.getTotalLength()
+          p.style.strokeDasharray = `${total}`
+        } catch {
+          // Skip invalid/empty paths
+        }
       }
     }
 
@@ -174,15 +192,20 @@ export default function Coursework() {
           const pe = pathRefs.current[k]
           const oe = orbRefs.current[k]
           if (!pe || !oe) continue
-          const totalK = pe.getTotalLength()
-          const len = totalK * p
-          pe.style.strokeDashoffset = `${totalK - len}`
-          const pt = pe.getPointAtLength(len)
-          oe.setAttribute('cx', pt.x.toFixed(1))
-          oe.setAttribute('cy', pt.y.toFixed(1))
-          oe.setAttribute('r', String(5 + 2.5 * Math.sin(p * Math.PI)))
-          // Fade in quickly once positioned
-          oe.style.opacity = String(Math.max(0.6, 0.9 * p))
+          try {
+            const totalK = pe.getTotalLength()
+            const len = totalK * p
+            pe.style.strokeDashoffset = `${totalK - len}`
+            const pt = pe.getPointAtLength(len)
+            oe.setAttribute('cx', pt.x.toFixed(1))
+            oe.setAttribute('cy', pt.y.toFixed(1))
+            oe.setAttribute('r', String(5 + 2.5 * Math.sin(p * Math.PI)))
+            // Fade in quickly once positioned
+            oe.style.opacity = String(Math.max(0.6, 0.9 * p))
+          } catch {
+            // Skip if the path is invalid at this moment (e.g., resized to zero)
+            continue
+          }
         }
       })
     }

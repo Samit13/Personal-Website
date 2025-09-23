@@ -14,16 +14,16 @@ export default function CourseworkPage({ params }: { params: { slug: string } })
     <main className="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 md:px-6 lg:px-8 py-14 md:py-20">
       <div className="mb-8">
         <Link
-          href="/#coursework"
+          href="/"
           className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-muted hover:bg-white/10 hover:text-fg/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
         >
           <span aria-hidden>←</span>
-          <span>Back to Coursework</span>
+          <span>Back to Home</span>
         </Link>
       </div>
 
       <article className="prose prose-invert max-w-none lg:grid lg:grid-cols-12 lg:gap-10">
-  <header className="mb-6 md:mb-8 not-prose lg:col-span-10 lg:col-start-2 xl:col-span-10 xl:col-start-2 text-center">
+        <header className="mb-6 md:mb-8 not-prose lg:col-span-10 lg:col-start-2 xl:col-span-10 xl:col-start-2 text-center">
           <p className="text-xs uppercase tracking-wide text-white/60">{item.kind}</p>
           <h1 className="mt-1 text-3xl md:text-5xl leading-tight">{item.title}</h1>
           {(item.course || item.term) && (
@@ -46,7 +46,7 @@ export default function CourseworkPage({ params }: { params: { slug: string } })
           </figure>
         )}
 
-  {item.description && <p className="text-base md:text-lg lg:col-span-10 lg:col-start-2 xl:col-span-10 xl:col-start-2">{item.description}</p>}
+        {item.description && <p className="text-base md:text-lg lg:col-span-10 lg:col-start-2 xl:col-span-10 xl:col-start-2">{item.description}</p>}
 
         {item.link && (
           <p className="mt-6 not-prose lg:col-span-10 lg:col-start-2 xl:col-span-10 xl:col-start-2">
@@ -82,6 +82,23 @@ export default function CourseworkPage({ params }: { params: { slug: string } })
                 {img.alt && <figcaption className="px-3 py-2 text-xs text-white/60">{img.alt}</figcaption>}
               </figure>
             ))}
+          </div>
+        )}
+
+        {/* PDF Download CTA for the CMPEN 431 thesis page */}
+        {item.slug === 'cmpen-431-design-space-exploration' && (
+          <div className="not-prose lg:col-span-10 lg:col-start-2 xl:col-span-10 xl:col-start-2 mt-12 flex items-center justify-center">
+            <a
+              href="/academics/cmpen-431-design-space-exploration/DSE.pdf"
+              download
+              className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-white hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden="true">
+                <path d="M12 3a1 1 0 0 1 1 1v8.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L11 12.586V4a1 1 0 0 1 1-1z" />
+                <path d="M5 20a1 1 0 0 1 0-2h14a1 1 0 1 1 0 2H5z" />
+              </svg>
+              <span>Download Thesis (PDF)</span>
+            </a>
           </div>
         )}
       </article>

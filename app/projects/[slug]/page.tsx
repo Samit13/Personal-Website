@@ -40,11 +40,11 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
     <main className="mx-auto max-w-6xl px-6 py-16 md:py-24">
       <div className="mb-8">
         <Link
-          href="/#projects"
+          href="/"
           className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-muted hover:bg-white/10 hover:text-fg/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
         >
           <span aria-hidden>←</span>
-          <span>Back to Projects</span>
+          <span>Back to Home</span>
         </Link>
       </div>
 

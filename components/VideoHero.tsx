@@ -27,7 +27,10 @@ export default function VideoHero({ className, poster, src, sources, children }:
     const result: Source[] = []
     for (const s of candidateSources) {
       const ok = s.type ? v.canPlayType(s.type) : 'maybe'
-      if (ok !== '') result.push(s)
+      // Keep sources the browser says it can play, plus keep QuickTime as a Safari fallback
+      if (ok !== '' || s.type === 'video/quicktime') {
+        result.push(s)
+      }
     }
     setSupportedSources(result.length ? result : candidateSources)
   }, [candidateSources])
@@ -42,6 +45,7 @@ export default function VideoHero({ className, poster, src, sources, children }:
         muted
         loop
         playsInline
+        preload="metadata"
       >
         {supportedSources.map((s, i) => (
           <source key={`src-${i}`} src={s.src} type={s.type} />

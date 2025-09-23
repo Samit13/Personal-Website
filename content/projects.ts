@@ -251,19 +251,50 @@ export const PROJECTS: Project[] = [
     downloads: [],
   },
   
+  // New Projects
   {
-    slug: 'espressif-ble-sensor-hub',
-    title: 'Espressif BLE Sensor Hub',
-    desc: 'ESP32 hub that aggregates BLE sensors and posts to a cloud dashboard.',
+    slug: 'esotaira-omnidemensial-drone',
+    title: 'Esotaira Omnidemensial Drone',
+    desc: 'Experimental multi-axis drone platform with custom control firmware and advanced stabilization.',
     summary:
-      'BLE scans, pairs, and reads multiple sensors concurrently. Batches data to a server; dashboard shows live and historical metrics.',
-    tech: ['ESP32', 'C/C++', 'BLE', 'MQTT', 'Next.js'],
+      'A research prototype focusing on precise multi-directional maneuvering, featuring sensor fusion and bespoke flight modes for confined or complex environments.',
+    tech: ['STM32', 'C/C++', 'PX4/ArduPilot (custom)', 'Sensor Fusion', 'PID', 'IMU', 'ESC', 'CAD'],
+    tags: ['Flight Control', 'Sensor Fusion', 'Embedded', 'Real-time'],
     highlights: [
-      'Custom GATT client for multi-sensor polling',
-      'Wrote ring-buffered telemetry with retries/backoff',
-      'Realtime graph dashboard with server-sent events',
+      'Custom flight controller firmware with multi-axis stabilization loops (PID)',
+      'Sensor fusion with IMU + barometer; soft-fail handling and safe arming',
+      'Configurable flight modes for hover, path follow, and tight-space translation',
     ],
-    media: ['/placeholder/project4.jpg'],
+    media: [
+      { type: 'image', src: '/placeholder/project-drone-esotaira.jpg', alt: 'Esotaira Omnidemensial Drone prototype' },
+    ],
+    sections: [
+      { title: 'About the Project', paragraphs: ['An experimental drone platform aimed at precision and stability in constrained spaces. Focused on control loops, sensor fusion, and robust fail-safes.'] },
+      { title: 'Features', bullets: ['Multi-axis control firmware', 'Sensor fusion (IMU + baro)', 'Custom flight modes', 'Safety/arming checks'] },
+      { title: 'Technical Implementation', bullets: ['PID loops tuned for fast response', 'Interrupt-driven sensor reads', 'Calibrated IMU alignment and filtering', 'Telemetry over UART/USB'] },
+    ],
+  },
+  {
+    slug: 'smart-drone',
+    title: 'Smart Drone',
+    desc: 'Autonomous drone with computer vision assisted navigation and waypoint missions.',
+    summary:
+      'Adds vision and autonomy on top of a stable flight stack: object detection, waypoint planning, and assisted landing.',
+    tech: ['Python', 'OpenCV', 'TensorFlow Lite', 'Onboard SBC', 'PX4'],
+    tags: ['Autonomy', 'Computer Vision', 'Robotics'],
+    highlights: [
+      'Onboard CV pipeline for marker detection and landing assist',
+      'Waypoint missions with obstacle-aware path adjustments',
+      'Modular design to swap models and navigation strategies',
+    ],
+    media: [
+      { type: 'image', src: '/placeholder/project-drone-smart.jpg', alt: 'Smart Drone with camera module' },
+    ],
+    sections: [
+      { title: 'About the Project', paragraphs: ['Built to explore semi-autonomous flight with lightweight models and deterministic behavior suitable for edge devices.'] },
+      { title: 'Features', bullets: ['Marker-based landing assist', 'Waypoint mission runner', 'Swappable detection models'] },
+      { title: 'Technical Implementation', bullets: ['OpenCV preprocessing on SBC', 'TensorFlow Lite inference', 'PX4 control via MAVLink'] },
+    ],
   },
 ]
 
