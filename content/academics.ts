@@ -592,8 +592,8 @@ std::string YourProposalFunction(
       <h2 id="introduction">Introduction</h2>
       <div class="intro-with-video" style="overflow: hidden;">
         <figure class="intro-video right vertical" style="float: right; margin: 0 0 1rem 1.25rem;">
-          <video id="amplifier-demo" data-primary="/academics/audio-amplifier-circuit/demo.mp4" data-alt="/academics/audio-amplifier-circuit/audio2.mp4" data-current="primary" autoplay loop controls playsinline muted preload="auto" style="aspect-ratio: 9/16; width: 360px; max-width: 50vw; height: auto; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.28); display: block;">
-            <source src="/academics/audio-amplifier-circuit/demo.mp4" type="video/mp4" />
+          <video id="amplifier-demo" data-primary="/academics/audio-amplifier-circuit/audiohero.mp4" data-alt="/academics/audio-amplifier-circuit/audiohero2.mp4" data-current="primary" autoplay loop controls playsinline muted preload="auto" style="aspect-ratio: 9/16; width: 360px; max-width: 50vw; height: auto; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.28); display: block;">
+            <source src="/academics/audio-amplifier-circuit/audiohero.mp4" type="video/mp4" />
             Sorry, your browser doesn't support embedded videos.
           </video>
           <div style="margin-top:.4rem; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
@@ -973,7 +973,7 @@ std::string YourProposalFunction(
         <div class="scope-grid scope-series">
           <figure class="scope-fig scope-small scope-video">
             <video controls playsinline muted loop autoplay preload="metadata" style="border-radius:10px; background:#000; box-shadow:0 4px 22px -8px rgba(0,0,0,.6);">
-              <source src="/academics/audio-amplifier-circuit/volume%20control.mp4" type="video/mp4" />
+              <source src="/academics/audio-amplifier-circuit/volumecontrol.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
             <figcaption>Real-time LED ladder response while sweeping volume control — successive thresholds light as amplitude crosses ≈20/60/80/120 mV.</figcaption>
