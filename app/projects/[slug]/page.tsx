@@ -51,67 +51,90 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
       {/* Cinematic hero */}
       {hero ? (
         <section aria-label="Project hero" className="mb-10">
-          {params.slug === 'ai-fitness-tracker' ? (
-            <div className="relative overflow-hidden rounded-2xl">
-              <Image
-                src="/projects/ai-fitness-tracker/AIfitnesstrackertitle.png?v=2"
-                alt="AI Fitness Tracker Title"
-                width={600}
-                height={400}
-                className="h-[36vh] md:h-[42vh] w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-              <div className="absolute inset-0 flex items-end">
-                <div className="w-full p-5 md:p-8">
-                  <h1 className="text-3xl md:text-5xl font-semibold leading-tight">{proj.title}</h1>
-                  {(proj.time || (proj as any).location) ? (
-                    <p className="mt-2 text-sm md:text-base text-white/70 flex flex-wrap items-center gap-2">
-                      {proj.time ? <span>{proj.time}</span> : null}
-                      {proj.time && (proj as any).location ? <span aria-hidden>•</span> : null}
-                      {(proj as any).location ? <span className="text-white/60">{(proj as any).location}</span> : null}
-                    </p>
-                  ) : null}
+          {(() => {
+            const heroHeights = (proj as any).heroHeights as { base: string; md?: string } | undefined
+            const baseHeight = heroHeights?.base || 'h-[36vh]'
+            const mdHeight = heroHeights?.md || 'md:h-[42vh]'
+            const heightClasses = `${baseHeight} ${mdHeight}`
+            
+            // We inline the repeated hero branches below but swap class names dynamically
+            if (params.slug === 'ai-fitness-tracker') {
+              return (
+                <div className="relative overflow-hidden rounded-2xl">
+                  <Image
+                    src="/projects/ai-fitness-tracker/AIfitnesstrackertitle.png?v=2"
+                    alt="AI Fitness Tracker Title"
+                    width={600}
+                    height={400}
+                    className={`${baseHeight} ${mdHeight} w-full object-cover`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 flex items-end">
+                    <div className="w-full p-5 md:p-8">
+                      <h1 className="text-3xl md:text-5xl font-semibold leading-tight">{proj.title}</h1>
+                      {(proj.time || (proj as any).location) ? (
+                        <p className="mt-2 text-sm md:text-base text-white/70 flex flex-wrap items-center gap-2">
+                          {proj.time ? <span>{proj.time}</span> : null}
+                          {proj.time && (proj as any).location ? <span aria-hidden>•</span> : null}
+                          {(proj as any).location ? <span className="text-white/60">{(proj as any).location}</span> : null}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ) : hero.type === 'image' ? (
-            <div className="relative overflow-hidden rounded-2xl">
-              <img src={hero.src} alt={(hero as any).alt || ''} className="h-[36vh] md:h-[42vh] w-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-              <div className="absolute inset-0 flex items-end">
-                <div className="w-full p-5 md:p-8">
-                  <h1 className="text-3xl md:text-5xl font-semibold leading-tight">{proj.title}</h1>
-                  {(proj.time || (proj as any).location) ? (
-                    <p className="mt-2 text-sm md:text-base text-white/70 flex flex-wrap items-center gap-2">
-                      {proj.time ? <span>{proj.time}</span> : null}
-                      {proj.time && (proj as any).location ? <span aria-hidden>•</span> : null}
-                      {(proj as any).location ? <span className="text-white/60">{(proj as any).location}</span> : null}
-                    </p>
-                  ) : null}
+              )
+            }
+            if (hero.type === 'image') {
+              return (
+                <div className="relative overflow-hidden rounded-2xl">
+                  <img src={hero.src} alt={(hero as any).alt || ''} className={`${baseHeight} ${mdHeight} w-full object-cover`} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 flex items-end">
+                    <div className="w-full p-5 md:p-8">
+                      <h1 className="text-3xl md:text-5xl font-semibold leading-tight">{proj.title}</h1>
+                      {(proj.time || (proj as any).location) ? (
+                        <p className="mt-2 text-sm md:text-base text-white/70 flex flex-wrap items-center gap-2">
+                          {proj.time ? <span>{proj.time}</span> : null}
+                          {proj.time && (proj as any).location ? <span aria-hidden>•</span> : null}
+                          {(proj as any).location ? <span className="text-white/60">{(proj as any).location}</span> : null}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ) : hero.type === 'video' ? (
-            <VideoHero
-              className="h-[36vh] md:h-[42vh]"
-              poster={(hero as any).poster || (firstImageIdx !== -1 ? (typedMedia[firstImageIdx] as any).src : undefined)}
-              src={(hero as any).src}
-              sources={(hero as any).sources}
-            >
-              <div className="absolute inset-0 flex items-end">
-                <div className="w-full p-5 md:p-8">
-                  <h1 className="text-3xl md:text-5xl font-semibold leading-tight">{proj.title}</h1>
-                  {(proj.time || (proj as any).location) ? (
-                    <p className="mt-2 text-sm md:text-base text-white/80 flex flex-wrap items-center gap-2 drop-shadow">
-                      {proj.time ? <span>{proj.time}</span> : null}
-                      {proj.time && (proj as any).location ? <span aria-hidden>•</span> : null}
-                      {(proj as any).location ? <span className="text-white/70">{(proj as any).location}</span> : null}
-                    </p>
-                  ) : null}
+              )
+            }
+            if (hero.type === 'video') {
+              const isPolice = params.slug === 'police-chase'
+              // Wider: remove previous max-w limit for police-chase (inherit main max-w-6xl)
+              const widthWrap = isPolice ? 'mx-auto' : ''
+              return (
+                <div className={widthWrap}>
+                  <VideoHero
+                    className={`${baseHeight} ${mdHeight} rounded-2xl`}
+                    poster={(hero as any).poster || (firstImageIdx !== -1 ? (typedMedia[firstImageIdx] as any).src : undefined)}
+                    src={(hero as any).src}
+                    sources={(hero as any).sources}
+                    fullViewport={false}
+                    overlayClassName="bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+                    videoClassName={isPolice ? 'scale-[1.45] md:scale-[1.5] -translate-y-[6%] object-cover' : undefined}
+                  >
+                    <div className="relative z-10">
+                      <h1 className={`${isPolice ? 'text-3xl md:text-5xl' : 'text-2xl md:text-4xl'} font-semibold leading-tight drop-shadow-[0_3px_8px_rgba(0,0,0,0.65)]`}>{proj.title}</h1>
+                      {(proj.time || (proj as any).location) ? (
+                        <p className="mt-1 text-xs md:text-sm text-white/85 flex flex-wrap items-center gap-2 drop-shadow">
+                          {proj.time ? <span>{proj.time}</span> : null}
+                          {proj.time && (proj as any).location ? <span aria-hidden>•</span> : null}
+                          {(proj as any).location ? <span className="text-white/75">{(proj as any).location}</span> : null}
+                        </p>
+                      ) : null}
+                    </div>
+                  </VideoHero>
                 </div>
-              </div>
-            </VideoHero>
-          ) : null}
+              )
+            }
+            return null
+          })()}
         </section>
       ) : null}
 

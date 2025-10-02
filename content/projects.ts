@@ -40,6 +40,8 @@ export type Project = {
   time?: string
   // Location or context (e.g., State College, PA · Personal Project)
   location?: string
+  // Optional hero height overrides (base + md breakpoint). Values should be Tailwind height utility classes.
+  heroHeights?: { base: string; md?: string }
   highlights: string[]
   // New: support typed media items; keep string[] for backward compatibility
   media: string[] | MediaItem[]
@@ -187,7 +189,8 @@ export const PROJECTS: Project[] = [
     title: 'Police Chase',
     desc: 'Arcade-style police pursuit game with helicopters, hazards, and a reactive HUD.',
     time: '2020',
-    location: 'Personal Project – State College, PA',
+    location: 'Personal Project – Pittsburgh, PA',
+  heroHeights: { base: 'h-[7vh]', md: 'md:h-[10vh]' },
     summary:
       'An arcade chase where you dodge traffic and obstacles while outsmarting police vehicles and helicopters. Score points, manage hearts, and use limited power moves to break free from tight situations.',
     tech: ['Unity', 'C#', 'Steering Behaviors', 'Game Physics'],

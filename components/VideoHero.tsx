@@ -14,6 +14,10 @@ export type VideoHeroProps = {
   preserveContentOnMobile?: boolean
   /** Optional overlay gradient classes override */
   overlayClassName?: string
+  /** If true (default), enforces a viewport-filling min height; set false for compact heroes (e.g., small project strip). */
+  fullViewport?: boolean
+  /** Extra classes applied directly to the <video> element (use for custom cropping / scaling). */
+  videoClassName?: string
 }
 
 export default function VideoHero({
@@ -23,7 +27,9 @@ export default function VideoHero({
   sources,
   children,
   preserveContentOnMobile = true,
-  overlayClassName
+  overlayClassName,
+  fullViewport = true,
+  videoClassName
 }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [supportedSources, setSupportedSources] = useState<Source[]>([])
@@ -62,10 +68,10 @@ export default function VideoHero({
   }, [])
 
   const containerHeightClass = useMemo(() => {
+    if (!fullViewport) return ''
     // Use dynamic viewport height if supported, else fall back.
-    // Tailwind does not ship dvh utility by default; apply inline style fallback below.
     return 'min-h-[100svh]'
-  }, [])
+  }, [fullViewport])
 
   const objectFit = preserveContentOnMobile && isIOS ? 'object-contain md:object-cover' : 'object-cover'
   // Apply a subtle upscale on medium+ screens for a larger visual presence (disabled on iOS when using contain)
@@ -82,7 +88,7 @@ export default function VideoHero({
     >
       <video
         ref={videoRef}
-  className={`w-full h-full ${objectFit} ${scaleClasses} transition-[object-fit,transform] duration-700 ease-out will-change-transform`}
+        className={`w-full h-full ${objectFit} ${scaleClasses} transition-[object-fit,transform] duration-700 ease-out will-change-transform ${videoClassName || ''}`}
         poster={poster}
         autoPlay
         muted
@@ -99,7 +105,7 @@ export default function VideoHero({
       }`} />
       {/* Safe-area inset padding wrapper for children */}
       {children && (
-        <div className="absolute inset-0 flex flex-col justify-end p-6 pb-[calc(env(safe-area-inset-bottom,0)+1.25rem)]">
+        <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8 pb-[calc(env(safe-area-inset-bottom,0)+1.25rem)]">
           {children}
         </div>
       )}
