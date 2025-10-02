@@ -64,6 +64,13 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
               <div className="absolute inset-0 flex items-end">
                 <div className="w-full p-5 md:p-8">
                   <h1 className="text-3xl md:text-5xl font-semibold leading-tight">{proj.title}</h1>
+                  {(proj.time || (proj as any).location) ? (
+                    <p className="mt-2 text-sm md:text-base text-white/70 flex flex-wrap items-center gap-2">
+                      {proj.time ? <span>{proj.time}</span> : null}
+                      {proj.time && (proj as any).location ? <span aria-hidden>•</span> : null}
+                      {(proj as any).location ? <span className="text-white/60">{(proj as any).location}</span> : null}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -74,6 +81,13 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
               <div className="absolute inset-0 flex items-end">
                 <div className="w-full p-5 md:p-8">
                   <h1 className="text-3xl md:text-5xl font-semibold leading-tight">{proj.title}</h1>
+                  {(proj.time || (proj as any).location) ? (
+                    <p className="mt-2 text-sm md:text-base text-white/70 flex flex-wrap items-center gap-2">
+                      {proj.time ? <span>{proj.time}</span> : null}
+                      {proj.time && (proj as any).location ? <span aria-hidden>•</span> : null}
+                      {(proj as any).location ? <span className="text-white/60">{(proj as any).location}</span> : null}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -87,6 +101,13 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
               <div className="absolute inset-0 flex items-end">
                 <div className="w-full p-5 md:p-8">
                   <h1 className="text-3xl md:text-5xl font-semibold leading-tight">{proj.title}</h1>
+                  {(proj.time || (proj as any).location) ? (
+                    <p className="mt-2 text-sm md:text-base text-white/80 flex flex-wrap items-center gap-2 drop-shadow">
+                      {proj.time ? <span>{proj.time}</span> : null}
+                      {proj.time && (proj as any).location ? <span aria-hidden>•</span> : null}
+                      {(proj as any).location ? <span className="text-white/70">{(proj as any).location}</span> : null}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </VideoHero>

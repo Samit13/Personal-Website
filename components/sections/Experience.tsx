@@ -117,7 +117,7 @@ export default function Experience() {
                   prefetch
                   scroll={false}
                   className="group block"
-                  aria-label={`${job.company} — ${job.time}`}
+                  aria-label={`${job.company} — ${job.role}${job.location ? ' — ' + job.location : ''} — ${job.time}`}
                   onClick={(e) => onCardClick(e, `/experience/${job.slug}`)}
                 >
                   <ViewTransition
@@ -126,8 +126,8 @@ export default function Experience() {
                     className="glass hover-highlight hover-shine reveal rounded-2xl px-4 py-3.5 ring-1 ring-white/10 border border-white/5 shadow-2xl shadow-black/40 transition-colors duration-300 transform-gpu [transform-style:preserve-3d] [will-change:transform]"
                     data-reveal
                   >
-                    <div className="flex items-baseline justify-between gap-4">
-                      <h3 className="text-2xl md:text-3xl leading-tight flex items-center gap-3">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <h3 className="text-2xl md:text-3xl leading-tight flex items-center gap-3 flex-1 min-w-[220px]">
                         {job.logo ? (
                           <Image
                             src={job.logo}
@@ -138,12 +138,23 @@ export default function Experience() {
                             priority
                           />
                         ) : null}
-                        <span>{job.company}</span>
+                        <span className="flex flex-col">
+                          <span>{job.company}</span>
+                          {job.context ? (
+                            <span className="text-[0.65rem] md:text-xs font-medium tracking-wide uppercase text-white/50 mt-0.5">{job.context}</span>
+                          ) : null}
+                        </span>
                       </h3>
-                      <span className="text-sm text-muted whitespace-nowrap">{job.time}</span>
+                      <div className="flex flex-col items-end text-right">
+                        {job.location ? (
+                          <span className="text-xs md:text-sm text-white/60 whitespace-nowrap leading-snug">{job.location}</span>
+                        ) : null}
+                        <span className="text-xs md:text-sm text-muted whitespace-nowrap mt-0.5">{job.time}</span>
+                      </div>
                     </div>
                     <div className="pointer-events-none max-h-0 opacity-0 translate-y-1 overflow-hidden transition-all duration-300 ease-out group-hover:max-h-40 group-hover:opacity-100 group-hover:translate-y-0">
-                      <p className="mt-2 text-sm text-muted">{job.role}</p>
+                      <p className="mt-2 text-sm text-muted font-medium">{job.role}</p>
+                      {job.location ? <p className="text-[0.65rem] uppercase tracking-wide text-white/40 mt-1">{job.location}</p> : null}
                       <ul className="mt-2 space-y-1.5 text-sm text-muted">
                         {job.bullets.slice(0, 2).map((b: string) => (
                           <li key={b} className="list-disc pl-5">{b}</li>

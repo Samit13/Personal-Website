@@ -61,7 +61,7 @@ export default function About() {
     { label: 'Frisbee', icon: '🥏' },
     { label: "Rubik's Cube", icon: '🧩' },
     { label: 'Physics', icon: '⚛️' },
-    { label: 'UFC', icon: '🥊' },
+    { label: 'Investing', icon: '📈' },
     { label: 'Technology', icon: '🤖' },
   ]
 

@@ -24,8 +24,12 @@ function Card({ item }: { item: AcademicItem & { kind: KindNoEssay } }) {
   <div className="text-xs uppercase tracking-wide text-white/60 mb-1">{LABEL[item.kind]}</div>
         <h3 className="text-lg font-semibold group-hover:underline underline-offset-4 decoration-white/30">{item.title}</h3>
         {item.description && <p className="mt-1 text-muted text-sm">{item.description}</p>}
-        {(item.course || item.term) && (
-          <p className="mt-3 text-xs text-white/50">{[item.course, item.term].filter(Boolean).join(' • ')}</p>
+        {(item.course || item.term || (item as any).location) && (
+          <p className="mt-3 text-[11px] uppercase tracking-wide text-white/40 flex flex-wrap gap-x-2 gap-y-0.5">
+            {[item.course, item.term].filter(Boolean).join(' ')}
+            {(item.course || item.term) && (item as any).location ? <span aria-hidden>•</span> : null}
+            {(item as any).location ? <span className="normal-case text-white/45">{(item as any).location}</span> : null}
+          </p>
         )}
       </div>
     </Link>

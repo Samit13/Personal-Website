@@ -36,6 +36,10 @@ export type Project = {
   tags?: string[]
   // Optional: image for the project card on the home page
   cardImage?: string
+  // Timeline / when the project was primarily developed (displayed in UI)
+  time?: string
+  // Location or context (e.g., State College, PA · Personal Project)
+  location?: string
   highlights: string[]
   // New: support typed media items; keep string[] for backward compatibility
   media: string[] | MediaItem[]
@@ -49,10 +53,141 @@ export type Project = {
 }
 
 export const PROJECTS: Project[] = [
+  // 2025 – 2026
+  {
+    slug: 'esotaira-omnidemensial-drone',
+    title: 'Esotaira Omnidemensial Drone',
+    desc: 'Experimental multi-axis drone platform with custom control firmware and advanced stabilization.',
+  time: '2025 – 2026',
+    location: 'Capstone / Research – State College, PA',
+    summary:
+      'A research prototype focusing on precise multi-directional maneuvering, featuring sensor fusion and bespoke flight modes for confined or complex environments.',
+    tech: ['STM32', 'C/C++', 'PX4/ArduPilot (custom)', 'Sensor Fusion', 'PID', 'IMU', 'ESC', 'CAD'],
+    tags: ['Flight Control', 'Sensor Fusion', 'Embedded', 'Real-time'],
+    highlights: [
+      'Custom flight controller firmware with multi-axis stabilization loops (PID)',
+      'Sensor fusion with IMU + barometer; soft-fail handling and safe arming',
+      'Configurable flight modes for hover, path follow, and tight-space translation',
+    ],
+    media: [
+      { type: 'image', src: '/placeholder/project-drone-esotaira.jpg', alt: 'Esotaira Omnidemensial Drone prototype' },
+    ],
+    sections: [
+      { title: 'About the Project', paragraphs: ['An experimental drone platform aimed at precision and stability in constrained spaces. Focused on control loops, sensor fusion, and robust fail-safes.'] },
+      { title: 'Features', bullets: ['Multi-axis control firmware', 'Sensor fusion (IMU + baro)', 'Custom flight modes', 'Safety/arming checks'] },
+      { title: 'Technical Implementation', bullets: ['PID loops tuned for fast response', 'Interrupt-driven sensor reads', 'Calibrated IMU alignment and filtering', 'Telemetry over UART/USB'] },
+    ],
+  },
+  {
+    slug: 'smart-drone',
+    title: 'Smart Drone',
+    desc: 'Autonomous drone with computer vision assisted navigation and waypoint missions.',
+    time: '2025 – 2026',
+    location: 'Personal R&D – State College, PA',
+    summary:
+      'Adds vision and autonomy on top of a stable flight stack: object detection, waypoint planning, and assisted landing.',
+    tech: ['Python', 'OpenCV', 'TensorFlow Lite', 'Onboard SBC', 'PX4'],
+    tags: ['Autonomy', 'Computer Vision', 'Robotics'],
+    highlights: [
+      'Onboard CV pipeline for marker detection and landing assist',
+      'Waypoint missions with obstacle-aware path adjustments',
+      'Modular design to swap models and navigation strategies',
+    ],
+    media: [
+      { type: 'image', src: '/placeholder/project-drone-smart.jpg', alt: 'Smart Drone with camera module' },
+    ],
+    sections: [
+      { title: 'About the Project', paragraphs: ['Built to explore semi-autonomous flight with lightweight models and deterministic behavior suitable for edge devices.'] },
+      { title: 'Features', bullets: ['Marker-based landing assist', 'Waypoint mission runner', 'Swappable detection models'] },
+      { title: 'Technical Implementation', bullets: ['OpenCV preprocessing on SBC', 'TensorFlow Lite inference', 'PX4 control via MAVLink'] },
+    ],
+  },
+  // 2024
+  {
+    slug: 'ai-fitness-tracker',
+    title: 'AI Fitness Tracker',
+    desc: 'Full-stack app with Java Servlets, MySQL, and ChatGPT API for natural language diet input.',
+    time: '2024',
+    location: 'Personal Project – State College, PA',
+    summary:
+      'Users log workouts and meals in natural language. A GPT-powered parser extracts macros and intents, with trend dashboards and reminders.',
+    tech: ['Java', 'Servlets', 'MySQL', 'OpenAI API', 'Tailwind', 'Chart.js'],
+    tags: ['Java', 'Servlets', 'MySQL', 'NLP', 'OpenAI API', 'Next.js', 'TypeScript', 'Tailwind', 'Charts'],
+    // Use the provided logo as the project card image in the grid
+    cardImage: '/projects/ai-fitness-tracker/aifitnesstrackericonimage.png',
+    highlights: [
+      'Natural-language meal logging and macro extraction',
+      'Auth + role-based views with account management',
+      'Trends dashboard and reminders',
+    ],
+    media: [
+      { type: 'image', src: '/projects/ai-fitness-tracker/personalhealthlogo.png', alt: 'AI Fitness Tracker meal logging preview' },
+    ],
+    sections: [
+      {
+        title: 'About the Project',
+        paragraphs: [
+          'AI Fitness Tracker lets you log meals and workouts using plain English. It parses foods, serving sizes, and macros to maintain daily totals and trends.',
+          'Important: The production/full version (not included in this site) is a Java Servlets + MySQL application with server-side authentication, persistent storage, and richer features (e.g., reminders, role-based views).',
+          'This portfolio includes a small, client-only demo that re-implements natural-language meal parsing in the browser so you can quickly try it out without a backend.',
+        ],
+      },
+      {
+        title: 'Features',
+        bullets: [
+          'Natural-language meal logging (e.g., "2 eggs and toast with butter, coffee")',
+          'Macro extraction: calories, protein, carbs, fat with a lightweight rules engine',
+          'Daily totals, editable log, and simple charts',
+          'Auth and roles in the original server version (Java + MySQL)',
+        ],
+      },
+      {
+        title: 'Technical Implementation',
+        bullets: [
+          'Full App (not included): Java Servlets backend with a normalized MySQL schema for users, meals, and nutrition entries (SQL), plus auth and reminders',
+          'Parsing: tokenization + quantity/unit detection + ingredient lookup with fallback heuristics (with optional GPT-assisted parsing)',
+          'Demo (this site): Client-only React/TypeScript parser, localStorage persistence, and computed totals',
+          'UI: Tailwind styling and accessible forms; charts placeholder ready for plug-in',
+        ],
+      },
+      {
+        title: 'Challenges & Solutions',
+        bullets: [
+          'Ambiguous inputs → Fallback database with portion defaults and user adjustments',
+          'Unit variety → Normalize to grams/ml; map to standard servings where possible',
+          'Porting from NetBeans/Tomcat → Browser-based demo removes server dependency for easy showcase',
+        ],
+      },
+      {
+        title: 'Technologies Used',
+        bullets: [
+          'Java, Servlets, MySQL (original full-stack)',
+          'Next.js, React, TypeScript (demo reimplementation)',
+          'Tailwind CSS for UI; Chart.js (optional) for trends',
+          'OpenAI API (optional) for advanced parsing and suggestions',
+        ],
+      },
+      {
+        title: 'Try the Live Demo',
+        bullets: [
+          'Open the in-browser demo to test natural-language meal logging and macro parsing.',
+          'This is a simplified, mini demo; the real app uses Java Servlets + MySQL and is not included here.',
+          'Data in this demo is stored locally in your browser (no server).',
+        ],
+      },
+    ],
+    // No downloads for this case study; keep Live Demo CTA instead
+    downloads: [],
+  },
+  
+  // New Projects
+  // 2020
   {
     slug: 'police-chase',
     title: 'Police Chase',
     desc: 'Arcade-style police pursuit game with helicopters, hazards, and a reactive HUD.',
+    time: '2020',
+    location: 'Personal Project – State College, PA',
     summary:
       'An arcade chase where you dodge traffic and obstacles while outsmarting police vehicles and helicopters. Score points, manage hearts, and use limited power moves to break free from tight situations.',
     tech: ['Unity', 'C#', 'Steering Behaviors', 'Game Physics'],
@@ -174,126 +309,6 @@ export const PROJECTS: Project[] = [
             { src: '/projects/police-chase/demo.mov', type: 'video/quicktime' },
           ],
       },
-    ],
-  },
-  {
-    slug: 'ai-fitness-tracker',
-    title: 'AI Fitness Tracker',
-    desc: 'Full-stack app with Java Servlets, MySQL, and ChatGPT API for natural language diet input.',
-    summary:
-      'Users log workouts and meals in natural language. A GPT-powered parser extracts macros and intents, with trend dashboards and reminders.',
-    tech: ['Java', 'Servlets', 'MySQL', 'OpenAI API', 'Tailwind', 'Chart.js'],
-    tags: ['Java', 'Servlets', 'MySQL', 'NLP', 'OpenAI API', 'Next.js', 'TypeScript', 'Tailwind', 'Charts'],
-    // Use the provided logo as the project card image in the grid
-    cardImage: '/projects/ai-fitness-tracker/aifitnesstrackericonimage.png',
-    highlights: [
-      'Natural-language meal logging and macro extraction',
-      'Auth + role-based views with account management',
-      'Trends dashboard and reminders',
-    ],
-    media: [
-      { type: 'image', src: '/projects/ai-fitness-tracker/personalhealthlogo.png', alt: 'AI Fitness Tracker meal logging preview' },
-    ],
-    sections: [
-      {
-        title: 'About the Project',
-        paragraphs: [
-          'AI Fitness Tracker lets you log meals and workouts using plain English. It parses foods, serving sizes, and macros to maintain daily totals and trends.',
-          'Important: The production/full version (not included in this site) is a Java Servlets + MySQL application with server-side authentication, persistent storage, and richer features (e.g., reminders, role-based views).',
-          'This portfolio includes a small, client-only demo that re-implements natural-language meal parsing in the browser so you can quickly try it out without a backend.',
-        ],
-      },
-      {
-        title: 'Features',
-        bullets: [
-          'Natural-language meal logging (e.g., "2 eggs and toast with butter, coffee")',
-          'Macro extraction: calories, protein, carbs, fat with a lightweight rules engine',
-          'Daily totals, editable log, and simple charts',
-          'Auth and roles in the original server version (Java + MySQL)',
-        ],
-      },
-      {
-        title: 'Technical Implementation',
-        bullets: [
-          'Full App (not included): Java Servlets backend with a normalized MySQL schema for users, meals, and nutrition entries (SQL), plus auth and reminders',
-          'Parsing: tokenization + quantity/unit detection + ingredient lookup with fallback heuristics (with optional GPT-assisted parsing)',
-          'Demo (this site): Client-only React/TypeScript parser, localStorage persistence, and computed totals',
-          'UI: Tailwind styling and accessible forms; charts placeholder ready for plug-in',
-        ],
-      },
-      {
-        title: 'Challenges & Solutions',
-        bullets: [
-          'Ambiguous inputs → Fallback database with portion defaults and user adjustments',
-          'Unit variety → Normalize to grams/ml; map to standard servings where possible',
-          'Porting from NetBeans/Tomcat → Browser-based demo removes server dependency for easy showcase',
-        ],
-      },
-      {
-        title: 'Technologies Used',
-        bullets: [
-          'Java, Servlets, MySQL (original full-stack)',
-          'Next.js, React, TypeScript (demo reimplementation)',
-          'Tailwind CSS for UI; Chart.js (optional) for trends',
-          'OpenAI API (optional) for advanced parsing and suggestions',
-        ],
-      },
-      {
-        title: 'Try the Live Demo',
-        bullets: [
-          'Open the in-browser demo to test natural-language meal logging and macro parsing.',
-          'This is a simplified, mini demo; the real app uses Java Servlets + MySQL and is not included here.',
-          'Data in this demo is stored locally in your browser (no server).',
-        ],
-      },
-    ],
-    // No downloads for this case study; keep Live Demo CTA instead
-    downloads: [],
-  },
-  
-  // New Projects
-  {
-    slug: 'esotaira-omnidemensial-drone',
-    title: 'Esotaira Omnidemensial Drone',
-    desc: 'Experimental multi-axis drone platform with custom control firmware and advanced stabilization.',
-    summary:
-      'A research prototype focusing on precise multi-directional maneuvering, featuring sensor fusion and bespoke flight modes for confined or complex environments.',
-    tech: ['STM32', 'C/C++', 'PX4/ArduPilot (custom)', 'Sensor Fusion', 'PID', 'IMU', 'ESC', 'CAD'],
-    tags: ['Flight Control', 'Sensor Fusion', 'Embedded', 'Real-time'],
-    highlights: [
-      'Custom flight controller firmware with multi-axis stabilization loops (PID)',
-      'Sensor fusion with IMU + barometer; soft-fail handling and safe arming',
-      'Configurable flight modes for hover, path follow, and tight-space translation',
-    ],
-    media: [
-      { type: 'image', src: '/placeholder/project-drone-esotaira.jpg', alt: 'Esotaira Omnidemensial Drone prototype' },
-    ],
-    sections: [
-      { title: 'About the Project', paragraphs: ['An experimental drone platform aimed at precision and stability in constrained spaces. Focused on control loops, sensor fusion, and robust fail-safes.'] },
-      { title: 'Features', bullets: ['Multi-axis control firmware', 'Sensor fusion (IMU + baro)', 'Custom flight modes', 'Safety/arming checks'] },
-      { title: 'Technical Implementation', bullets: ['PID loops tuned for fast response', 'Interrupt-driven sensor reads', 'Calibrated IMU alignment and filtering', 'Telemetry over UART/USB'] },
-    ],
-  },
-  {
-    slug: 'smart-drone',
-    title: 'Smart Drone',
-    desc: 'Autonomous drone with computer vision assisted navigation and waypoint missions.',
-    summary:
-      'Adds vision and autonomy on top of a stable flight stack: object detection, waypoint planning, and assisted landing.',
-    tech: ['Python', 'OpenCV', 'TensorFlow Lite', 'Onboard SBC', 'PX4'],
-    tags: ['Autonomy', 'Computer Vision', 'Robotics'],
-    highlights: [
-      'Onboard CV pipeline for marker detection and landing assist',
-      'Waypoint missions with obstacle-aware path adjustments',
-      'Modular design to swap models and navigation strategies',
-    ],
-    media: [
-      { type: 'image', src: '/placeholder/project-drone-smart.jpg', alt: 'Smart Drone with camera module' },
-    ],
-    sections: [
-      { title: 'About the Project', paragraphs: ['Built to explore semi-autonomous flight with lightweight models and deterministic behavior suitable for edge devices.'] },
-      { title: 'Features', bullets: ['Marker-based landing assist', 'Waypoint mission runner', 'Swappable detection models'] },
-      { title: 'Technical Implementation', bullets: ['OpenCV preprocessing on SBC', 'TensorFlow Lite inference', 'PX4 control via MAVLink'] },
     ],
   },
 ]

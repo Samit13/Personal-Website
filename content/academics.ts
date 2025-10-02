@@ -14,6 +14,7 @@ export type AcademicItem = {
   description?: string
   course?: string
   term?: string
+  location?: string
   link?: string
   /** Optional hero image to show below the title */
   hero?: AcademicImage
@@ -29,6 +30,7 @@ export const featuredAcademics: AcademicItem[] = [
     title: 'Design Space Exploration',
     course: 'CMPEN 431',
     term: 'Spring 2025',
+    location: 'State College, PA',
     hero: {
       src: '/academics/cmpen-431-design-space-exploration/hero.png',
       alt: 'Energy, performance, and area exploration (EDP/ED²P/EDAP) illustration'
@@ -435,6 +437,7 @@ std::string YourProposalFunction(
     description: 'A 32‑bit pipelined MIPS processor with hazards resolved via forwarding & stalls.',
     course: 'ECE 350',
     term: 'Fall 2024',
+    location: 'State College, PA',
     hero: {
         // Updated to academics path (ensure the file is moved to /public/academics/pipelined-mips-cpu-5-stage/)
         src: '/academics/pipelined-mips-cpu-5-stage/5stagepipelineiconimage.png',
@@ -588,6 +591,8 @@ std::string YourProposalFunction(
     slug: 'audio-amplifier-circuit',
     title: 'Audio Amplifier Circuit',
   description: 'Audio amplifier with treble, bass and volume control',
+    term: 'Fall 2024',
+    location: 'State College, PA',
     contentHtml: `
       <h2 id="introduction">Introduction</h2>
       <div class="intro-with-video" style="overflow:hidden;">
