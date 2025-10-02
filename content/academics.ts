@@ -7,6 +7,20 @@ export type AcademicImage = {
   height?: number
 }
 
+export type AcademicVideo = {
+  src: string
+  /** Optional poster image (shown before playback / while loading) */
+  poster?: string
+  /** Accessible label / description of what the video shows */
+  alt?: string
+  width?: number
+  height?: number
+  /** Whether to show native controls (default false for decorative looping hero) */
+  controls?: boolean
+  /** Start muted to allow autoplay on mobile */
+  muted?: boolean
+}
+
 export type AcademicItem = {
   kind: AcademicKind
   slug: string
@@ -17,6 +31,8 @@ export type AcademicItem = {
   link?: string
   /** Optional hero image to show below the title */
   hero?: AcademicImage
+  /** Optional hero video (takes precedence over hero image if present) */
+  heroVideo?: AcademicVideo
   images?: AcademicImage[]
   /** Optional long-form HTML content to render on the detail page */
   contentHtml?: string
@@ -600,60 +616,19 @@ std::string YourProposalFunction(
     slug: 'audio-amplifier-circuit',
     title: 'Audio Amplifier Circuit',
   description: 'Audio amplifier with treble, bass and volume control',
+    heroVideo: {
+      src: '/academics/audio-amplifier-circuit/demo.mp4',
+      poster: '/academics/audio-amplifier-circuit/block1.png',
+      alt: 'Vertical demo clip of the audio amplifier system operating',
+      muted: true,
+      controls: false,
+      width: 360,
+      height: 640
+    },
     contentHtml: `
       <h2 id="introduction">Introduction</h2>
       <div class="intro-with-video" style="overflow: hidden;">
-        <figure class="intro-video right vertical" style="float: right; margin: 0 0 1rem 1.25rem;">
-          <video id="amplifier-demo" data-primary="/academics/audio-amplifier-circuit/demo.mp4" data-alt="/academics/audio-amplifier-circuit/audio2.mp4" data-current="primary" autoplay loop playsinline muted preload="metadata" poster="/academics/audio-amplifier-circuit/block1.png" style="aspect-ratio: 9/16; width: 360px; max-width: 50vw; height: auto; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.28); display: block; background:#000;">
-            <source src="/academics/audio-amplifier-circuit/demo.mp4" type="video/mp4" />
-            <!-- Optional WebM fallback if you add one: <source src="/academics/audio-amplifier-circuit/demo.webm" type="video/webm" /> -->
-            Sorry, your browser doesn't support embedded videos.
-          </video>
-          <div style="margin-top:.4rem; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
-            <figcaption style="margin:0;">Video is muted by default. Click Unmute to hear audio.</figcaption>
-            <button id="amplifier-audio" type="button" style="cursor:pointer; font-size:.65rem; letter-spacing:.4px; padding:.45rem .75rem; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(6px); transition:background .25s;">Unmute</button>
-            <button id="amplifier-toggle" type="button" style="cursor:pointer; font-size:.65rem; letter-spacing:.4px; padding:.45rem .75rem; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(6px); transition:background .25s;">Switch Video</button>
-          </div>
-          <script>
-            (function(){
-              const v = document.getElementById('amplifier-demo');
-              if(!v) return;
-              const audioBtn = document.getElementById('amplifier-audio');
-              const switchBtn = document.getElementById('amplifier-toggle');
-              if(audioBtn){
-                audioBtn.addEventListener('click', () => {
-                  try {
-                    v.muted = !v.muted;
-                    if(!v.paused){
-                      const p = v.play(); if(p) p.catch(()=>{});
-                    }
-                    audioBtn.textContent = v.muted ? 'Unmute' : 'Mute';
-                  } catch(e) {}
-                });
-              }
-              if(switchBtn){
-                switchBtn.addEventListener('click', () => {
-                  try {
-                    const current = v.getAttribute('data-current') || 'primary';
-                    const next = current === 'primary' ? 'alt' : 'primary';
-                    const nextSrc = v.dataset[next];
-                    if(!nextSrc){ return; }
-                    Array.from(v.querySelectorAll('source')).forEach(s => s.remove());
-                    const sEl = document.createElement('source');
-                    sEl.src = nextSrc;
-                    sEl.type = 'video/mp4';
-                    v.appendChild(sEl);
-                    v.setAttribute('data-current', next);
-                    v.pause();
-                    v.load();
-                    const p = v.play(); if(p) p.catch(()=>{});
-                    switchBtn.textContent = next === 'primary' ? 'Switch Video' : 'Switch Back';
-                  } catch(e) {}
-                });
-              }
-            })();
-          </script>
-        </figure>
+        <!-- (Video moved to dedicated heroVideo above) -->
         <p>This system processes audio sources and adjusts them with volume, bass, and treble controls. Bright LED indicators show the audio levels, while a connected speaker plays back your changes instantly. 
         <br><br>
         To achieve this, I designed and implemented a five-stage audio processing chain: a summing op-amp mixer, a tone control filter, a volume control stage, an LED-based volume indicator, and a fixed-gain power amplifier. The system accepts a stereo input, converts it to mono, adjusts the tone and volume, shows a real-time visual indication of signal amplitude, and drives a speaker output. Each stage was built using individual components such as op-amps, resistors, capacitors, and transistors, and was individually tested with an oscilloscope before integration into the complete system.</p>
