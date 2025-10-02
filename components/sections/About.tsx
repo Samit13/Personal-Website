@@ -66,7 +66,7 @@ export default function About() {
   ]
 
   return (
-    <section aria-labelledby="about-title" className="relative mx-auto max-w-6xl px-6 py-24 md:py-40">
+  <section aria-labelledby="about-title" data-scroll-slight className="relative mx-auto max-w-6xl px-6 py-24 md:py-40">
       <div ref={ref} className="grid gap-10 md:grid-cols-12">
         {/* Left rail — sticky heading for alignment */}
         <div className="md:col-span-4" data-col="left">

@@ -1,6 +1,6 @@
 export default function FooterCTA() {
   return (
-  <footer role="contentinfo" className="mx-auto max-w-6xl px-6 pt-10 pb-10">
+  <footer role="contentinfo" data-scroll-slight className="mx-auto max-w-6xl px-6 pt-10 pb-10">
       <div className="glass rounded-2xl p-6 md:p-7 text-center">
         <h2 className="text-3xl md:text-4xl mb-3">Contact Me</h2>
         <a
