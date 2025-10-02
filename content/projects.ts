@@ -110,7 +110,7 @@ export const PROJECTS: Project[] = [
     title: 'AI Fitness Tracker',
     desc: 'Full-stack app with Java Servlets, MySQL, and ChatGPT API for natural language diet input.',
     time: '2024',
-    location: 'Personal Project – State College, PA',
+    location: 'Personal Project – Pittsburgh, PA',
     summary:
       'Users log workouts and meals in natural language. A GPT-powered parser extracts macros and intents, with trend dashboards and reminders.',
     tech: ['Java', 'Servlets', 'MySQL', 'OpenAI API', 'Tailwind', 'Chart.js'],
