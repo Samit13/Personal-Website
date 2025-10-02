@@ -28,6 +28,7 @@ export const EXPERIENCE: Job[] = [
     slug: 'honeywell-software-intern',
     company: 'Honeywell',
     logo: '/logos/companies/honeywell.png',
+    context: 'Industrial Automation: PSS',
     role: 'Intern – Software Engineer',
     time: 'May 2025 – Aug 2025',
     location: 'Pittsburgh, PA',
@@ -56,7 +57,8 @@ export const EXPERIENCE: Job[] = [
     slug: 'thermo-fisher-persistent-data-mentee',
     company: 'Thermo Fisher Scientific – Persistent Systems',
     logo: '/logos/companies/thermofisher.png',
-    role: 'Intern – Data Engineer Mentee',
+    context: 'Enterprise Data Engineering',
+    role: 'Mentee / Intern – Data Engineer',
     time: 'May 2024 – Aug 2024',
     location: 'Remote',
     bullets: [

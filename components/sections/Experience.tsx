@@ -127,22 +127,34 @@ export default function Experience() {
                     data-reveal
                   >
                     <div className="flex flex-wrap items-start justify-between gap-4">
-                      <h3 className="text-2xl md:text-3xl leading-tight flex items-center gap-3 flex-1 min-w-[220px]">
+                      <h3 className="text-2xl md:text-3xl leading-tight flex items-start gap-3 flex-1 min-w-[220px]">
                         {job.logo ? (
                           <Image
                             src={job.logo}
                             alt={`${job.company} logo`}
                             width={48}
                             height={48}
-                            className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-sm bg-white/5 p-0.5 border border-white/10"
+                            className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-sm bg-white/5 p-0.5 border border-white/10 self-start"
                             priority
                           />
                         ) : null}
                         <span className="flex flex-col">
                           <span>{job.company}</span>
-                          {job.context ? (
-                            <span className="text-[0.65rem] md:text-xs font-medium tracking-wide uppercase text-white/50 mt-0.5">{job.context}</span>
-                          ) : null}
+                          {(() => {
+                            const ctx = job.context?.toLowerCase() || ''
+                            const elevate = ctx.includes('startup') || ctx.includes('industrial automation') || ctx.includes('enterprise data engineering')
+                            return (
+                              <>
+                                {elevate && job.context ? (
+                                  <span className="text-[0.6rem] md:text-[0.7rem] font-medium tracking-wide uppercase text-white/45 mt-0.5">{job.context}</span>
+                                ) : null}
+                                <span className={`text-xs md:text-sm text-white/70 leading-snug ${elevate ? 'mt-1' : 'mt-0.5'}`}>{job.role}</span>
+                                {!elevate && job.context ? (
+                                  <span className="text-[0.6rem] md:text-[0.7rem] font-medium tracking-wide uppercase text-white/45 mt-1">{job.context}</span>
+                                ) : null}
+                              </>
+                            )
+                          })()}
                         </span>
                       </h3>
                       <div className="flex flex-col items-end text-right">
@@ -153,7 +165,6 @@ export default function Experience() {
                       </div>
                     </div>
                     <div className="pointer-events-none max-h-0 opacity-0 translate-y-1 overflow-hidden transition-all duration-300 ease-out group-hover:max-h-40 group-hover:opacity-100 group-hover:translate-y-0">
-                      <p className="mt-2 text-sm text-muted font-medium">{job.role}</p>
                       {job.location ? <p className="text-[0.65rem] uppercase tracking-wide text-white/40 mt-1">{job.location}</p> : null}
                       <ul className="mt-2 space-y-1.5 text-sm text-muted">
                         {job.bullets.slice(0, 2).map((b: string) => (
