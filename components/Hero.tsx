@@ -79,7 +79,7 @@ export default function Hero() {
           Samit Madatanapalli
         </h1>
         <p ref={subRef} className="max-w-3xl text-lg md:text-2xl text-muted will-change-transform">
-          Embedded Engineer at Honeywell
+          Website is In Progress
         </p>
       </div>
 
