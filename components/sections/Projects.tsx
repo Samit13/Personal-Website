@@ -45,7 +45,7 @@ export default function Projects() {
   // No custom click interception; use standard navigation to full page
 
   return (
-  <section ref={sectionRef} id="projects" aria-labelledby="projects-title" data-scroll-slight className="mx-auto max-w-6xl px-6 py-24 md:py-32 [content-visibility:auto] [contain-intrinsic-size:800px]">
+  <section ref={sectionRef} id="projects" aria-labelledby="projects-title" className="mx-auto max-w-6xl px-6 py-24 md:py-32 [content-visibility:auto] [contain-intrinsic-size:800px]">
       <h2 id="projects-title" className="mb-10">Projects</h2>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 relative">
         {PROJECTS.map((p, i) => (

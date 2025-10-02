@@ -91,7 +91,7 @@ export default function Experience() {
   }
 
   return (
-  <section ref={sectionRef} aria-labelledby="experience-title" data-scroll-slight className="relative mx-auto max-w-6xl px-6 py-24 md:py-32 [content-visibility:auto] [contain-intrinsic-size:900px]" id="experience">
+  <section ref={sectionRef} aria-labelledby="experience-title" className="relative mx-auto max-w-6xl px-6 py-24 md:py-32 [content-visibility:auto] [contain-intrinsic-size:900px]" id="experience">
       <div className="relative">
         <header className="mb-4">
           <h2 id="experience-title">Experience</h2>
