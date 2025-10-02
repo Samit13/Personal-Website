@@ -14,51 +14,48 @@ export default function Hero() {
     if (prefersReduced) return
     gsap.registerPlugin(ScrollTrigger)
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        onComplete: () => {
-          titleRef.current?.classList.remove('will-change-transform')
-          subRef.current?.classList.remove('will-change-transform')
-        }
-      })
-      titleRef.current?.classList.add('will-change-transform')
-      subRef.current?.classList.add('will-change-transform')
+      const tl = gsap.timeline()
+      // Name scales down from bigger to native size, with subtle rise and fade
       tl.fromTo(
         titleRef.current,
-        { y: 18, opacity: 0, scale: 1.12, transformOrigin: '50% 50%' },
-        { y: 0, opacity: 1, scale: 1, duration: 0.9, ease: 'power3.out' }
-      ).fromTo(
+        { y: 12, opacity: 0, scale: 1.2, transformOrigin: '50% 50%' },
+        { y: 0, opacity: 1, scale: 1, duration: 1.1, ease: 'power3.out' }
+      )
+      // Subtitle follows shortly after
+      tl.fromTo(
         subRef.current,
-        { y: 26, opacity: 0, scale: 1.06, transformOrigin: '50% 50%' },
-        { y: 0, opacity: 1, scale: 1, duration: 0.75, ease: 'power3.out' },
-        '-=0.55'
+        { y: 20, opacity: 0, scale: 1.08, transformOrigin: '50% 50%' },
+        { y: 0, opacity: 1, scale: 1, duration: 0.9, ease: 'power3.out' },
+        '-=0.6'
       )
 
-      // Scroll effect simplified: no filter changes (filters are costly), smaller scale delta, shorter range
+      // Lightweight scroll-driven effect using ScrollTrigger (no manual listeners)
       const scrubTl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=260',
-          scrub: 0.3,
+          end: '+=400',
+          scrub: 0.25,
           invalidateOnRefresh: true,
         }
       })
       .fromTo(
         titleRef.current,
-        { scale: 1, y: 0, opacity: 1, immediateRender: false },
-        { scale: 0.8, y: -8, opacity: 0.65, ease: 'none' },
+        { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', immediateRender: false },
+        { scale: 0.68, y: -10, opacity: 0.55, filter: 'brightness(0.1)', ease: 'none' },
         0
       )
       .fromTo(
         subRef.current,
-        { scale: 1, y: 0, opacity: 1, immediateRender: false },
-        { scale: 0.86, y: -6, opacity: 0.7, ease: 'none' },
+        { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', immediateRender: false },
+        { scale: 0.74, y: -8, opacity: 0.58, filter: 'brightness(0.2)', ease: 'none' },
         0
       )
 
+      // Ensure hero resets to a crisp state whenever we re-enter the top of the page
       const resetHero = () => {
-        gsap.to(titleRef.current, { scale: 1, y: 0, opacity: 1, duration: 0.2, overwrite: 'auto' })
-        gsap.to(subRef.current, { scale: 1, y: 0, opacity: 1, duration: 0.2, overwrite: 'auto' })
+        gsap.to(titleRef.current, { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', duration: 0.2, overwrite: 'auto' })
+        gsap.to(subRef.current, { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', duration: 0.2, overwrite: 'auto' })
       }
       ScrollTrigger.create({
         trigger: sectionRef.current,

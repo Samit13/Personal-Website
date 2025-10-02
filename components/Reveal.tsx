@@ -35,16 +35,10 @@ export default function Reveal({ children, className, as = 'div', delay = 0 }: P
   return (
     <Tag
       ref={ref}
-      onTransitionEnd={(e: React.TransitionEvent) => {
-        if (e.target === e.currentTarget && shown) {
-          // Remove will-change after the reveal to free up memory/compositor cost
-          e.currentTarget.classList.remove('will-change-transform')
-        }
-      }}
       className={[
         className,
-        shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 will-change-transform',
-        'transition-all duration-700'
+        shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4',
+        'transition-all duration-700 will-change-transform'
       ].filter(Boolean).join(' ')}
     >
       {children}

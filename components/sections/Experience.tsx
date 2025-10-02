@@ -91,7 +91,7 @@ export default function Experience() {
   }
 
   return (
-  <section ref={sectionRef} aria-labelledby="experience-title" className="relative mx-auto max-w-6xl px-6 py-24 md:py-32 [content-visibility:auto] [contain-intrinsic-size:900px]" id="experience">
+    <section ref={sectionRef} aria-labelledby="experience-title" className="relative mx-auto max-w-6xl px-6 py-24 md:py-32" id="experience">
       <div className="relative">
         <header className="mb-4">
           <h2 id="experience-title">Experience</h2>
@@ -123,7 +123,7 @@ export default function Experience() {
                   <ViewTransition
                     name={`exp-${job.slug}`}
                     as="article"
-                    className="glass hover-highlight hover-shine reveal rounded-2xl px-4 py-3.5 ring-1 ring-white/10 border border-white/5 shadow-2xl shadow-black/40 transition-colors duration-300"
+                    className="glass hover-highlight hover-shine reveal rounded-2xl px-4 py-3.5 ring-1 ring-white/10 border border-white/5 shadow-2xl shadow-black/40 transition-colors duration-300 transform-gpu [transform-style:preserve-3d] [will-change:transform]"
                     data-reveal
                   >
                     <div className="flex items-baseline justify-between gap-4">

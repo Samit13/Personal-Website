@@ -236,7 +236,7 @@ export default function Coursework() {
   }, [filter])
 
   return (
-    <section ref={sectionRef} id="coursework" aria-labelledby="coursework-title" className="mx-auto max-w-6xl px-6 py-24 md:py-32 [content-visibility:auto] [contain-intrinsic-size:1000px]">
+    <section ref={sectionRef} id="coursework" aria-labelledby="coursework-title" className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
         <h2 id="coursework-title">Academic Highlights</h2>
         {/* Filter chips */}

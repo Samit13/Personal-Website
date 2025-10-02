@@ -31,30 +31,8 @@ export default function CourseworkPage({ params }: { params: { slug: string } })
           )}
         </header>
 
-        {/* Hero media (video preferred, fallback to image) */}
-        {item.heroVideo ? (
-          <figure className="mt-8 mb-6 lg:col-span-10 lg:col-start-2 xl:col-span-8 xl:col-start-3 mx-auto max-w-md not-prose">
-            <video
-              src={item.heroVideo.src}
-              poster={item.heroVideo.poster}
-              autoPlay
-              loop
-              playsInline
-              muted={item.heroVideo.muted !== false}
-              controls={!!item.heroVideo.controls}
-              width={item.heroVideo.width || 360}
-              height={item.heroVideo.height || 640}
-              className="w-full h-auto rounded-2xl border border-white/10 shadow-xl shadow-black/40 bg-black object-cover"
-            >
-              {item.heroVideo.alt && <track kind="descriptions" label="description" />}
-            </video>
-            {item.heroVideo.alt && (
-              <figcaption className="mt-2 text-xs text-white/50">
-                {item.heroVideo.alt}
-              </figcaption>
-            )}
-          </figure>
-        ) : item.hero && (
+        {/* Hero image right after the title */}
+        {item.hero && (
           <figure
             className={`mt-8 mb-6 lg:col-span-12 lg:col-start-1 xl:col-span-12 xl:col-start-1 mx-auto px-0 ${item.slug === 'pipelined-mips-cpu-5-stage' ? 'full-bleed-hero' : 'max-w-2xl'}`}
           >
@@ -63,6 +41,7 @@ export default function CourseworkPage({ params }: { params: { slug: string } })
               alt={item.hero.alt || `${item.title} illustration`}
               width={item.hero.width || 1600}
               height={item.hero.height || 1066}
+              // Reduced the max height from 820px to 700px to make the 5-stage pipeline hero slightly smaller
               className={`w-full h-auto object-contain ${item.slug === 'pipelined-mips-cpu-5-stage' ? 'max-h-[700px]' : 'rounded-xl border border-white/10 bg-white/5 shadow-lg shadow-black/30'}`}
               sizes={item.slug === 'pipelined-mips-cpu-5-stage' ? '100vw' : '(max-width: 1024px) 100vw, 55vw'}
               priority

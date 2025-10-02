@@ -7,20 +7,6 @@ export type AcademicImage = {
   height?: number
 }
 
-export type AcademicVideo = {
-  src: string
-  /** Optional poster image (shown before playback / while loading) */
-  poster?: string
-  /** Accessible label / description of what the video shows */
-  alt?: string
-  width?: number
-  height?: number
-  /** Whether to show native controls (default false for decorative looping hero) */
-  controls?: boolean
-  /** Start muted to allow autoplay on mobile */
-  muted?: boolean
-}
-
 export type AcademicItem = {
   kind: AcademicKind
   slug: string
@@ -31,8 +17,6 @@ export type AcademicItem = {
   link?: string
   /** Optional hero image to show below the title */
   hero?: AcademicImage
-  /** Optional hero video (takes precedence over hero image if present) */
-  heroVideo?: AcademicVideo
   images?: AcademicImage[]
   /** Optional long-form HTML content to render on the detail page */
   contentHtml?: string
@@ -460,19 +444,7 @@ std::string YourProposalFunction(
     },
     contentHtml: `
   <h2>Overview</h2>
-  <p>I built a simple computer brain. It follows a list of tiny commands called instructions.</p>
-  <p>An instruction is a very small step like: add two numbers, load a value from memory, or store a result back. A CPU spends its life doing one instruction after another: (1) get the next instruction from memory, (2) figure out what it means, (3) do the work (like add), (4) access memory if needed, (5) save the answer. In a basic design these five actions happen one full instruction at a time. In this project I made them overlap so the computer finishes more work per second.</p>
-  <p>The result is a 32‑bit MIPS‑style processor (classic teaching architecture) described in Verilog. It uses the well‑known <strong>five‑stage pipeline</strong>:</p>
-  <ul>
-    <li><strong>IF (Fetch):</strong> Grab the next instruction from instruction memory.</li>
-    <li><strong>ID (Decode):</strong> Read the registers it needs and see what kind of command it is.</li>
-    <li><strong>EX (Execute):</strong> Perform the math or calculate an address.</li>
-    <li><strong>MEM (Memory):</strong> Read from or write to data memory if the instruction needs it.</li>
-    <li><strong>WB (Write Back):</strong> Put the final answer into the register file so future instructions can use it.</li>
-  </ul>
-  <p>You can think of it like a tiny five‑station assembly line: while one instruction is being decoded, another is already being fetched, another is executing, and so on. This overlap is where the speedup comes from.</p>
-  <p>One problem: later instructions sometimes need a result that an earlier instruction has not officially “written back” yet. To stay correct the design has two helpers. A <strong>hazard detector</strong> notices when using a not‑yet‑ready value would be wrong and briefly pauses the line (adding a one‑cycle stall only when necessary). A <strong>forwarding network</strong> reduces those pauses by directly handing fresh results from a later stage (like EX or MEM) back to an earlier stage that needs them, instead of waiting for the formal write‑back step.</p>
-  <p>This high‑level structure (pipeline + hazard detection + forwarding) is the same core idea used, at a much larger scale, inside real modern CPUs. Mine is a small, clean teaching version that shows those ideas working end‑to‑end.</p>
+  <p>I built a small computer processor. It runs in five staged steps and can process multiple instructions at the same time. Formally, it is a 32‑bit MIPS‑style CPU implemented in Verilog with the classic <em>five‑stage pipeline</em> (IF, ID, EX, MEM, WB). Correctness and throughput are maintained by a hazard detection unit that inserts stalls when required and a forwarding network that supplies the most recent values to the ALU inputs.</p>
 
   <h2>Highlights</h2>
   <ul>
@@ -616,19 +588,67 @@ std::string YourProposalFunction(
     slug: 'audio-amplifier-circuit',
     title: 'Audio Amplifier Circuit',
   description: 'Audio amplifier with treble, bass and volume control',
-    heroVideo: {
-      src: '/academics/audio-amplifier-circuit/demo.mp4',
-      poster: '/academics/audio-amplifier-circuit/block1.png',
-      alt: 'Vertical demo clip of the audio amplifier system operating',
-      muted: true,
-      controls: false,
-      width: 360,
-      height: 640
-    },
     contentHtml: `
       <h2 id="introduction">Introduction</h2>
       <div class="intro-with-video" style="overflow: hidden;">
-        <!-- (Video moved to dedicated heroVideo above) -->
+        <figure class="intro-video right vertical" style="float: right; margin: 0 0 1rem 1.25rem;">
+          <video id="amplifier-demo" data-primary="/academics/audio-amplifier-circuit/demo.mp4" data-alt="/academics/audio-amplifier-circuit/audio2.mp4" data-current="primary" autoplay loop controls playsinline muted preload="auto" style="aspect-ratio: 9/16; width: 360px; max-width: 50vw; height: auto; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.28); display: block;">
+            <source src="/academics/audio-amplifier-circuit/demo.mp4" type="video/mp4" />
+            Sorry, your browser doesn't support embedded videos.
+          </video>
+          <div style="margin-top:.4rem; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
+            <figcaption style="margin:0;">Enable audio to hear music.</figcaption>
+            <button id="amplifier-toggle" type="button" style="cursor:pointer; font-size:.65rem; letter-spacing:.4px; padding:.45rem .75rem; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(6px); transition:background .25s;">
+              Switch to Alt Video
+            </button>
+          </div>
+          <script>
+            // Attempt to unmute after autoplay starts (browser will block only if no gesture and policy disallows)
+            (function(){
+              const v = document.getElementById('amplifier-demo');
+              if(!v) return;
+              const tryUnmute = () => {
+                try {
+                  v.muted = false;
+                  const p = v.play();
+                  if(p) p.catch(()=>{/* ignore if blocked */});
+                } catch(e) {}
+              };
+              if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                setTimeout(tryUnmute, 300);
+              } else {
+                document.addEventListener('DOMContentLoaded', () => setTimeout(tryUnmute, 300));
+              }
+              // Fallback: on first user interaction force unmute
+              const userEvents = ['click','touchstart','keydown'];
+              const onUser = () => { tryUnmute(); userEvents.forEach(ev=>window.removeEventListener(ev,onUser)); };
+              userEvents.forEach(ev=>window.addEventListener(ev,onUser,{once:true}));
+              // Toggle button logic
+              const btn = document.getElementById('amplifier-toggle');
+              if(btn){
+                btn.addEventListener('click', () => {
+                  try {
+                    const current = v.getAttribute('data-current') || 'primary';
+                    const next = current === 'primary' ? 'alt' : 'primary';
+                    const nextSrc = v.dataset[next];
+                    if(!nextSrc) return;
+                    // Remove existing <source> elements
+                    Array.from(v.querySelectorAll('source')).forEach(s => s.remove());
+                    const sEl = document.createElement('source');
+                    sEl.src = nextSrc;
+                    sEl.type = 'video/mp4';
+                    v.appendChild(sEl);
+                    v.setAttribute('data-current', next);
+                    v.pause();
+                    v.load();
+                    const p = v.play(); if(p) p.catch(()=>{});
+                    btn.textContent = next === 'primary' ? 'Switch to Alt Video' : 'Switch to Original';
+                  } catch(e){/* noop */}
+                });
+              }
+            })();
+          </script>
+        </figure>
         <p>This system processes audio sources and adjusts them with volume, bass, and treble controls. Bright LED indicators show the audio levels, while a connected speaker plays back your changes instantly. 
         <br><br>
         To achieve this, I designed and implemented a five-stage audio processing chain: a summing op-amp mixer, a tone control filter, a volume control stage, an LED-based volume indicator, and a fixed-gain power amplifier. The system accepts a stereo input, converts it to mono, adjusts the tone and volume, shows a real-time visual indication of signal amplitude, and drives a speaker output. Each stage was built using individual components such as op-amps, resistors, capacitors, and transistors, and was individually tested with an oscilloscope before integration into the complete system.</p>
