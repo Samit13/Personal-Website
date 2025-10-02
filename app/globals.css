@@ -499,3 +499,9 @@ li[data-inview="true"] .timeline-dot {
     height: clamp(200px, 28vw, 160px);
   }
 }
+
+/* Full-bleed hero utility (used for wide academic diagrams) */
+.full-bleed-hero {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}

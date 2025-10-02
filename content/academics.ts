@@ -432,18 +432,31 @@ std::string YourProposalFunction(
     kind: 'project',
     slug: 'pipelined-mips-cpu-5-stage',
     title: 'Pipelined MIPS CPU (5‑stage)',
-  description: 'A 32‑bit MIPS‑style processor implemented in Verilog with a five‑stage pipeline, hazard detection, and data forwarding for efficient execution.',
+    description: 'A 32‑bit pipelined MIPS processor with hazards resolved via forwarding & stalls.',
     course: 'ECE 350',
     term: 'Fall 2024',
     hero: {
-      src: '/projects/5stagepipeline/5stagepipelineiconimage.png',
-      alt: 'Block diagram icon for the 5‑stage pipelined MIPS CPU',
-      width: 1280,
-      height: 720
+        // Updated to academics path (ensure the file is moved to /public/academics/pipelined-mips-cpu-5-stage/)
+        src: '/academics/pipelined-mips-cpu-5-stage/5stagepipelineiconimage.png',
+      alt: 'Five stage pipeline datapath overview',
+      width: 1600,
+      height: 900
     },
     contentHtml: `
   <h2>Overview</h2>
-  <p>I built a small computer processor. It runs in five staged steps and can process multiple instructions at the same time. Formally, it is a 32‑bit MIPS‑style CPU implemented in Verilog with the classic <em>five‑stage pipeline</em> (IF, ID, EX, MEM, WB). Correctness and throughput are maintained by a hazard detection unit that inserts stalls when required and a forwarding network that supplies the most recent values to the ALU inputs.</p>
+  <p>I built a simple computer brain. It follows a list of tiny commands called instructions.</p>
+  <p>An instruction is a very small step like: add two numbers, load a value from memory, or store a result back. A CPU spends its life doing one instruction after another: (1) get the next instruction from memory, (2) figure out what it means, (3) do the work (like add), (4) access memory if needed, (5) save the answer. In a basic design these five actions happen one full instruction at a time. In this project I made them overlap so the computer finishes more work per second.</p>
+  <p>The result is a 32‑bit MIPS‑style processor (classic teaching architecture) described in Verilog. It uses the well‑known <strong>five‑stage pipeline</strong>:</p>
+  <ul>
+    <li><strong>IF (Fetch):</strong> Grab the next instruction from instruction memory.</li>
+    <li><strong>ID (Decode):</strong> Read the registers it needs and see what kind of command it is.</li>
+    <li><strong>EX (Execute):</strong> Perform the math or calculate an address.</li>
+    <li><strong>MEM (Memory):</strong> Read from or write to data memory if the instruction needs it.</li>
+    <li><strong>WB (Write Back):</strong> Put the final answer into the register file so future instructions can use it.</li>
+  </ul>
+  <p>You can think of it like a tiny five‑station assembly line: while one instruction is being decoded, another is already being fetched, another is executing, and so on. This overlap is where the speedup comes from.</p>
+  <p>One problem: later instructions sometimes need a result that an earlier instruction has not officially “written back” yet. To stay correct the design has two helpers. A <strong>hazard detector</strong> notices when using a not‑yet‑ready value would be wrong and briefly pauses the line (adding a one‑cycle stall only when necessary). A <strong>forwarding network</strong> reduces those pauses by directly handing fresh results from a later stage (like EX or MEM) back to an earlier stage that needs them, instead of waiting for the formal write‑back step.</p>
+  <p>This high‑level structure (pipeline + hazard detection + forwarding) is the same core idea used, at a much larger scale, inside real modern CPUs. Mine is a small, clean teaching version that shows those ideas working end‑to‑end.</p>
 
   <h2>Highlights</h2>
   <ul>
@@ -495,10 +508,6 @@ std::string YourProposalFunction(
       </g>
     </svg>
     <figcaption>Five‑stage pipeline with schematic forwarding paths from MEM/WB back to EX operands.</figcaption>
-  </figure>
-
-      <h2>Pipeline operation</h2>
-      <ol>
         <li><strong>IF — Instruction Fetch:</strong> The program counter (PC) addresses instruction memory; <code>pc_adder</code> advances the PC by 4.</li>
         <li><strong>ID — Decode and Register Read:</strong> The control unit derives control signals; the register file provides <code>rs</code> and <code>rt</code>; immediates are sign‑extended.</li>
         <li><strong>EX — Execute:</strong> The ALU performs arithmetic (add/sub). The write‑back register (rt vs. rd) is selected, and forwarded operands may be chosen.</li>
@@ -590,124 +599,328 @@ std::string YourProposalFunction(
     kind: 'project',
     slug: 'audio-amplifier-circuit',
     title: 'Audio Amplifier Circuit',
+  description: 'Audio amplifier with treble, bass and volume control',
     contentHtml: `
       <h2 id="introduction">Introduction</h2>
       <div class="intro-with-video" style="overflow: hidden;">
         <figure class="intro-video right vertical" style="float: right; margin: 0 0 1rem 1.25rem;">
-          <video controls playsinline muted style="aspect-ratio: 9/16; width: 260px; max-width: 40vw; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); display: block;">
-            <source src="/academics/audio-amplifier/demo.mp4" type="video/mp4" />
-            <source src="/academics/audio-amplifier/demo.mov" type="video/quicktime" />
+          <video id="amplifier-demo" data-primary="/academics/audio-amplifier-circuit/demo.mp4" data-alt="/academics/audio-amplifier-circuit/audio2.mp4" data-current="primary" autoplay loop controls playsinline muted preload="auto" style="aspect-ratio: 9/16; width: 360px; max-width: 50vw; height: auto; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.28); display: block;">
+            <source src="/academics/audio-amplifier-circuit/demo.mp4" type="video/mp4" />
             Sorry, your browser doesn't support embedded videos.
           </video>
-          <figcaption>LEDs reacting live while music plays (vertical video).</figcaption>
+          <div style="margin-top:.4rem; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
+            <figcaption style="margin:0;">Enable audio to hear music.</figcaption>
+            <button id="amplifier-toggle" type="button" style="cursor:pointer; font-size:.65rem; letter-spacing:.4px; padding:.45rem .75rem; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(6px); transition:background .25s;">
+              Switch to Alt Video
+            </button>
+          </div>
+          <script>
+            // Attempt to unmute after autoplay starts (browser will block only if no gesture and policy disallows)
+            (function(){
+              const v = document.getElementById('amplifier-demo');
+              if(!v) return;
+              const tryUnmute = () => {
+                try {
+                  v.muted = false;
+                  const p = v.play();
+                  if(p) p.catch(()=>{/* ignore if blocked */});
+                } catch(e) {}
+              };
+              if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                setTimeout(tryUnmute, 300);
+              } else {
+                document.addEventListener('DOMContentLoaded', () => setTimeout(tryUnmute, 300));
+              }
+              // Fallback: on first user interaction force unmute
+              const userEvents = ['click','touchstart','keydown'];
+              const onUser = () => { tryUnmute(); userEvents.forEach(ev=>window.removeEventListener(ev,onUser)); };
+              userEvents.forEach(ev=>window.addEventListener(ev,onUser,{once:true}));
+              // Toggle button logic
+              const btn = document.getElementById('amplifier-toggle');
+              if(btn){
+                btn.addEventListener('click', () => {
+                  try {
+                    const current = v.getAttribute('data-current') || 'primary';
+                    const next = current === 'primary' ? 'alt' : 'primary';
+                    const nextSrc = v.dataset[next];
+                    if(!nextSrc) return;
+                    // Remove existing <source> elements
+                    Array.from(v.querySelectorAll('source')).forEach(s => s.remove());
+                    const sEl = document.createElement('source');
+                    sEl.src = nextSrc;
+                    sEl.type = 'video/mp4';
+                    v.appendChild(sEl);
+                    v.setAttribute('data-current', next);
+                    v.pause();
+                    v.load();
+                    const p = v.play(); if(p) p.catch(()=>{});
+                    btn.textContent = next === 'primary' ? 'Switch to Alt Video' : 'Switch to Original';
+                  } catch(e){/* noop */}
+                });
+              }
+            })();
+          </script>
         </figure>
-        <p>This project was about building a small audio system from scratch that could take in music, shape the sound, display the volume on LEDs, and play it through a speaker. To achieve this, I designed and implemented a five-stage audio processing chain: a summing op-amp mixer, a tone control filter, a volume control stage, an LED-based volume indicator, and a fixed-gain power amplifier. The system accepts a stereo input, converts it to mono, adjusts the tone and volume, shows a real-time visual indication of signal amplitude, and drives a speaker output. Each stage was built with discrete components — op-amps, resistors, capacitors, and transistors — and was tested individually before integration into the complete system.</p>
+        <p>This system processes audio sources and adjusts them with volume, bass, and treble controls. Bright LED indicators show the audio levels, while a connected speaker plays back your changes instantly. 
+        <br><br>
+        To achieve this, I designed and implemented a five-stage audio processing chain: a summing op-amp mixer, a tone control filter, a volume control stage, an LED-based volume indicator, and a fixed-gain power amplifier. The system accepts a stereo input, converts it to mono, adjusts the tone and volume, shows a real-time visual indication of signal amplitude, and drives a speaker output. Each stage was built using individual components such as op-amps, resistors, capacitors, and transistors, and was individually tested with an oscilloscope before integration into the complete system.</p>
         <ul class="intro-tags" aria-label="Tags" style="list-style: none; padding: 0; margin: 0.5rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem;">
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Analog</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Op‑amp</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">RC filter</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Summing mixer</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Volume control</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">LED VU</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Power amp</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">TIP31/TIP32</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Breadboard</li>
+          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Op‑amp mixing</li>
+          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Tone filtering</li>
+          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Frequency analysis</li>
+          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Potentiometer</li>
+          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Signal visualization</li>
+          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Mono conversion</li>
+          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Oscilloscope testing</li>
+          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Schematic drafting</li>
+          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Breadboarding</li>
         </ul>
       </div>
 
-  <div style="clear: both;"></div>
-  <h2 id="system-overview">System Overview</h2>
-      <p>The audio pipeline was divided into functional blocks, each contributing a critical role:</p>
-      <ol>
-        <li><strong>Mixing (Block 1)</strong> – A summing op-amp combined stereo left/right channels into a single mono output, with potentiometers to independently control each channel’s contribution.</li>
-        <li><strong>Tone Control (Block 2)</strong> – A potentiometer-controlled filter modified frequency response between 20 Hz and 20 kHz, boosting bass while attenuating treble or the reverse.</li>
-        <li><strong>Volume Control (Block 3)</strong> – A 20 kΩ potentiometer configured as a voltage divider provided continuous volume adjustment from zero to full scale.</li>
-        <li><strong>LED Volume Indicator (Block 4)</strong> – A four-level comparator circuit used reference voltages to light LEDs in sequence, functioning as a visual VU meter.</li>
-        <li><strong>Power Amplifier (Block 5)</strong> – A fixed-gain amplifier built with TIP31 (NPN) and TIP32 (PNP) transistors delivered the necessary current to drive a speaker.</li>
-      </ol>
+  <!-- local styles for image formatting in this page only -->
+  <style>
+    .amp-fig{margin:1.5rem auto; text-align:center; max-width:900px;}
+    .amp-fig figcaption{font-size:.7rem; letter-spacing:.3px; opacity:.7; margin-top:.45rem;}
+    .amp-wide{display:block; margin:0 auto; width:100%; max-width:900px; border-radius:14px;}
+    .amp-block-img{display:block; margin:0.75rem auto 0; max-width:420px; width:100%; border-radius:10px; box-shadow:0 4px 18px -6px rgba(0,0,0,0.4);}
+    /* invert white-background block images so they harmonize with dark theme */
+    .amp-invert{filter:invert(1) hue-rotate(180deg) saturate(.4) brightness(1.1) contrast(1.05);}
+    @media (min-width:1100px){ .amp-block-img{max-width:460px;} }
+    /* compact block gallery */
+    .amp-block-grid{display:grid; gap:1.25rem; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); align-items:start; margin:1rem 0 2.25rem;}
+    .amp-block-card{background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:0.75rem 0.75rem 1rem; border-radius:16px; box-shadow:0 4px 18px -8px rgba(0,0,0,0.5);}
+    .amp-block-card figure{margin:0 0 .35rem;}
+    .amp-block-card summary{cursor:pointer; font-weight:600; letter-spacing:.3px; font-size:.8rem;}
+    .amp-block-card details{margin-top:.25rem; font-size:.72rem; line-height:1.3;}
+    .amp-block-card p{margin:.4rem 0 0;}
+    .amp-block-card .amp-block-img{max-width:100%; box-shadow:none;}
+    /* refinement: better alignment & larger cards */
+    .amp-block-grid{max-width:1400px; margin:1.4rem auto 3rem; gap:2rem; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));}
+    .amp-block-card{padding:1.15rem 1.15rem 1.35rem; border-radius:22px; display:flex; flex-direction:column; height:100%;}
+    .amp-block-card .amp-fig{max-width:none; margin:0 0 .65rem;}
+    .amp-block-card figure{background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:1rem 1rem .85rem; display:flex; flex-direction:column; justify-content:flex-start; min-height:250px;}
+    .amp-block-card .amp-block-img{margin:.15rem auto 0; max-width:92%; max-height:200px; object-fit:contain;}
+    .amp-block-label{font-size:.8rem; font-weight:600; letter-spacing:.4px; text-align:center; margin:0 0 .4rem;}
+    .amp-block-card figcaption{margin-top:.65rem; font-size:.68rem; opacity:.7; line-height:1.35;}
+    @media (min-width:900px){
+      .amp-block-card figure{min-height:280px;}
+      .amp-block-card .amp-block-img{max-height:230px;}
+      .amp-block-label{font-size:.85rem;}
+    }
+    @media (min-width:1400px){
+      .amp-block-grid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));}
+      .amp-block-card figure{min-height:300px;}
+      .amp-block-card .amp-block-img{max-height:250px;}
+    }
+    /* breadboard overview sizing */
+    .amp-breadboard{max-width:680px; margin:1.25rem auto 1.75rem;}
+    .amp-breadboard-img{display:block; width:100%; max-width:620px; margin:0 auto; border-radius:14px; box-shadow:0 4px 22px -6px rgba(0,0,0,0.45);}    
+    /* oscilloscope results layout */
+    .scope-grid{display:grid; gap:1.75rem; margin:1.5rem 0 2.5rem; grid-template-columns:repeat(auto-fit,minmax(320px,1fr));}
+    .scope-fig{background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08); padding:1rem 1rem .9rem; border-radius:18px; box-shadow:0 4px 18px -8px rgba(0,0,0,.55); display:flex; flex-direction:column;}
+    .scope-fig img{width:100%; height:auto; border-radius:10px; background:#111; object-fit:contain; box-shadow:0 4px 22px -8px rgba(0,0,0,.6);}
+    .scope-fig figcaption{margin-top:.55rem; font-size:.63rem; line-height:1.35; opacity:.82; letter-spacing:.3px;}
+    .scope-label{font-size:.8rem; font-weight:600; letter-spacing:.4px; margin:0 0 .55rem; text-align:center;}
+    .scope-pair{display:grid; gap:1rem;}
+    .scope-mini{font-size:.6rem; opacity:.65; margin-top:.4rem;}
+    /* collapsible blocks + automatic figure numbering */
+    .scope-block{margin:2.25rem 0 2.75rem; border:1px solid rgba(255,255,255,0.08); border-radius:22px; padding:1.1rem 1.15rem 1.4rem; background:linear-gradient(145deg,rgba(255,255,255,0.035),rgba(255,255,255,0.015)); box-shadow:0 6px 28px -12px rgba(0,0,0,.55);}
+    .scope-block>summary{cursor:pointer; list-style:none; font-weight:600; font-size:1rem; letter-spacing:.4px; margin:0 0 .85rem; position:relative; padding-left:1.4rem;}
+    .scope-block>summary::-webkit-details-marker{display:none;}
+    .scope-block>summary:before{content:'▸'; position:absolute; left:0; top:0; transition:transform .25s ease;}
+    .scope-block[open]>summary:before{transform:rotate(90deg);}
+    .scope-series{counter-reset:scopefig;}
+    .scope-series .scope-fig{counter-increment:scopefig;}
+    .scope-series .scope-fig figcaption:before{content:'Fig. ' counter(scopefig) ' – '; font-weight:600;}
+  /* force 2x2 layout specifically when requested */
+  .scope-grid.two-col{grid-template-columns:repeat(2,1fr);}
+  @media (max-width:780px){.scope-grid.two-col{grid-template-columns:1fr;}}
+  /* optional smaller variant for single large images */
+  .scope-fig.scope-small img{max-width:65%; margin:0 auto;}
+  @media (max-width:880px){.scope-fig.scope-small img{max-width:80%;}}
+    /* custom sizing adjustments for Block 4 request */
+    .scope-fig.scope-video video{width:230px; max-width:60%; display:block; margin:0 auto;}
+    .scope-fig.scope-large img{max-width:92%; margin:0 auto;}
+    @media (min-width:900px){
+      .scope-fig.scope-large{grid-column:span 2;}
+      .scope-fig.scope-large img{max-width:70%;}
+    }
+    @media (prefers-reduced-motion:no-preference){
+      .scope-block[open] .scope-fig{animation:fadeIn .4s ease both;}
+      @keyframes fadeIn{0%{opacity:0; transform:translateY(6px);}100%{opacity:1; transform:translateY(0);}}
+    }
+    @media (min-width:1000px){
+      .scope-pair{grid-template-columns:1fr 1fr;}
+    }
+  </style>
 
-      <figure class="block-diagram">
-        <svg viewBox="0 0 900 160" role="img" aria-label="Block diagram: L/R inputs → Mixer → Tone → Volume → (split) LED VU and Power Amp → Speaker">
+  <div style="clear: both;"></div>
+  <h2 id="system-objectives">System Objectives</h2>
+      <figure class="block-diagram" style="margin:0 0 1.25rem;">
+        <svg role="img" aria-label="High-level audio chain: Blocks 1→2→3 split into Blocks 5 (power) and 4 (LED meter) with voltage ranges" viewBox="0 0 1100 260" width="100%" preserveAspectRatio="xMidYMid meet" style="max-width:1200px; display:block; margin:auto;">
           <defs>
-            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-              <path d="M0,0 L0,6 L9,3 z" fill="currentColor" />
+            <marker id="bdArrow2" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,8 L10,4 Z" fill="currentColor" />
             </marker>
+            <style>
+              .blk{fill:rgba(255,255,255,0.05);stroke:rgba(255,255,255,0.85);stroke-width:1.7;}
+              .lbl{font:600 16px/1.2 system-ui, sans-serif; fill:rgba(255,255,255,0.95);}
+              .range{font:13px/1.2 system-ui, sans-serif; fill:rgba(255,255,255,0.78);}
+              .meta{font:12px/1.2 system-ui, sans-serif; fill:rgba(255,255,255,0.6);}
+            </style>
           </defs>
-          <g fill="none" stroke="currentColor" stroke-width="2">
-            <text x="10" y="30">L</text>
-            <text x="10" y="60">R</text>
-            <line x1="30" y1="25" x2="90" y2="25" marker-end="url(#arrow)" />
-            <line x1="30" y1="55" x2="90" y2="55" marker-end="url(#arrow)" />
-            <rect x="90" y="20" width="120" height="50" rx="8"/>
-            <text x="150" y="50" text-anchor="middle">Mixer</text>
-            <line x1="210" y1="45" x2="300" y2="45" marker-end="url(#arrow)" />
-            <rect x="300" y="20" width="120" height="50" rx="8"/>
-            <text x="360" y="50" text-anchor="middle">Tone</text>
-            <line x1="420" y1="45" x2="510" y2="45" marker-end="url(#arrow)" />
-            <rect x="510" y="20" width="120" height="50" rx="8"/>
-            <text x="570" y="50" text-anchor="middle">Volume</text>
-            <line x1="630" y1="45" x2="720" y2="45" />
-            <line x1="675" y1="45" x2="675" y2="110" />
-            <line x1="675" y1="110" x2="760" y2="110" marker-end="url(#arrow)" />
-            <rect x="760" y="85" width="120" height="50" rx="8"/>
-            <text x="820" y="115" text-anchor="middle">LED VU</text>
-            <line x1="720" y1="45" x2="810" y2="45" marker-end="url(#arrow)" />
-            <rect x="810" y="20" width="120" height="50" rx="8"/>
-            <text x="870" y="50" text-anchor="middle">Power Amp</text>
+          <g transform="translate(40,40)">
+            <!-- Inputs label -->
+            <text class="range" x="0" y="55">0.025 – 1 Vpp (L/R)</text>
+            <!-- Input arrows to Block 1 (merged visually) -->
+            <line x1="105" y1="40" x2="150" y2="40" stroke="currentColor" stroke-width="2" marker-end="url(#bdArrow2)" />
+            <line x1="105" y1="70" x2="150" y2="70" stroke="currentColor" stroke-width="2" marker-end="url(#bdArrow2)" />
+
+            <!-- Block 1 -->
+            <rect class="blk" x="150" y="30" width="140" height="50" rx="10" />
+            <text class="lbl" x="220" y="57" text-anchor="middle">Block 1</text>
+            <text class="meta" x="220" y="22" text-anchor="middle">Stereo → Mono</text>
+            <!-- Range after Block 1 -->
+            <text class="range" x="320" y="115" text-anchor="middle">0.01 – 0.4 Vpp</text>
+            <line x1="290" y1="55" x2="370" y2="55" stroke="currentColor" stroke-width="2" marker-end="url(#bdArrow2)" />
+
+            <!-- Block 2 -->
+            <rect class="blk" x="370" y="30" width="140" height="50" rx="10" />
+            <text class="lbl" x="440" y="57" text-anchor="middle">Block 2</text>
+            <text class="meta" x="440" y="22" text-anchor="middle">Tone</text>
+            <text class="range" x="540" y="115" text-anchor="middle">0.3 – 1.2 Vpp</text>
+            <line x1="510" y1="55" x2="590" y2="55" stroke="currentColor" stroke-width="2" marker-end="url(#bdArrow2)" />
+
+            <!-- Block 3 -->
+            <rect class="blk" x="590" y="30" width="140" height="50" rx="10" />
+            <text class="lbl" x="660" y="57" text-anchor="middle">Block 3</text>
+            <text class="meta" x="660" y="22" text-anchor="middle">Volume</text>
+            <text class="range" x="750" y="115" text-anchor="middle">0 – 1.2 Vpp</text>
+            <line x1="730" y1="55" x2="810" y2="55" stroke="currentColor" stroke-width="2" />
+
+            <!-- Split node -->
+            <circle cx="810" cy="55" r="4" fill="currentColor" />
+            <!-- Branch down -->
+            <line x1="810" y1="55" x2="810" y2="140" stroke="currentColor" stroke-width="2" />
+
+            <!-- Block 5 (upper) -->
+            <line x1="810" y1="55" x2="890" y2="55" stroke="currentColor" stroke-width="2" marker-end="url(#bdArrow2)" />
+            <rect class="blk" x="890" y="30" width="140" height="50" rx="10" />
+            <text class="lbl" x="960" y="57" text-anchor="middle">Block 5</text>
+            <text class="meta" x="960" y="22" text-anchor="middle">Power Amp</text>
+
+            <!-- Block 4 (lower) -->
+            <line x1="810" y1="140" x2="890" y2="140" stroke="currentColor" stroke-width="2" marker-end="url(#bdArrow2)" />
+            <rect class="blk" x="890" y="115" width="140" height="50" rx="10" />
+            <text class="lbl" x="960" y="142" text-anchor="middle">Block 4</text>
+            <text class="meta" x="960" y="107" text-anchor="middle">LED VU</text>
           </g>
         </svg>
-        <figcaption>Signal flow from stereo inputs to speaker, with a parallel tap to the LED VU meter.</figcaption>
+        <figcaption style="text-align:center; font-size:.75rem; margin-top:.6rem; letter-spacing:.3px; color:rgba(255,255,255,0.7);">High‑level signal flow with post‑stage approximate amplitude envelopes.</figcaption>
       </figure>
+      <div class="overflow-x-auto" style="margin:.75rem 0 1rem;">
+        <table style="font-size:.8rem; min-width:680px;">
+          <thead><tr><th style="text-align:left;">Block</th><th>Function</th><th>Key Range / Thresholds</th><th>Core Parts</th></tr></thead>
+          <tbody>
+            <tr><td>1 Mixer</td><td>Stereo → mono summing, per‑channel trim</td><td>In: 0.025–1.0 Vpp ea.  Out: ~0.01–0.04 Vpp nominal</td><td>Op‑amp, 2× 20 kΩ pots</td></tr>
+            <tr><td>2 Tone</td><td>Adjustable bass / treble tilt</td><td>Gain LF 1/3×→3× (HF inversely 3×→1/3×), 20 Hz–20 kHz</td><td>RC network + pot</td></tr>
+            <tr><td>3 Volume</td><td>Post‑EQ amplitude control</td><td>0 → ~1.2 Vpp</td><td>20 kΩ pot divider</td></tr>
+            <tr><td>4 LED VU</td><td>Amplitude visualization</td><td>Comparators at 20 / 60 / 80 / 120 mV</td><td>4 refs + LEDs</td></tr>
+            <tr><td>5 Power Amp</td><td>Current drive to speaker</td><td>Fixed gain, drives low‑Z load</td><td>TIP31 / TIP32 pair</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ol style="display:grid; gap:.9rem; padding-left:1.25rem;">
+        <li><strong>Block 1 – Summing Mixer.</strong> Two AC‑coupled stereo channels feed an inverting summing node. Independent 20 kΩ potentiometers set per‑channel contribution without clipping the combined headroom (target mono output ~0.01–0.04 Vpp for nominal sources).</li>
+        <li><strong>Block 2 – Tone Filter.</strong> A single potentiometer sweeps a tilt‑style RC network: low frequencies can be boosted up to 3× while highs attenuate to 1/3× (or vice‑versa), covering the 20 Hz–20 kHz band with smooth spectral shaping.</li>
+        <li><strong>Block 3 – Volume Control.</strong> A 20 kΩ divider implements user gain from mute (≈0 Vpp) to ≈1.2 Vpp while presenting a low source impedance to downstream comparator and driver stages.</li>
+        <li><strong>Block 4 – LED Level Indicator.</strong> Four comparators reference a 9 V ladder (≈20, 60, 80, 120 mV). Progressive LED illumination forms a simple pseudo‑VU display without loading the audio path.</li>
+        <li><strong>Block 5 – Power Amplifier.</strong> Complementary emitter follower (TIP31/TIP32) supplies current gain; the op‑amp front end biases the pair to limit crossover distortion and cleanly drive the speaker at listening levels.</li>
+      </ol>
+      
+      <h2 id="theory-experimental-methods">Theory &amp; Experimental Methods</h2>
+      <figure>
+        <img src="/academics/audio-amplifier-circuit/complete-schem.png" alt="Complete schematic: summing mixer, tone filter, volume divider, LED comparator ladder, complementary emitter follower power stage" style="width:100%; max-width:1100px; margin-inline:auto; border-radius:12px; box-shadow:0 4px 28px -6px rgba(0,0,0,0.5);" />
+        <figcaption style="text-align:center; font-size:.8rem; opacity:.8;">Complete schematic – unified view of the five functional blocks (source: complete schem.png).</figcaption>
+      </figure>
+      <h3>Theoretical Overview</h3>
+      <ul>
+        <li><strong>Block 1 (Summing Mixer):</strong> Implements an inverting summer. For equal input resistors R<sub>in</sub> and feedback resistor R<sub>f</sub>, each channel contribution ≈ −(R<sub>f</sub>/R<sub>in</sub>)·V<sub>CH</sub>. Potentiometers precede the summing node providing variable effective R<sub>in</sub> (amplitude trim) to keep summed V<sub>out</sub> within the 0.01–0.04 V<sub>pp</sub> design envelope.</li>
+        <li><strong>Block 2 (Tone Filter):</strong> A single‑pot “tilt” network whose impedance division versus frequency alters relative LF/HF gains. At one extreme G<sub>LF</sub> ≈ 3×, G<sub>HF</sub> ≈ 1/3×; reversed at the other. Capacitor reactances chosen so pivot occurs inside the audio band (order of a few kHz) while still spanning 20 Hz–20 kHz.</li>
+        <li><strong>Block 3 (Volume Divider):</strong> Passive 20 kΩ potentiometer forming a variable attenuator with low output impedance ( ≪ comparator input impedance ), preserving tone shaping while setting 0–1.2 V<sub>pp</sub> user level.</li>
+        <li><strong>Block 4 (LED VU Ladder):</strong> Resistor ladder establishes monotonic DC thresholds (≈20/60/80/120 mV). Each comparator outputs a logic‑level drive through its series LED resistor (~810 Ω) giving stepped amplitude indication. Instantaneous (no envelope) response intentionally chosen for simplicity.</li>
+        <li><strong>Block 5 (Power Stage):</strong> Complementary emitter follower provides current gain (β aggregation) without additional voltage gain; op‑amp supplies drive and bias to minimize crossover distortion while keeping the driver within linear output swing for the target speaker load.</li>
+      </ul>
 
       <figure class="overview-photo">
-        <img src="/academics/audio-amplifier/breadboard-overview.jpg" alt="Breadboard overview of the full audio chain" />
         <figcaption>Full breadboard build — neat wiring and short returns help keep noise low.</figcaption>
       </figure>
 
       <h2 id="design-process">Design Process</h2>
-      <p>Each block was designed, simulated, and validated individually before integration.</p>
-      <h3 id="block-1">Block 1 — Summing Mixer</h3>
-      <p>A classic inverting summing amplifier mixes left/right into mono. Gains were set by choosing input resistors against the feedback resistor to keep headroom and low noise.</p>
-      <figure>
-        <img src="/academics/audio-amplifier/block1-mixer.jpg" alt="Summing amplifier stage on breadboard" />
-        <figcaption>Summing mixer: left/right pots control contribution before summing.</figcaption>
+      <figure class="amp-breadboard">
+        <img class="amp-breadboard-img" src="/academics/audio-amplifier-circuit/breadboard-overview.png" alt="Breadboard overview of the full audio chain" />
+        <figcaption style="text-align:center; font-size:.75rem; opacity:.75; margin-top:.55rem;">Complete schematic used as reference during block‑by‑block bring‑up.</figcaption>
       </figure>
 
-      <h3 id="block-2">Block 2 — Tone Control</h3>
-      <p>A potentiometer-controlled RC network shapes the response between ~20 Hz and 20 kHz, giving musical bass/treble tilt without clipping.</p>
-      <figure>
-        <img src="/academics/audio-amplifier/block2-tone.jpg" alt="Tone control RC network with potentiometer" />
-        <figcaption>Tilt EQ: sweep tested on the scope to confirm frequency shaping.</figcaption>
-      </figure>
-
-      <h3 id="block-3">Block 3 — Volume</h3>
-      <p>A 20 kΩ potentiometer configured as a divider provides smooth volume from mute to full-scale; output impedance remains low into the next stage.</p>
-      <figure>
-        <img src="/academics/audio-amplifier/block3-volume.jpg" alt="Volume control potentiometer wiring" />
-        <figcaption>Volume pot wiring and measured taper behavior.</figcaption>
-      </figure>
-
-      <h3 id="block-4">Block 4 — LED Volume Indicator</h3>
-      <p>Four comparators check the signal against references (~20 mV, 60 mV, 80 mV, 120 mV). LEDs light progressively, forming a simple VU meter.</p>
-      <figure>
-        <img src="/academics/audio-amplifier/block4-leds.jpg" alt="Comparator-based LED volume indicator" />
-        <figcaption>LED VU: reference ladder from the 9 V rail and matched resistors.</figcaption>
-      </figure>
-
-      <h3 id="block-5">Block 5 — Power Amplifier</h3>
-      <p>A complementary emitter follower using TIP31/TIP32 provides current to the speaker at a fixed gain. Biasing avoids crossover distortion while protecting the op-amp.</p>
-      <figure>
-        <img src="/academics/audio-amplifier/block5-amp.jpg" alt="Power amplifier stage with TIP31/TIP32" />
-        <figcaption>Power stage layout with heat dissipation and short speaker leads.</figcaption>
-      </figure>
-
-      <details>
-        <summary>Bill of Materials (expand)</summary>
-        <ul>
-          <li>Op-amp(s), TIP31/TIP32, assorted resistors/caps, 20 kΩ pots (×2), LEDs (×4), 9 V supply</li>
-          <li>Breadboard, jumpers, 8 Ω speaker, audio jack(s)</li>
-        </ul>
-      </details>
+      <h3 id="blocks-overview">Blocks 1–5 Implementation</h3>
+      <p style="margin-top:.4rem; font-size:.85rem; opacity:.85;">Compact gallery of the five functional stages. Click any card for details.</p>
+      <div class="amp-block-grid">
+        <div class="amp-block-card" id="block-1">
+          <figure class="amp-fig">
+            <div class="amp-block-label">Block 1 – Summing Mixer</div>
+            <img class="amp-block-img amp-invert" src="/academics/audio-amplifier-circuit/block1.png" alt="Summing amplifier stage on breadboard" />
+            <figcaption>Summing mixer schematic / breadboard stage.</figcaption>
+          </figure>
+          <details>
+            <summary>Details</summary>
+            <p>A classic inverting summing amplifier mixes left/right into mono. Input potentiometers trim each channel to preserve headroom and minimize noise at the summing node.</p>
+          </details>
+        </div>
+        <div class="amp-block-card" id="block-2">
+          <figure class="amp-fig">
+            <div class="amp-block-label">Block 2 – Tone Control</div>
+            <img class="amp-block-img amp-invert" src="/academics/audio-amplifier-circuit/block2.png" alt="Tone control RC network with potentiometer" />
+            <figcaption>Tilt EQ network schematic.</figcaption>
+          </figure>
+          <details>
+            <summary>Details</summary>
+            <p>Potentiometer‑controlled RC tilt network shapes the spectrum (≈20 Hz–20 kHz) providing complementary bass boost vs. treble cut (and vice‑versa) without clipping.</p>
+          </details>
+        </div>
+        <div class="amp-block-card" id="block-3">
+          <figure class="amp-fig">
+            <div class="amp-block-label">Block 3 – Volume</div>
+            <img class="amp-block-img amp-invert" src="/academics/audio-amplifier-circuit/block3.png" alt="Volume control potentiometer wiring" />
+            <figcaption>Output level control potentiometer.</figcaption>
+          </figure>
+          <details>
+            <summary>Details</summary>
+            <p>20 kΩ potentiometer as a divider provides smooth attenuation from mute to ≈1.2 Vpp while presenting low source impedance to comparators and driver.</p>
+          </details>
+        </div>
+        <div class="amp-block-card" id="block-4">
+          <figure class="amp-fig">
+            <div class="amp-block-label">Block 4 – LED Indicator</div>
+            <img class="amp-block-img amp-invert" src="/academics/audio-amplifier-circuit/block4.png" alt="Comparator-based LED volume indicator" />
+            <figcaption>Comparator ladder + LEDs.</figcaption>
+          </figure>
+          <details>
+            <summary>Details</summary>
+            <p>Four comparators reference a resistor ladder (~20/60/80/120 mV) lighting LEDs progressively for instantaneous amplitude visualization.</p>
+          </details>
+        </div>
+        <div class="amp-block-card" id="block-5">
+          <figure class="amp-fig">
+            <div class="amp-block-label">Block 5 – Power Amp</div>
+            <img class="amp-block-img amp-invert" src="/academics/audio-amplifier-circuit/block5.png" alt="Power amplifier stage with TIP31/TIP32" />
+            <figcaption>Complementary emitter follower stage.</figcaption>
+          </figure>
+          <details>
+            <summary>Details</summary>
+            <p>Complementary TIP31/TIP32 emitter follower furnishes current gain; op‑amp front‑end biases the pair to limit crossover distortion and cleanly drive the load.</p>
+          </details>
+        </div>
+      </div>
 
       <h2 id="results">Results</h2>
       <ul>
@@ -717,19 +930,83 @@ std::string YourProposalFunction(
         <li>The LED indicator responded dynamically to signal amplitude, creating a real-time visual representation of the music.</li>
         <li>The amplifier stage drove the speaker effectively at normal listening levels.</li>
       </ul>
-      <figure>
-        <img src="/academics/audio-amplifier/scope-output.png" alt="Oscilloscope output at the speaker terminals" />
-        <figcaption>Measured output waveform under load — clean sinusoid within target swing.</figcaption>
-      </figure>
-      <h2 id="challenges">Challenges &amp; Lessons Learned</h2>
-      <ul>
-        <li>Component tolerances affected gain and filter accuracy — tune using measured values, not only calculations.</li>
-        <li>Breadboard noise underscored the importance of star grounds and short returns for analog stages.</li>
-        <li>Integration matters: simple blocks become powerful when combined thoughtfully.</li>
-      </ul>
-      <h2 id="reflection">Reflection</h2>
-      <p>This project demonstrated the fundamentals of system-level circuit design: combining mixing, filtering, control, indication, and amplification into one functioning chain. It reinforced the importance of testing at every stage, understanding real-world deviations from theory, and considering user interaction (knobs, LEDs, speaker output) as part of the design. If extended, the system could be upgraded with a microphone input, digital tone controls, and a microcontroller-driven display for a more modern interface.</p>
-      
+      <h3 id="oscilloscope-measurements">Oscilloscope Results</h3>
+      <p style="font-size:.85rem; opacity:.85;">Each block was verified by capturing input (reference) and output waveforms. Use consistent vertical scaling so amplitude changes and threshold activations are visually comparable. Replace the <code>src</code> attributes below with your final PNGs/JPGs (recommended width 1000–1400 px for clarity). Keep captions concise and emphasize what changed between traces (gain, attenuation, threshold crossings).</p>
+      <!-- Collapsible structured measurement sets -->
+      <details class="scope-block" open id="scope-block1">
+        <summary>Block 1 – Summing Mixer (Independent Channel Trim)</summary>
+        <div class="scope-grid scope-series two-col">
+          <figure class="scope-fig">
+            <img src="/academics/audio-amplifier-circuit/block1-left-max.png" alt="Left channel input (top) vs mixed output (bottom) at maximum trim" loading="lazy" />
+            <figcaption>Left channel max trim: output ≈2.0 Vpp (matches input) → full gain path engaged.</figcaption>
+          </figure>
+          <figure class="scope-fig">
+            <img src="/academics/audio-amplifier-circuit/block1-left-min.png" alt="Left channel input (top) vs mixed output (bottom) at minimum trim" loading="lazy" />
+            <figcaption>Left channel min trim: output ~80 mVpp residual while input unchanged — confirms attenuation range & isolation.</figcaption>
+          </figure>
+          <figure class="scope-fig">
+            <img src="/academics/audio-amplifier-circuit/block1-right-max.png" alt="Right channel input (top) vs mixed output (bottom) at maximum trim" loading="lazy" />
+            <figcaption>Right channel max trim: symmetric ≈2.05 Vpp contribution shows balanced summing network.</figcaption>
+          </figure>
+          <figure class="scope-fig">
+            <img src="/academics/audio-amplifier-circuit/block1-right-min.png" alt="Right channel input (top) vs mixed output (bottom) at minimum trim" loading="lazy" />
+            <figcaption>Right channel min trim: output suppressed to noise floor (~80 mVpp) with negligible bleed.</figcaption>
+          </figure>
+        </div>
+      </details>
+      <details class="scope-block" open id="scope-block2">
+        <summary>Block 2 – Tone Control (Tilt Extremes at 20 kHz)</summary>
+        <div class="scope-grid scope-series">
+          <figure class="scope-fig">
+            <img src="/academics/audio-amplifier-circuit/block2-max.png" alt="20 kHz input vs boosted output – potentiometer clockwise" loading="lazy" />
+            <figcaption>Clockwise (boost): output ≈8.4 Vpp vs ≈4.1 Vpp input — high‑frequency emphasis.</figcaption>
+          </figure>
+          <figure class="scope-fig">
+            <img src="/academics/audio-amplifier-circuit/block2-min.png" alt="20 kHz input vs attenuated output – potentiometer counter‑clockwise" loading="lazy" />
+            <figcaption>Counter‑clockwise (cut): output reduced to ≈1.2 Vpp — full attenuation range demonstrated.</figcaption>
+          </figure>
+        </div>
+      </details>
+      <details class="scope-block" open id="scope-block3">
+        <summary>Block 3 – Volume Stage (Max vs Near‑Mute)</summary>
+        <div class="scope-grid scope-series">
+          <figure class="scope-fig">
+            <img src="/academics/audio-amplifier-circuit/block3-max.png" alt="1.2 Vpp input vs full-scale output" loading="lazy" />
+            <figcaption>Pot at max: output ≈1.29 Vpp (≈unity gain) — minimal insertion loss.</figcaption>
+          </figure>
+          <figure class="scope-fig">
+            <img src="/academics/audio-amplifier-circuit/block3-min.png" alt="1.2 Vpp input vs muted output" loading="lazy" />
+            <figcaption>Pot near min: output ~80 mVpp residual noise — effective mute without loading source.</figcaption>
+          </figure>
+        </div>
+      </details>
+      <details class="scope-block" open id="scope-block4">
+        <summary>Block 4 – LED Indicator (Comparator Threshold Region)</summary>
+        <div class="scope-grid scope-series">
+          <figure class="scope-fig scope-small scope-video">
+            <video controls playsinline muted loop autoplay preload="metadata" style="border-radius:10px; background:#000; box-shadow:0 4px 22px -8px rgba(0,0,0,.6);">
+              <source src="/academics/audio-amplifier-circuit/volume%20control.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            <figcaption>Real-time LED ladder response while sweeping volume control — successive thresholds light as amplitude crosses ≈20/60/80/120 mV.</figcaption>
+          </figure>
+          <figure class="scope-fig scope-large">
+            <img src="/academics/audio-amplifier-circuit/block4-graph.png" alt="Input and comparator node near LED thresholds" loading="lazy" />
+            <figcaption>Comparator node traverses ≈20/60/80/120 mV thresholds — drives stepped LED illumination (not visible on scope but correlated).</figcaption>
+          </figure>
+        </div>
+      </details>
+      <details class="scope-block" open id="scope-block5">
+        <summary>Block 5 – Power Stage (Drive Integrity)</summary>
+        <div class="scope-grid scope-series">
+          <figure class="scope-fig scope-small">
+            <img src="/academics/audio-amplifier-circuit/block5-graph.png" alt="Power amplifier input vs output across load" loading="lazy" />
+            <figcaption>Output mirrors input symmetrically; absence of crossover notch indicates proper bias of complementary emitter follower.</figcaption>
+          </figure>
+        </div>
+      </details>
+
+
     `
   },
   {

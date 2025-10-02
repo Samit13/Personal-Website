@@ -33,20 +33,26 @@ export default function CourseworkPage({ params }: { params: { slug: string } })
 
         {/* Hero image right after the title */}
         {item.hero && (
-          <figure className="mt-4 mb-2 lg:col-span-10 lg:col-start-2 xl:col-span-10 xl:col-start-2 max-w-2xl mx-auto">
+          <figure
+            className={`mt-8 mb-6 lg:col-span-12 lg:col-start-1 xl:col-span-12 xl:col-start-1 mx-auto px-0 ${item.slug === 'pipelined-mips-cpu-5-stage' ? 'full-bleed-hero' : 'max-w-2xl'}`}
+          >
             <Image
               src={item.hero.src}
               alt={item.hero.alt || `${item.title} illustration`}
               width={item.hero.width || 1600}
               height={item.hero.height || 1066}
-              className="w-full h-auto rounded-xl border border-white/10 bg-white/5 shadow-lg shadow-black/30"
-              sizes="(max-width: 1024px) 100vw, 55vw"
+              // Reduced the max height from 820px to 700px to make the 5-stage pipeline hero slightly smaller
+              className={`w-full h-auto object-contain ${item.slug === 'pipelined-mips-cpu-5-stage' ? 'max-h-[700px]' : 'rounded-xl border border-white/10 bg-white/5 shadow-lg shadow-black/30'}`}
+              sizes={item.slug === 'pipelined-mips-cpu-5-stage' ? '100vw' : '(max-width: 1024px) 100vw, 55vw'}
               priority
             />
           </figure>
         )}
 
-        {item.description && <p className="text-base md:text-lg lg:col-span-10 lg:col-start-2 xl:col-span-10 xl:col-start-2">{item.description}</p>}
+        {/* Show description on detail pages except for audio amplifier project (only show on home card) */}
+        {item.description && item.slug !== 'audio-amplifier-circuit' && (
+          <p className="text-base md:text-lg lg:col-span-10 lg:col-start-2 xl:col-span-10 xl:col-start-2">{item.description}</p>
+        )}
 
         {item.link && (
           <p className="mt-6 not-prose lg:col-span-10 lg:col-start-2 xl:col-span-10 xl:col-start-2">
