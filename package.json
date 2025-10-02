@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prebuild": "git lfs install --local && git lfs fetch --all && git lfs checkout",
+  "prebuild": "git lfs install --local && git lfs pull || echo 'LFS pull skipped'",
     "start": "next start",
     "lint": "next lint"
   },
