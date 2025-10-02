@@ -45,7 +45,7 @@ export default function Projects() {
   // No custom click interception; use standard navigation to full page
 
   return (
-    <section ref={sectionRef} id="projects" aria-labelledby="projects-title" className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+  <section ref={sectionRef} id="projects" aria-labelledby="projects-title" className="mx-auto max-w-6xl px-6 py-24 md:py-32 [content-visibility:auto] [contain-intrinsic-size:800px]">
       <h2 id="projects-title" className="mb-10">Projects</h2>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 relative">
         {PROJECTS.map((p, i) => (
@@ -56,7 +56,7 @@ export default function Projects() {
             ref={(el) => { if (el) (cardsRef.current[i] = el as unknown as HTMLAnchorElement) }}
             onMouseEnter={() => { try { router.prefetch?.(`/projects/${p.slug}`) } catch {} }}
             onFocus={() => { try { router.prefetch?.(`/projects/${p.slug}`) } catch {} }}
-            className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-fg/30 rounded-2xl overflow-hidden glass hover-highlight card-fadeup will-change-transform"
+            className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-fg/30 rounded-2xl overflow-hidden glass hover-highlight card-fadeup"
             style={{ ['--c-delay' as any]: `${Math.min(i, 5) * 60}ms` }}
             aria-label={`${p.title}`}
           >

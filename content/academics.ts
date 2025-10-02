@@ -604,47 +604,40 @@ std::string YourProposalFunction(
       <h2 id="introduction">Introduction</h2>
       <div class="intro-with-video" style="overflow: hidden;">
         <figure class="intro-video right vertical" style="float: right; margin: 0 0 1rem 1.25rem;">
-          <video id="amplifier-demo" data-primary="/academics/audio-amplifier-circuit/demo.mp4" data-alt="/academics/audio-amplifier-circuit/audio2.mp4" data-current="primary" autoplay loop controls playsinline muted preload="auto" style="aspect-ratio: 9/16; width: 360px; max-width: 50vw; height: auto; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.28); display: block;">
+          <video id="amplifier-demo" data-primary="/academics/audio-amplifier-circuit/demo.mp4" data-alt="/academics/audio-amplifier-circuit/audio2.mp4" data-current="primary" autoplay loop playsinline muted preload="metadata" poster="/academics/audio-amplifier-circuit/block1.png" style="aspect-ratio: 9/16; width: 360px; max-width: 50vw; height: auto; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.28); display: block; background:#000;">
             <source src="/academics/audio-amplifier-circuit/demo.mp4" type="video/mp4" />
+            <!-- Optional WebM fallback if you add one: <source src="/academics/audio-amplifier-circuit/demo.webm" type="video/webm" /> -->
             Sorry, your browser doesn't support embedded videos.
           </video>
           <div style="margin-top:.4rem; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
-            <figcaption style="margin:0;">Enable audio to hear music.</figcaption>
-            <button id="amplifier-toggle" type="button" style="cursor:pointer; font-size:.65rem; letter-spacing:.4px; padding:.45rem .75rem; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(6px); transition:background .25s;">
-              Switch to Alt Video
-            </button>
+            <figcaption style="margin:0;">Video is muted by default. Click Unmute to hear audio.</figcaption>
+            <button id="amplifier-audio" type="button" style="cursor:pointer; font-size:.65rem; letter-spacing:.4px; padding:.45rem .75rem; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(6px); transition:background .25s;">Unmute</button>
+            <button id="amplifier-toggle" type="button" style="cursor:pointer; font-size:.65rem; letter-spacing:.4px; padding:.45rem .75rem; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(6px); transition:background .25s;">Switch Video</button>
           </div>
           <script>
-            // Attempt to unmute after autoplay starts (browser will block only if no gesture and policy disallows)
             (function(){
               const v = document.getElementById('amplifier-demo');
               if(!v) return;
-              const tryUnmute = () => {
-                try {
-                  v.muted = false;
-                  const p = v.play();
-                  if(p) p.catch(()=>{/* ignore if blocked */});
-                } catch(e) {}
-              };
-              if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                setTimeout(tryUnmute, 300);
-              } else {
-                document.addEventListener('DOMContentLoaded', () => setTimeout(tryUnmute, 300));
+              const audioBtn = document.getElementById('amplifier-audio');
+              const switchBtn = document.getElementById('amplifier-toggle');
+              if(audioBtn){
+                audioBtn.addEventListener('click', () => {
+                  try {
+                    v.muted = !v.muted;
+                    if(!v.paused){
+                      const p = v.play(); if(p) p.catch(()=>{});
+                    }
+                    audioBtn.textContent = v.muted ? 'Unmute' : 'Mute';
+                  } catch(e) {}
+                });
               }
-              // Fallback: on first user interaction force unmute
-              const userEvents = ['click','touchstart','keydown'];
-              const onUser = () => { tryUnmute(); userEvents.forEach(ev=>window.removeEventListener(ev,onUser)); };
-              userEvents.forEach(ev=>window.addEventListener(ev,onUser,{once:true}));
-              // Toggle button logic
-              const btn = document.getElementById('amplifier-toggle');
-              if(btn){
-                btn.addEventListener('click', () => {
+              if(switchBtn){
+                switchBtn.addEventListener('click', () => {
                   try {
                     const current = v.getAttribute('data-current') || 'primary';
                     const next = current === 'primary' ? 'alt' : 'primary';
                     const nextSrc = v.dataset[next];
-                    if(!nextSrc) return;
-                    // Remove existing <source> elements
+                    if(!nextSrc){ return; }
                     Array.from(v.querySelectorAll('source')).forEach(s => s.remove());
                     const sEl = document.createElement('source');
                     sEl.src = nextSrc;
@@ -654,8 +647,8 @@ std::string YourProposalFunction(
                     v.pause();
                     v.load();
                     const p = v.play(); if(p) p.catch(()=>{});
-                    btn.textContent = next === 'primary' ? 'Switch to Alt Video' : 'Switch to Original';
-                  } catch(e){/* noop */}
+                    switchBtn.textContent = next === 'primary' ? 'Switch Video' : 'Switch Back';
+                  } catch(e) {}
                 });
               }
             })();

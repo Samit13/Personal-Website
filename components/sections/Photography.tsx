@@ -17,7 +17,7 @@ export default async function Photography() {
   }
 
   return (
-	<section id="photos" aria-labelledby="photos-title" className="relative mx-auto max-w-7xl px-6 pt-14 md:pt-16 pb-4 md:pb-6">
+	<section id="photos" aria-labelledby="photos-title" className="relative mx-auto max-w-7xl px-6 pt-14 md:pt-16 pb-4 md:pb-6 [content-visibility:auto] [contain-intrinsic-size:800px]">
 			  <header className="relative z-20 mb-2 md:mb-3 text-center">
 				<h2 id="photos-title" className="text-3xl md:text-5xl font-semibold tracking-tight text-fg title-glow">Photography</h2>
 				<p className="mt-2 text-muted">
