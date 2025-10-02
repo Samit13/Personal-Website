@@ -590,9 +590,9 @@ std::string YourProposalFunction(
   description: 'Audio amplifier with treble, bass and volume control',
     contentHtml: `
       <h2 id="introduction">Introduction</h2>
-      <div class="intro-with-video" style="overflow: hidden;">
-        <figure class="intro-video right vertical" style="float: right; margin: 0 0 1rem 1.25rem;">
-          <video id="amplifier-demo" data-primary="/academics/audio-amplifier-circuit/audiohero.mp4" data-alt="/academics/audio-amplifier-circuit/audiohero2.mp4" data-current="primary" autoplay loop controls playsinline muted preload="auto" style="aspect-ratio: 9/16; width: 360px; max-width: 50vw; height: auto; border-radius: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.28); display: block;">
+      <div class="intro-with-video" style="overflow:hidden;">
+        <figure class="intro-video vertical" style="margin:0 auto 0.85rem; max-width:260px;">
+          <video id="amplifier-demo" data-primary="/academics/audio-amplifier-circuit/audiohero.mp4" data-alt="/academics/audio-amplifier-circuit/audiohero2.mp4" data-current="primary" autoplay loop controls playsinline muted preload="metadata" style="aspect-ratio:9/16; width:100%; max-width:260px; height:auto; border-radius:14px; box-shadow:0 6px 20px rgba(0,0,0,0.26); display:block; background:#000;">
             <source src="/academics/audio-amplifier-circuit/audiohero.mp4" type="video/mp4" />
             Sorry, your browser doesn't support embedded videos.
           </video>
@@ -649,24 +649,53 @@ std::string YourProposalFunction(
             })();
           </script>
         </figure>
-        <p>This system processes audio sources and adjusts them with volume, bass, and treble controls. Bright LED indicators show the audio levels, while a connected speaker plays back your changes instantly. 
-        <br><br>
-        To achieve this, I designed and implemented a five-stage audio processing chain: a summing op-amp mixer, a tone control filter, a volume control stage, an LED-based volume indicator, and a fixed-gain power amplifier. The system accepts a stereo input, converts it to mono, adjusts the tone and volume, shows a real-time visual indication of signal amplitude, and drives a speaker output. Each stage was built using individual components such as op-amps, resistors, capacitors, and transistors, and was individually tested with an oscilloscope before integration into the complete system.</p>
-        <ul class="intro-tags" aria-label="Tags" style="list-style: none; padding: 0; margin: 0.5rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem;">
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Op‑amp mixing</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Tone filtering</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Frequency analysis</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Potentiometer</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Signal visualization</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Mono conversion</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Oscilloscope testing</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Schematic drafting</li>
-          <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Breadboarding</li>
-        </ul>
+        <div class="intro-text-wrap">
+          <p class="intro-text">This system processes audio sources and adjusts them with volume, bass, and treble controls. Bright LED indicators show the audio levels, while a connected speaker plays back your changes instantly. 
+          <br><br>
+          To achieve this, I designed and implemented a five-stage audio processing chain: a summing op-amp mixer, a tone control filter, a volume control stage, an LED-based volume indicator, and a fixed-gain power amplifier. The system accepts a stereo input, converts it to mono, adjusts the tone and volume, shows a real-time visual indication of signal amplitude, and drives a speaker output. Each stage was built using individual components such as op-amps, resistors, capacitors, and transistors, and was individually tested with an oscilloscope before integration into the complete system.</p>
+          <ul class="intro-tags" aria-label="Tags" style="list-style: none; padding: 0; margin: 1.1rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Op‑amp mixing</li>
+            <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Tone filtering</li>
+            <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Frequency analysis</li>
+            <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Potentiometer</li>
+            <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Signal visualization</li>
+            <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Mono conversion</li>
+            <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Oscilloscope testing</li>
+            <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Schematic drafting</li>
+            <li style="padding: 0.35rem 0.7rem; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; line-height: 1;">Breadboarding</li>
+          </ul>
+        </div>
       </div>
 
   <!-- local styles for image formatting in this page only -->
   <style>
+    /* Intro video responsive adjustments */
+    .intro-with-video{position:relative;}
+    .intro-with-video .intro-text-wrap{width:100%;}
+    .intro-with-video .intro-text{margin-top:.25rem; line-height:1.55;}
+    .intro-with-video .intro-video{width:100%; max-width:240px;}
+    /* Larger screens: switch to two-column grid so text keeps natural width */
+    @media (min-width:900px){
+      .intro-with-video{display:grid; grid-template-columns:1fr auto; align-items:start; gap:2.4rem;}
+      .intro-with-video .intro-text-wrap{order:1;}
+      .intro-with-video .intro-video{order:2; margin:0 !important; max-width:240px;}
+      .intro-with-video .intro-video video{width:240px;}
+      .intro-with-video .intro-text{max-width:68ch;}
+    }
+    @media (min-width:1150px){
+      .intro-with-video{gap:2.9rem;}
+      .intro-with-video .intro-video{max-width:260px;}
+      .intro-with-video .intro-video video{width:260px;}
+    }
+    @media (min-width:1400px){
+      .intro-with-video .intro-video{max-width:280px;}
+      .intro-with-video .intro-video video{width:280px;}
+      .intro-with-video .intro-text{max-width:70ch;}
+    }
+    /* Slightly tighten paragraph measure on very wide screens */
+    @media (min-width:1400px){
+      .intro-with-video .intro-text{max-width:62ch;}
+    }
     .amp-fig{margin:1.5rem auto; text-align:center; max-width:900px;}
     .amp-fig figcaption{font-size:.7rem; letter-spacing:.3px; opacity:.7; margin-top:.45rem;}
     .amp-wide{display:block; margin:0 auto; width:100%; max-width:900px; border-radius:14px;}
