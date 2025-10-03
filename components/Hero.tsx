@@ -76,18 +76,25 @@ export default function Hero() {
   }, [prefersReduced])
 
   return (
-  <section ref={sectionRef} aria-label="Intro" className="relative min-h-[100vh] md:min-h-[100svh] overflow-hidden">
-
-      {/* Overlay content */}
-      <div className="relative z-10 mx-auto flex h-[100svh] max-w-6xl flex-col items-center justify-center px-6 text-center">
-        <h1 ref={titleRef} className="mb-4 bg-clip-text text-transparent bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(255,255,255,0.65)_60%,rgba(255,255,255,0.3)_100%)] text-elevate title-glow origin-center will-change-transform">
+    <section
+      ref={sectionRef}
+      aria-label="Intro"
+      className="relative flex min-h-screen items-center justify-center"
+    >
+      <div className="relative z-10 mx-auto max-w-6xl px-6 text-center">
+        <h1
+          ref={titleRef}
+          className="mb-4 bg-clip-text text-transparent bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(255,255,255,0.65)_60%,rgba(255,255,255,0.3)_100%)] text-elevate title-glow origin-center will-change-transform"
+        >
           Samit Madatanapalli
         </h1>
-        <p ref={subRef} className="max-w-3xl text-lg md:text-2xl text-muted will-change-transform">
+        <p
+          ref={subRef}
+          className="max-w-3xl text-lg md:text-2xl text-muted will-change-transform mx-auto"
+        >
           Embedded Engineer at Honeywell
         </p>
       </div>
-
     </section>
   )
 }
