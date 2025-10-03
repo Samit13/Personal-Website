@@ -41,37 +41,42 @@ export default function Hero() {
       })
       .fromTo(
         titleRef.current,
-        { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', immediateRender: false },
-        { scale: 0.68, y: -10, opacity: 0.55, filter: 'brightness(0.1)', ease: 'none' },
+        { scale: 1, y: 0, opacity: 1, immediateRender: false, force3D: false },
+        { scale: 0.7, y: -12, opacity: 0.55, ease: 'none', force3D: false },
         0
       )
       .fromTo(
         subRef.current,
-        { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', immediateRender: false },
-        { scale: 0.74, y: -8, opacity: 0.58, filter: 'brightness(0.2)', ease: 'none' },
+        { scale: 1, y: 0, opacity: 1, immediateRender: false, force3D: false },
+        { scale: 0.78, y: -10, opacity: 0.6, ease: 'none', force3D: false },
         0
       )
 
       // Ensure hero resets to a crisp state whenever we re-enter the top of the page
+      let atTop = false
       const resetHero = () => {
-        gsap.to(titleRef.current, { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', duration: 0.2, overwrite: 'auto' })
-        gsap.to(subRef.current, { scale: 1, y: 0, opacity: 1, filter: 'brightness(1)', duration: 0.2, overwrite: 'auto' })
+        if (atTop) return
+        atTop = true
+        gsap.to([titleRef.current, subRef.current], { scale: 1, y: 0, opacity: 1, duration: 0.25, overwrite: 'auto', force3D: false })
       }
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: 'top top',
         onEnter: resetHero,
         onEnterBack: resetHero,
+        onLeave: () => { atTop = false },
+        onLeaveBack: () => { atTop = false }
       })
 
       // In case the page loads deep-linked (e.g., /#projects), refresh after first paint
-      requestAnimationFrame(() => ScrollTrigger.refresh())
+      // Delay refresh slightly so fonts/images settle (helps prevent jump on Windows)
+      setTimeout(() => ScrollTrigger.refresh(), 180)
     })
     return () => ctx.revert()
   }, [prefersReduced])
 
   return (
-    <section ref={sectionRef} aria-label="Intro" className="relative min-h-[100svh] overflow-hidden">
+  <section ref={sectionRef} aria-label="Intro" className="relative min-h-[100vh] md:min-h-[100svh] overflow-hidden">
 
       {/* Overlay content */}
       <div className="relative z-10 mx-auto flex h-[100svh] max-w-6xl flex-col items-center justify-center px-6 text-center">
