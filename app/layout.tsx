@@ -6,17 +6,18 @@ import Script from 'next/script'
 export const metadata: Metadata = {
   title: 'Samit Madatanapalli — Portfolio',
   description: 'Modern, minimal, scroll-driven portfolio with glossy liquid glass hero.',
-  metadataBase: new URL('http://localhost:3000'),
+  metadataBase: new URL('https://samitm.com'),
   themeColor: '#0b0c0f',
   icons: {
     icon: [
+      { url: '/favicon.ico' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/websiteicon.png', type: 'image/png' }
+      { url: '/favicon-32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/websiteicon.png', type: 'image/png', sizes: '512x512' }
     ],
-    apple: [{ url: '/websiteicon.png', sizes: '180x180', type: 'image/png' }],
-    other: [
-      { rel: 'mask-icon', url: '/favicon.svg', color: '#0b0c0f' }
-    ]
+    apple: [ { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' } ],
+    other: [ { rel: 'mask-icon', url: '/favicon.svg', color: '#0b0c0f' } ]
   }
 }
 
