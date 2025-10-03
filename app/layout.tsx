@@ -6,7 +6,19 @@ import Script from 'next/script'
 export const metadata: Metadata = {
   title: 'Samit Madatanapalli — Portfolio',
   description: 'Modern, minimal, scroll-driven portfolio with glossy liquid glass hero.',
-  metadataBase: new URL('http://localhost:3000')
+  metadataBase: new URL('http://localhost:3000'),
+  themeColor: '#0b0c0f',
+  icons: {
+    icon: [
+      { url: '/websiteicon.png', type: 'image/png', sizes: '512x512' },
+      { url: '/websiteicon.png', type: 'image/png', sizes: '192x192' },
+      { url: '/websiteicon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/websiteicon.png', type: 'image/png', sizes: '16x16' }
+    ],
+    apple: [
+      { url: '/websiteicon.png', sizes: '180x180', type: 'image/png' }
+    ]
+  }
 }
 
 type RootLayoutProps = { children: React.ReactNode }
