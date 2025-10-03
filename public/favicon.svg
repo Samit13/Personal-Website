@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SM monogram">
+  <rect width="512" height="512" rx="104" fill="#0b0c0f"/>
+  <g stroke="#e6e7eb" stroke-width="70" stroke-linecap="square" stroke-linejoin="miter" fill="none">
+    <circle cx="256" cy="256" r="180" stroke-width="72"/>
+    <path d="M256 76v360"/>
+    <path d="M170 420 256 140 342 420"/>
+    <path d="M132 256h248" stroke-width="60"/>
+  </g>
+</svg>

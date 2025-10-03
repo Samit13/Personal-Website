@@ -10,13 +10,12 @@ export const metadata: Metadata = {
   themeColor: '#0b0c0f',
   icons: {
     icon: [
-      { url: '/websiteicon.png', type: 'image/png', sizes: '512x512' },
-      { url: '/websiteicon.png', type: 'image/png', sizes: '192x192' },
-      { url: '/websiteicon.png', type: 'image/png', sizes: '32x32' },
-      { url: '/websiteicon.png', type: 'image/png', sizes: '16x16' }
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/websiteicon.png', type: 'image/png' }
     ],
-    apple: [
-      { url: '/websiteicon.png', sizes: '180x180', type: 'image/png' }
+    apple: [{ url: '/websiteicon.png', sizes: '180x180', type: 'image/png' }],
+    other: [
+      { rel: 'mask-icon', url: '/favicon.svg', color: '#0b0c0f' }
     ]
   }
 }
