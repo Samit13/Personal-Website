@@ -13,34 +13,11 @@ export default function Projects() {
   const router = useRouter()
 
   useEffect(() => {
-    // Prefetch project pages to remove first-click delay
-    PROJECTS.forEach((p) => {
-      try { router.prefetch?.(`/projects/${p.slug}`) } catch {}
-    })
-
-    // Simple one-time fade/raise reveal for cards
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          const el = e.target as HTMLElement
-          if (e.isIntersecting) {
-            el.setAttribute('data-inview', 'true')
-            io.unobserve(el)
-          }
-        }
-      },
-      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
-    )
-
-    if (prefersReduced) {
-      // Reveal immediately without animation
-      cardsRef.current.forEach((el) => el?.setAttribute('data-inview', 'true'))
-      return
-    }
-
-    cardsRef.current.forEach((el) => { if (el) io.observe(el) })
-    return () => io.disconnect()
-  }, [prefersReduced, router])
+    // Prefetch project pages (still keeps snappy navigation)
+    PROJECTS.forEach((p) => { try { router.prefetch?.(`/projects/${p.slug}`) } catch {} })
+    // Immediately mark all cards in view (no intersection observer / animations)
+    cardsRef.current.forEach((el) => el?.setAttribute('data-inview', 'true'))
+  }, [router])
 
   // No custom click interception; use standard navigation to full page
 
@@ -56,8 +33,7 @@ export default function Projects() {
             ref={(el) => { if (el) (cardsRef.current[i] = el as unknown as HTMLAnchorElement) }}
             onMouseEnter={() => { try { router.prefetch?.(`/projects/${p.slug}`) } catch {} }}
             onFocus={() => { try { router.prefetch?.(`/projects/${p.slug}`) } catch {} }}
-            className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-fg/30 rounded-2xl overflow-hidden glass hover-highlight card-fadeup will-change-transform"
-            style={{ ['--c-delay' as any]: `${Math.min(i, 5) * 60}ms` }}
+            className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-fg/30 rounded-2xl overflow-hidden glass hover-highlight"
             aria-label={`${p.title}`}
           >
             {/* Removed ViewTransition wrapper for plain navigation */}
@@ -71,9 +47,9 @@ export default function Projects() {
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.18),transparent_65%)]" aria-hidden />
                 </div>
               ) : p.cardImage ? (
-                <img src={p.cardImage} alt="" className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform" loading={i < 3 ? 'eager' : 'lazy'} decoding="async" />
+                <img src={p.cardImage} alt="" className="h-full w-full object-cover" loading={i < 3 ? 'eager' : 'lazy'} decoding="async" />
               ) : (
-                <div className="h-full w-full bg-gradient-to-br from-white/10 to-white/0 group-hover:scale-[1.02] transition-transform" />
+                <div className="h-full w-full bg-gradient-to-br from-white/10 to-white/0" />
               )}
             </div>
             <div className="p-5">
