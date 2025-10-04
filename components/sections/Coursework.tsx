@@ -239,6 +239,55 @@ export default function Coursework() {
     })
   }, [filter])
 
+  // Scroll-triggered (re)reveal: animate cards every time section re-enters viewport
+  useEffect(() => {
+    if (prefersReduced) return
+    const section = sectionRef.current
+    const stage = stageRef.current
+    if (!section || !stage) return
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.target !== section) continue
+        if (e.isIntersecting) {
+          const cards = Array.from(stage.querySelectorAll<HTMLElement>('[data-ac-card]'))
+            .filter(c => !c.hasAttribute('data-revealed'))
+          if (cards.length) {
+            gsap.fromTo(cards, {
+              opacity: 0,
+              y: 28,
+              scale: 0.96,
+              filter: 'blur(6px)'
+            }, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              filter: 'blur(0px)',
+              duration: 0.6,
+              ease: 'power3.out',
+              stagger: 0.07,
+              onComplete: () => {
+                cards.forEach(c => c.setAttribute('data-revealed', 'true'))
+              }
+            })
+          }
+        } else {
+          // Fully out of view? reset so it can replay
+          if (e.intersectionRatio === 0) {
+            const cards = stage.querySelectorAll<HTMLElement>('[data-ac-card][data-revealed]')
+            cards.forEach(c => {
+              c.removeAttribute('data-revealed')
+              c.style.removeProperty('opacity')
+              c.style.removeProperty('transform')
+              c.style.removeProperty('filter')
+            })
+          }
+        }
+      }
+    }, { threshold: [0, 0.25] })
+    io.observe(section)
+    return () => io.disconnect()
+  }, [prefersReduced, filter])
+
   return (
     <section ref={sectionRef} id="coursework" aria-labelledby="coursework-title" className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">

@@ -59,7 +59,6 @@ export default function About() {
     { label: 'Driving', icon: '🛞' },
     { label: 'Gym', icon: '🏋️' },
     { label: 'Frisbee', icon: '🥏' },
-    { label: "Rubik's Cube", icon: '🧩' },
     { label: 'Physics', icon: '⚛️' },
     { label: 'Investing', icon: '📈' },
     { label: 'Technology', icon: '🤖' },

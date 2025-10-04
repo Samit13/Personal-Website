@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -14,33 +14,61 @@ export default function Projects() {
 
   useEffect(() => {
     // Prefetch project pages to remove first-click delay
-    PROJECTS.forEach((p) => {
-      try { router.prefetch?.(`/projects/${p.slug}`) } catch {}
-    })
+    PROJECTS.forEach((p) => { try { router.prefetch?.(`/projects/${p.slug}`) } catch {} })
 
-    // Simple one-time fade/raise reveal for cards
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           const el = e.target as HTMLElement
           if (e.isIntersecting) {
+            // Enter viewport: trigger animation
             el.setAttribute('data-inview', 'true')
-            io.unobserve(el)
+          } else {
+            // Fully out of view (intersectionRatio 0) -> reset so animation can replay next time
+            if (e.intersectionRatio === 0) {
+              el.removeAttribute('data-inview')
+              el.removeAttribute('data-hovering')
+              el.style.removeProperty('--rx')
+              el.style.removeProperty('--ry')
+            }
           }
         }
       },
-      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
+      { threshold: [0, 0.25], rootMargin: '0px 0px -10% 0px' }
     )
 
     if (prefersReduced) {
-      // Reveal immediately without animation
       cardsRef.current.forEach((el) => el?.setAttribute('data-inview', 'true'))
       return
     }
-
-    cardsRef.current.forEach((el) => { if (el) io.observe(el) })
+  cardsRef.current.forEach((el) => { if (el) io.observe(el) })
     return () => io.disconnect()
   }, [prefersReduced, router])
+
+  // Interactive tilt (mousemove -> CSS vars). Debounced via rAF.
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLAnchorElement>) => {
+    const el = e.currentTarget
+    const rect = el.getBoundingClientRect()
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    const dx = (e.clientX - cx) / (rect.width / 2) // -1 .. 1
+    const dy = (e.clientY - cy) / (rect.height / 2)
+    const maxTilt = 8 // deg
+    const rx = (dy * -maxTilt).toFixed(2) + 'deg'
+    const ry = (dx * maxTilt).toFixed(2) + 'deg'
+    el.style.setProperty('--rx', rx)
+    el.style.setProperty('--ry', ry)
+  }, [])
+
+  const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLAnchorElement>) => {
+    e.currentTarget.setAttribute('data-hovering', 'true')
+  }, [])
+  const handlePointerLeave = useCallback((e: React.PointerEvent<HTMLAnchorElement>) => {
+    const el = e.currentTarget
+    el.removeAttribute('data-hovering')
+    el.style.removeProperty('--rx')
+    el.style.removeProperty('--ry')
+  }, [])
 
   // No custom click interception; use standard navigation to full page
 
@@ -56,8 +84,11 @@ export default function Projects() {
             ref={(el) => { if (el) (cardsRef.current[i] = el as unknown as HTMLAnchorElement) }}
             onMouseEnter={() => { try { router.prefetch?.(`/projects/${p.slug}`) } catch {} }}
             onFocus={() => { try { router.prefetch?.(`/projects/${p.slug}`) } catch {} }}
-            className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-fg/30 rounded-2xl overflow-hidden glass hover-highlight card-fadeup will-change-transform"
-            style={{ ['--c-delay' as any]: `${Math.min(i, 5) * 60}ms` }}
+            className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-fg/30 rounded-2xl overflow-hidden glass hover-highlight project-card-anim"
+            style={{ ['--enter-delay' as any]: `${Math.min(i, 8) * 70}ms` }}
+            onPointerMove={handlePointerMove}
+            onPointerEnter={handlePointerEnter}
+            onPointerLeave={handlePointerLeave}
             aria-label={`${p.title}`}
           >
             {/* Removed ViewTransition wrapper for plain navigation */}

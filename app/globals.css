@@ -335,6 +335,53 @@ li[data-inview="true"] .timeline-dot {
     transform: translateY(0) scale(1);
   }
 
+  /* Enhanced project card animation (springy entrance + 3D hover tilt) */
+  .project-card-anim {
+    --enter-delay: 0ms;
+    --rx: 0deg; /* runtime hover rotateX */
+    --ry: 0deg; /* runtime hover rotateY */
+    --hover-scale: 1.015;
+    opacity: 0;
+    filter: blur(8px) saturate(0.85);
+    transform: translateY(28px) scale(0.92) rotateX(6deg);
+    transform-style: preserve-3d;
+    transition:
+      opacity 620ms cubic-bezier(.16,1,.3,1) var(--enter-delay),
+      filter 680ms ease var(--enter-delay),
+      transform 940ms cubic-bezier(.22,1.12,.34,1) var(--enter-delay),
+      box-shadow 260ms ease,
+      background-color 260ms ease;
+    will-change: transform, filter, opacity;
+    perspective: 1200px;
+  }
+  .project-card-anim[data-inview="true"] {
+    opacity: 1;
+    filter: blur(0) saturate(1);
+    transform: translateY(0) scale(1) rotateX(0deg) rotateY(0deg);
+  }
+  /* When hovering (JS sets data-hovering and rotation vars) */
+  .project-card-anim[data-hovering="true"] {
+    transform:
+      translateY(-2px)
+      scale(var(--hover-scale))
+      rotateX(var(--rx))
+      rotateY(var(--ry));
+    transition-duration: 340ms, 420ms, 520ms; /* allow snappier response post-enter */
+  }
+  /* Academic card reveal utility (JS sets inline styles, this keeps consistent timing if needed) */
+  .ac-card-reveal {
+    will-change: transform, opacity, filter;
+    transition: opacity 480ms ease, transform 640ms cubic-bezier(.16,1,.3,1), filter 520ms ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .project-card-anim, .project-card-anim[data-inview="true"], .project-card-anim[data-hovering="true"] {
+      transition: none !important;
+      filter: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+  }
+
 /* Hover shine */
 .hover-shine { position: relative; overflow: hidden; }
 .hover-shine::after {
