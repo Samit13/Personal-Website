@@ -435,7 +435,7 @@ std::string YourProposalFunction(
     slug: 'pipelined-mips-cpu-5-stage',
     title: 'Pipelined MIPS CPU (5‑stage)',
     description: 'A 32‑bit pipelined MIPS processor with hazards resolved via forwarding & stalls.',
-    course: 'ECE 350',
+    course: 'CMPEN 331',
     term: 'Fall 2024',
     location: 'State College, PA',
     hero: {
@@ -591,8 +591,8 @@ std::string YourProposalFunction(
     slug: 'audio-amplifier-circuit',
     title: 'Audio Amplifier Circuit',
   description: 'Audio amplifier with treble, bass and volume control',
-    term: 'Fall 2024',
-    location: 'State College, PA',
+    term: 'EE210 Fall 2024',
+    location: 'Erie, PA',
     contentHtml: `
       <h2 id="introduction">Introduction</h2>
       <div class="intro-with-video" style="overflow:hidden;">
@@ -1033,11 +1033,11 @@ std::string YourProposalFunction(
   },
   {
     kind: 'assignment',
-    slug: 'allocator-from-scratch',
-    title: 'Allocator from Scratch',
-    description: 'Buddy allocator in C with coalescing; unit tests and perf harness.',
-    course: 'CS 341 (OS)',
-    term: 'Fall 2024',
+    slug: 'IN PROGRESS',
+    title: 'IN PROGRESS',
+    description: '...',
+    course: ' ',
+    term: ' ',
     link: '#'
   },
   
