@@ -11,13 +11,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://samitm.com'
   const now = new Date().toISOString()
 
+  // Only include routes that actually exist to avoid Google reporting fetch errors for 404s
   const staticPages: MetadataRoute.Sitemap = [
-    '',
-    '/projects',
-    '/experience',
-    '/coursework',
+    '/',
     '/ai-fitness-tracker'
-  ].map(p => ({ url: `${base}${p}`, lastModified: now, changeFrequency: 'weekly', priority: p === '' ? 1 : 0.6 }))
+  ].map(p => ({ url: `${base}${p === '/' ? '' : p}`, lastModified: now, changeFrequency: 'weekly', priority: p === '/' ? 1 : 0.6 }))
 
   const projectPages: MetadataRoute.Sitemap = PROJECTS.map(p => ({
     url: `${base}/projects/${p.slug}`,
