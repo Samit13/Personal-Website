@@ -4,7 +4,7 @@ import GlobalBackground from '@/components/GlobalBackground'
 import Script from 'next/script'
 
 export const metadata: Metadata = {
-  title: 'Samit Madatanapalli — Embedded Engineer Portfolio',
+  title: 'Samit Madatanapalli — Portfolio',
   description: 'Portfolio of Samit Madatanapalli – Embedded Engineer (Honeywell) showcasing projects in embedded systems, drones, computer architecture, data systems, and full‑stack applications.',
   metadataBase: new URL('https://samitm.com'),
   alternates: { canonical: 'https://samitm.com/' },

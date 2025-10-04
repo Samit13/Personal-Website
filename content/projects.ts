@@ -57,8 +57,8 @@ export type Project = {
 export const PROJECTS: Project[] = [
   // 2025 – 2026
   {
-    slug: 'esotaira-omnidemensial-drone',
-    title: 'Esotaira Omnidemensial Drone',
+    slug: 'esotaira-omnidirectional-drone',
+    title: 'Esotaira Omnidirectional Drone',
     desc: 'Experimental multi-axis drone platform with custom control firmware and advanced stabilization.',
   time: '2025 – 2026',
     location: 'Capstone / Research – State College, PA',
