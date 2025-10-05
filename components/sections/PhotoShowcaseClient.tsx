@@ -78,17 +78,21 @@ export default function PhotoShowcaseClient({ data }: Props) {
     const clone = cloneRef.current
     if (!wrap || !batch || !clone) return
 
-  let raf = 0
-  let last = performance.now()
-  let offset = 0
-  let resumeAt = 0 // timestamp after which auto-scroll resumes
-  let lastTouchY: number | null = null
-  const SPEED = 16 // px/sec upward (slightly increased speed)
+    let raf = 0
+    let last = performance.now()
+    let offset = 0
+    let resumeAt = 0 // when we allow auto velocity to take back over
+    const BASE_SPEED = 16 // px/sec upward target auto speed
+    let velocity = -BASE_SPEED // negative because content moves up
+    let dragging = false
+
+    // Touch momentum tracking
+    type PosSample = { t: number; y: number }
+    let samples: PosSample[] = []
+    let lastPointerY: number | null = null
 
     const measure = () => batch.getBoundingClientRect().height
     let batchHeight = measure()
-    // We maintain an integer version of the height to avoid cumulative
-    // sub‑pixel translation seams between the primary batch and its clone.
     let batchHeightInt = Math.round(batchHeight)
     const resizeObserver = new ResizeObserver(() => {
       batchHeight = measure()
@@ -96,14 +100,7 @@ export default function PhotoShowcaseClient({ data }: Props) {
     })
     resizeObserver.observe(batch)
 
-    // Apply transforms. We snap to whole pixels to avoid a faint 1px horizontal seam
-    // that can appear on iOS Safari when two large translated layers abut with
-    // sub‑pixel fractional values (the black "thin bar" you observed). Rounding
-    // removes the gap. We also use translate3d to promote to its own layer.
     const applyTransforms = () => {
-      // Keep subpixel precision for smoothness; rounding caused visible jitter because
-      // frame deltas (<0.5px) accumulated then jumped. We instead maintain full float
-      // precision and rely on a small overlap to mask any seam.
       const overlap = 0.5
       const y = offset
       batch.style.transform = `translate3d(0, ${y}px, 0)`
@@ -111,58 +108,101 @@ export default function PhotoShowcaseClient({ data }: Props) {
     }
 
     const normalize = () => {
-      if (Math.abs(offset) >= batchHeightInt) {
+      if (offset <= -batchHeightInt) {
         offset += batchHeightInt
-      }
-      if (offset > 0) {
+      } else if (offset >= 0) {
         offset -= batchHeightInt
       }
     }
 
     const step = (now: number) => {
-      // Clamp dt to avoid large jumps after tab inactivity
       const dtRaw = (now - last) / 1000
-      const dt = Math.min(dtRaw, 1/30) // max ~33ms logical step
+      const dt = Math.min(dtRaw, 1/60 * 4) // allow up to ~4 frames skip before clamp
       last = now
-      if (now >= resumeAt) {
-        offset -= SPEED * dt
-        normalize()
-        applyTransforms()
+
+      if (!dragging) {
+        if (now >= resumeAt) {
+          // Smoothly converge velocity back to base speed
+            velocity += (-BASE_SPEED - velocity) * Math.min(dt * 2.5, 1)
+        } else {
+          // During pause after interaction, slowly decay any residual velocity
+          velocity *= (1 - Math.min(dt * 4, 1))
+        }
       }
+
+      // Apply velocity integration
+      offset += velocity * dt
+      normalize()
+      applyTransforms()
+
+      // Friction when not in auto-speed (i.e., user momentum phase)
+      if (!dragging && now < resumeAt) {
+        velocity *= 0.94 // friction curve
+        if (Math.abs(velocity + BASE_SPEED) < 0.15 && now >= resumeAt) {
+          velocity = -BASE_SPEED
+        }
+      }
+
       raf = requestAnimationFrame(step)
     }
     raf = requestAnimationFrame(step)
 
-    // --- User Interaction (Wheel) ---
+    const pauseAuto = () => {
+      resumeAt = performance.now() + 2600 // shorter pause for snappier feel
+    }
+
+    // Wheel (desktop / trackpad)
     const onWheel = (e: WheelEvent) => {
       e.preventDefault()
-      const now = performance.now()
-      resumeAt = now + 3000 // pause auto for 3s after interaction
+      pauseAuto()
+      dragging = true
+      velocity = 0
       offset -= e.deltaY
-      normalize()
-      applyTransforms()
+      normalize(); applyTransforms()
+      dragging = false
     }
     wrap.addEventListener('wheel', onWheel, { passive: false })
 
-    // --- Touch (Mobile) ---
+    // Touch (momentum)
     const onTouchStart = (e: TouchEvent) => {
-      const now = performance.now()
-      resumeAt = now + 3000
-      lastTouchY = e.touches[0].clientY
+      pauseAuto()
+      dragging = true
+      velocity = 0
+      samples = []
+      lastPointerY = e.touches[0].clientY
+      samples.push({ t: performance.now(), y: lastPointerY })
     }
     const onTouchMove = (e: TouchEvent) => {
-      if (lastTouchY == null) return
+      if (!dragging || lastPointerY == null) return
       e.preventDefault()
       const y = e.touches[0].clientY
-      const dy = y - lastTouchY
-      lastTouchY = y
+      const dy = y - lastPointerY
+      lastPointerY = y
+      offset += dy
+      normalize(); applyTransforms()
       const now = performance.now()
-      resumeAt = now + 3000
-      offset += dy // finger direction mirrors content direction for familiarity
-      normalize()
-      applyTransforms()
+      samples.push({ t: now, y })
+      if (samples.length > 6) samples.shift()
     }
-    const onTouchEnd = () => { lastTouchY = null }
+    const onTouchEnd = () => {
+      if (!dragging) return
+      dragging = false
+      const now = performance.now()
+      // Compute velocity from oldest vs newest sample (avoid noise)
+      if (samples.length >= 2) {
+        const first = samples[0]
+        const lastS = samples[samples.length - 1]
+        const dt = (lastS.t - first.t) / 1000
+        if (dt > 0) {
+          const vy = (lastS.y - first.y) / dt // px/sec, positive if finger moved down
+          // Content moves opposite finger: invert
+          velocity = -vy
+          // Clamp extreme flings
+          velocity = Math.max(Math.min(velocity, 250), -250)
+        }
+      }
+      // Let momentum play out until resumeAt triggers auto convergence
+    }
     wrap.addEventListener('touchstart', onTouchStart, { passive: false })
     wrap.addEventListener('touchmove', onTouchMove, { passive: false })
     wrap.addEventListener('touchend', onTouchEnd)
