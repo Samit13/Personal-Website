@@ -101,11 +101,13 @@ export default function PhotoShowcaseClient({ data }: Props) {
     // sub‑pixel fractional values (the black "thin bar" you observed). Rounding
     // removes the gap. We also use translate3d to promote to its own layer.
     const applyTransforms = () => {
-      const snapped = Math.round(offset)
-      // slight -0.5px overlap hides any residual aliasing line at the join
+      // Keep subpixel precision for smoothness; rounding caused visible jitter because
+      // frame deltas (<0.5px) accumulated then jumped. We instead maintain full float
+      // precision and rely on a small overlap to mask any seam.
       const overlap = 0.5
-      batch.style.transform = `translate3d(0, ${snapped}px, 0)`
-      clone.style.transform = `translate3d(0, ${snapped + batchHeightInt - overlap}px, 0)`
+      const y = offset
+      batch.style.transform = `translate3d(0, ${y}px, 0)`
+      clone.style.transform = `translate3d(0, ${y + batchHeightInt - overlap}px, 0)`
     }
 
     const normalize = () => {
@@ -118,7 +120,9 @@ export default function PhotoShowcaseClient({ data }: Props) {
     }
 
     const step = (now: number) => {
-      const dt = (now - last) / 1000
+      // Clamp dt to avoid large jumps after tab inactivity
+      const dtRaw = (now - last) / 1000
+      const dt = Math.min(dtRaw, 1/30) // max ~33ms logical step
       last = now
       if (now >= resumeAt) {
         offset -= SPEED * dt
