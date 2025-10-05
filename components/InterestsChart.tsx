@@ -8,23 +8,15 @@ type Props = { items: Interest[] }
 
 export default function InterestsChart({ items }: Props) {
   const prefersReduced = useReducedMotion()
-  const [compact, setCompact] = useState(false)
-
-  // Detect small viewport once on mount for mobile sizing (avoids SSR mismatch by defaulting to non-compact first)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const check = () => setCompact(window.innerWidth < 480)
-      check()
-      window.addEventListener('resize', check)
-      return () => window.removeEventListener('resize', check)
-    }
-  }, [])
   const ref = useRef<HTMLDivElement>(null)
+  const [compact, setCompact] = useState(false)
+  useEffect(() => {
+    const onResize = () => setCompact(window.innerWidth < 480)
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
-  /**
-   * 1. Assign relative visual weights (bigger bubbles) — tweak here.
-   * 2. Derive actual pixel diameters (these get normalized to the container).
-   */
   const sized = useMemo(() => {
     const weightMap: Record<string, number> = {
       Photography: 1.25,
@@ -33,7 +25,7 @@ export default function InterestsChart({ items }: Props) {
       'Embedded Systems': 1.35,
       Gym: 1.05,
     }
-    const baseSizes = compact ? { min: 56, max: 108 } : { min: 70, max: 130 }
+    const baseSizes = compact ? { min: 54, max: 100 } : { min: 70, max: 130 }
     return items.map((it, i) => {
       const w = weightMap[it.label] ?? 1
       const norm = Math.min(1, Math.max(0, (w - 0.8) / (1.4 - 0.8)))
@@ -42,114 +34,73 @@ export default function InterestsChart({ items }: Props) {
     })
   }, [items, compact])
 
-  /**
-   * Circle packing (lightweight force-based) to fill container.
-   * Steps:
-   *  - Assign provisional radii from size
-   *  - Initial polar distribution using golden angle spiral
-   *  - Iteratively resolve overlaps (repulsion) & recentre
-   *  - Normalize scale to fit ~92% of container diameter
-   */
   const positioned = useMemo(() => {
-    if (!sized.length) return [] as any[]
-    type Node = { label: string; icon: string; size: number; delay: number; r: number; x: number; y: number }
-    const itemsWithRadius: Node[] = sized.map(s => ({ ...s, r: s.size / 2, x: 0, y: 0 }))
+    if (!sized.length) return []
+  const gap = compact ? 14 : 6 // tighter desktop gap, keep mobile spacing
+    const circles = [...sized]
+      .map(s => ({ ...s, r: s.size / 2 }))
+      .sort((a, b) => b.r - a.r) // largest first
 
-    // Base coordinate space: unit square we later map; treat container radius = 1
-    const n = itemsWithRadius.length
-    const phi = Math.PI * (3 - Math.sqrt(5)) // golden angle
-    itemsWithRadius.forEach((node, i) => {
-      const t = i + 1
-      const r = 0.15 + 0.85 * (t / n) // radial progression
-      const angle = t * phi
-      node.x = r * Math.cos(angle)
-      node.y = r * Math.sin(angle)
-    })
+    interface Placed { label: string; icon: string; size: number; delay: number; r: number; x: number; y: number }
+    const placed: Placed[] = []
 
-  const ITER = 340
-    for (let it = 0; it < ITER; it++) {
-      // Pairwise separation
-      for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-          const a = itemsWithRadius[i]
-          const b = itemsWithRadius[j]
-            ;
-          const dx = b.x - a.x
-          const dy = b.y - a.y
-          const dist = Math.hypot(dx, dy) || 1e-6
-          // Increase separation slightly (especially on mobile) by reducing divisor -> larger minDist
-          const sepDiv = compact ? 210 : 250
-          const minDist = (a.r + b.r) / sepDiv
-          if (dist < minDist) {
-            const overlap = (minDist - dist) * 0.5
-            const ux = dx / dist
-            const uy = dy / dist
-            a.x -= ux * overlap
-            a.y -= uy * overlap
-            b.x += ux * overlap
-            b.y += uy * overlap
+    const fits = (x: number, y: number, r: number) => {
+      for (const p of placed) {
+        const dx = x - p.x
+        const dy = y - p.y
+        const need = r + p.r + gap
+        if (dx * dx + dy * dy < need * need) return false
+      }
+      return true
+    }
+
+    // Spiral search for each circle
+    const maxRadius = 500 // virtual coordinate space; will normalize later
+    for (const c of circles) {
+      if (placed.length === 0) {
+        placed.push({ ...c, x: 0, y: 0 })
+        continue
+      }
+      let placedFlag = false
+      const stepR = Math.max(4, c.r * 0.35)
+      for (let R = 0; R <= maxRadius && !placedFlag; R += stepR) {
+        const circumference = 2 * Math.PI * (R || 1)
+        const steps = Math.max(8, Math.ceil(circumference / Math.max(8, c.r * 0.9)))
+        for (let i = 0; i < steps; i++) {
+          const theta = (i / steps) * Math.PI * 2
+          const x = R * Math.cos(theta)
+          const y = R * Math.sin(theta)
+          if (fits(x, y, c.r)) {
+            placed.push({ ...c, x, y })
+            placedFlag = true
+            break
           }
         }
       }
-      // Gentle attraction towards center to keep cluster tight
-      itemsWithRadius.forEach(nod => {
-        nod.x *= 0.994
-        nod.y *= 0.994
-      })
+      if (!placedFlag) {
+        // Fallback: place far outside (should rarely happen)
+        placed.push({ ...c, x: maxRadius, y: 0 })
+      }
     }
 
-    // Additional post-pass to enforce a stricter minimum distance (final polish especially for very small screens)
-    const targetDiv = compact ? 195 : 235
-    for (let pass = 0; pass < 60; pass++) {
-      let adjusted = false
-      for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-          const a = itemsWithRadius[i]
-          const b = itemsWithRadius[j]
-          const dx = b.x - a.x
-          const dy = b.y - a.y
-          let dist = Math.hypot(dx, dy) || 1e-6
-          const req = (a.r + b.r) / targetDiv
-          if (dist < req) {
-            adjusted = true
-            const push = (req - dist) * 0.55
-            const ux = dx / dist
-            const uy = dy / dist
-            a.x -= ux * push
-            a.y -= uy * push
-            b.x += ux * push
-            b.y += uy * push
-            dist = req
-          }
-        }
-      }
-      // Light re-centering to keep cluster balanced after pushes
-      if (!adjusted) break
-      itemsWithRadius.forEach(nod => {
-        nod.x *= 0.997
-        nod.y *= 0.997
-      })
+    // Normalize positions to fit inside square with padding
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity
+    for (const p of placed) {
+      minX = Math.min(minX, p.x - p.r)
+      maxX = Math.max(maxX, p.x + p.r)
+      minY = Math.min(minY, p.y - p.r)
+      maxY = Math.max(maxY, p.y + p.r)
     }
-
-    let maxR = 0
-    itemsWithRadius.forEach(nod => {
-      const d = Math.hypot(nod.x, nod.y) + nod.r / 300
-      if (d > maxR) maxR = d
-    })
-  // Slightly reduce scale on very small screens to further separate bubbles
-  const scaleBase = 0.95
-  const scale = (compact ? scaleBase * 0.80 : scaleBase * 0.92) / maxR
-    const placed = itemsWithRadius.map(nod => {
-      const x = nod.x * scale
-      const y = nod.y * scale
-      return {
-        ...nod,
-        left: `${50 + x * 50}%`,
-        top: `${50 + y * 50}%`,
-      }
-    })
-    return placed
-  }, [sized])
+    const width = maxX - minX
+    const height = maxY - minY
+    const box = Math.max(width, height)
+  const pad = (compact ? 0.04 : 0.015) * box // less outer padding on desktop to tighten cluster
+    return placed.map(p => ({
+      ...p,
+      left: `${((p.x - minX + (box - width) / 2) / (box + pad * 2)) * 100}%`,
+      top: `${((p.y - minY + (box - height) / 2) / (box + pad * 2)) * 100}%`
+    }))
+  }, [sized, compact])
 
   useEffect(() => {
     if (prefersReduced) return
