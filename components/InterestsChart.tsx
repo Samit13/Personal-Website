@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 type Interest = { label: string; icon: string }
@@ -8,6 +8,17 @@ type Props = { items: Interest[] }
 
 export default function InterestsChart({ items }: Props) {
   const prefersReduced = useReducedMotion()
+  const [compact, setCompact] = useState(false)
+
+  // Detect small viewport once on mount for mobile sizing (avoids SSR mismatch by defaulting to non-compact first)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const check = () => setCompact(window.innerWidth < 480)
+      check()
+      window.addEventListener('resize', check)
+      return () => window.removeEventListener('resize', check)
+    }
+  }, [])
   const ref = useRef<HTMLDivElement>(null)
 
   /**
@@ -22,14 +33,14 @@ export default function InterestsChart({ items }: Props) {
       'Embedded Systems': 1.35,
       Gym: 1.05,
     }
-    const baseSizes = { min: 70, max: 130 }
+    const baseSizes = compact ? { min: 56, max: 108 } : { min: 70, max: 130 }
     return items.map((it, i) => {
       const w = weightMap[it.label] ?? 1
       const norm = Math.min(1, Math.max(0, (w - 0.8) / (1.4 - 0.8)))
       const size = baseSizes.min + (baseSizes.max - baseSizes.min) * norm
       return { ...it, size: Math.round(size), delay: (i % 6) * 0.16 }
     })
-  }, [items])
+  }, [items, compact])
 
   /**
    * Circle packing (lightweight force-based) to fill container.
@@ -90,7 +101,9 @@ export default function InterestsChart({ items }: Props) {
       const d = Math.hypot(nod.x, nod.y) + nod.r / 300
       if (d > maxR) maxR = d
     })
-    const scale = 0.98 / maxR
+  // Slightly reduce scale on very small screens to further separate bubbles
+  const scaleBase = 0.98
+  const scale = (compact ? scaleBase * 0.9 : scaleBase) / maxR
     const placed = itemsWithRadius.map(nod => {
       const x = nod.x * scale
       const y = nod.y * scale

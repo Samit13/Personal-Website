@@ -184,7 +184,7 @@ export default function PhotoShowcaseClient({ data }: Props) {
               aria-label="Open photo"
               onClick={() => open(src)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(src) } }}
-              className="relative overflow-hidden rounded-xl ring-1 ring-white/10 hover:ring-white/25 focus:outline-none focus:ring-2 focus:ring-white/40 cursor-zoom-in group">
+              className="relative overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-white/40 cursor-zoom-in group">
               <img
                 src={src}
                 alt="Photo"
@@ -203,7 +203,7 @@ export default function PhotoShowcaseClient({ data }: Props) {
 
   return (
     <div ref={rootRef} className="relative">
-  <div className="relative overflow-hidden rounded-2xl ring-1 ring-white/10 backdrop-blur-sm h-[70vh] md:h-[78vh]">
+  <div className="relative overflow-hidden rounded-2xl backdrop-blur-sm h-[70vh] md:h-[78vh]">
         {/* Top fade */}
         <div className="pointer-events-none absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black via-black/60 to-transparent z-20" />
         {/* Bottom fade */}
@@ -220,14 +220,14 @@ export default function PhotoShowcaseClient({ data }: Props) {
     </div>
       {/* Lightbox */}
       {lightboxIndex != null && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true">
+        <div
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => { if (e.target === e.currentTarget) close() }}
+        >
           <button
-            onClick={close}
-            aria-label="Close"
-            className="absolute top-4 right-4 text-white/70 hover:text-white text-xl"
-          >✕</button>
-          <button
-            onClick={() => goto(-1)}
+            onClick={(e) => { e.stopPropagation(); goto(-1) }}
             aria-label="Previous"
             className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-3xl select-none"
           >‹</button>
@@ -236,9 +236,10 @@ export default function PhotoShowcaseClient({ data }: Props) {
             alt="Enlarged view"
             className="max-h-[80vh] max-w-[90vw] object-contain rounded-lg shadow-lg shadow-black/50"
             draggable={false}
+            onClick={(e) => e.stopPropagation()}
           />
           <button
-            onClick={() => goto(1)}
+            onClick={(e) => { e.stopPropagation(); goto(1) }}
             aria-label="Next"
             className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-3xl select-none"
           >›</button>

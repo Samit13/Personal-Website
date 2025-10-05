@@ -157,11 +157,11 @@ export default function Experience() {
                           })()}
                         </span>
                       </h3>
-                      <div className="flex flex-col items-end text-right">
+                      <div className="flex flex-col items-start sm:items-end text-left sm:text-right min-w-[110px]">
                         {job.location ? (
-                          <span className="text-xs md:text-sm text-white/60 whitespace-nowrap leading-snug">{job.location}</span>
+                          <span className="text-[0.7rem] md:text-sm text-white/60 whitespace-nowrap leading-snug">{job.location}</span>
                         ) : null}
-                        <span className="text-xs md:text-sm text-muted whitespace-nowrap mt-0.5">{job.time}</span>
+                        <span className="text-[0.7rem] md:text-sm text-muted whitespace-nowrap mt-0.5">{job.time}</span>
                       </div>
                     </div>
                     <div className="pointer-events-none max-h-0 opacity-0 translate-y-1 overflow-hidden transition-all duration-300 ease-out group-hover:max-h-40 group-hover:opacity-100 group-hover:translate-y-0">
