@@ -87,8 +87,12 @@ export default function PhotoShowcaseClient({ data }: Props) {
 
     const measure = () => batch.getBoundingClientRect().height
     let batchHeight = measure()
+    // We maintain an integer version of the height to avoid cumulative
+    // sub‑pixel translation seams between the primary batch and its clone.
+    let batchHeightInt = Math.round(batchHeight)
     const resizeObserver = new ResizeObserver(() => {
       batchHeight = measure()
+      batchHeightInt = Math.round(batchHeight)
     })
     resizeObserver.observe(batch)
 
@@ -98,16 +102,18 @@ export default function PhotoShowcaseClient({ data }: Props) {
     // removes the gap. We also use translate3d to promote to its own layer.
     const applyTransforms = () => {
       const snapped = Math.round(offset)
+      // slight -0.5px overlap hides any residual aliasing line at the join
+      const overlap = 0.5
       batch.style.transform = `translate3d(0, ${snapped}px, 0)`
-      clone.style.transform = `translate3d(0, ${snapped + batchHeight}px, 0)`
+      clone.style.transform = `translate3d(0, ${snapped + batchHeightInt - overlap}px, 0)`
     }
 
     const normalize = () => {
-      if (Math.abs(offset) >= batchHeight) {
-        offset += batchHeight
+      if (Math.abs(offset) >= batchHeightInt) {
+        offset += batchHeightInt
       }
       if (offset > 0) {
-        offset -= batchHeight
+        offset -= batchHeightInt
       }
     }
 
