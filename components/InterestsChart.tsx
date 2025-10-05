@@ -66,7 +66,7 @@ export default function InterestsChart({ items }: Props) {
       node.y = r * Math.sin(angle)
     })
 
-  const ITER = 320
+  const ITER = 340
     for (let it = 0; it < ITER; it++) {
       // Pairwise separation
       for (let i = 0; i < n; i++) {
@@ -78,7 +78,7 @@ export default function InterestsChart({ items }: Props) {
           const dy = b.y - a.y
           const dist = Math.hypot(dx, dy) || 1e-6
           // Increase separation slightly (especially on mobile) by reducing divisor -> larger minDist
-          const sepDiv = compact ? 260 : 280
+          const sepDiv = compact ? 210 : 250
           const minDist = (a.r + b.r) / sepDiv
           if (dist < minDist) {
             const overlap = (minDist - dist) * 0.5
@@ -93,8 +93,41 @@ export default function InterestsChart({ items }: Props) {
       }
       // Gentle attraction towards center to keep cluster tight
       itemsWithRadius.forEach(nod => {
-        nod.x *= 0.993
-        nod.y *= 0.993
+        nod.x *= 0.994
+        nod.y *= 0.994
+      })
+    }
+
+    // Additional post-pass to enforce a stricter minimum distance (final polish especially for very small screens)
+    const targetDiv = compact ? 195 : 235
+    for (let pass = 0; pass < 60; pass++) {
+      let adjusted = false
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          const a = itemsWithRadius[i]
+          const b = itemsWithRadius[j]
+          const dx = b.x - a.x
+          const dy = b.y - a.y
+          let dist = Math.hypot(dx, dy) || 1e-6
+          const req = (a.r + b.r) / targetDiv
+          if (dist < req) {
+            adjusted = true
+            const push = (req - dist) * 0.55
+            const ux = dx / dist
+            const uy = dy / dist
+            a.x -= ux * push
+            a.y -= uy * push
+            b.x += ux * push
+            b.y += uy * push
+            dist = req
+          }
+        }
+      }
+      // Light re-centering to keep cluster balanced after pushes
+      if (!adjusted) break
+      itemsWithRadius.forEach(nod => {
+        nod.x *= 0.997
+        nod.y *= 0.997
       })
     }
 
@@ -104,8 +137,8 @@ export default function InterestsChart({ items }: Props) {
       if (d > maxR) maxR = d
     })
   // Slightly reduce scale on very small screens to further separate bubbles
-  const scaleBase = 0.96
-  const scale = (compact ? scaleBase * 0.85 : scaleBase * 0.94) / maxR
+  const scaleBase = 0.95
+  const scale = (compact ? scaleBase * 0.80 : scaleBase * 0.92) / maxR
     const placed = itemsWithRadius.map(nod => {
       const x = nod.x * scale
       const y = nod.y * scale
