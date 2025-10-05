@@ -15,18 +15,18 @@ export default function Hero() {
     gsap.registerPlugin(ScrollTrigger)
     const ctx = gsap.context(() => {
       const tl = gsap.timeline()
-      // Name scales down from bigger to native size, with subtle rise and fade
+      // Animate both name & subtitle simultaneously on load
       tl.fromTo(
         titleRef.current,
-        { y: 12, opacity: 0, scale: 1.2, transformOrigin: '50% 50%' },
-        { y: 0, opacity: 1, scale: 1, duration: 1.1, ease: 'power3.out' }
+        { y: 16, opacity: 0, scale: 1.18, transformOrigin: '50% 50%' },
+        { y: 0, opacity: 1, scale: 1, duration: 1.05, ease: 'power3.out' },
+        0
       )
-      // Subtitle follows shortly after
       tl.fromTo(
         subRef.current,
-        { y: 20, opacity: 0, scale: 1.08, transformOrigin: '50% 50%' },
-        { y: 0, opacity: 1, scale: 1, duration: 0.9, ease: 'power3.out' },
-        '-=0.6'
+        { y: 16, opacity: 0, scale: 1.14, transformOrigin: '50% 50%' },
+        { y: 0, opacity: 1, scale: 1, duration: 1.05, ease: 'power3.out' },
+        0
       )
 
       // Lightweight scroll-driven effect using ScrollTrigger (no manual listeners)

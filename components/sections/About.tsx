@@ -88,7 +88,7 @@ export default function About() {
         </div>
 
         {/* Right — interests bubble chart */}
-        <div className="md:col-span-8" data-col="right">
+        <div className="md:col-span-8 md:-mt-10 lg:-mt-16" data-col="right">
           <InterestsChart items={INTERESTS} />
         </div>
       </div>
