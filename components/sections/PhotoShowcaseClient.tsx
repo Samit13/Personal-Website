@@ -92,9 +92,14 @@ export default function PhotoShowcaseClient({ data }: Props) {
     })
     resizeObserver.observe(batch)
 
+    // Apply transforms. We snap to whole pixels to avoid a faint 1px horizontal seam
+    // that can appear on iOS Safari when two large translated layers abut with
+    // sub‑pixel fractional values (the black "thin bar" you observed). Rounding
+    // removes the gap. We also use translate3d to promote to its own layer.
     const applyTransforms = () => {
-      batch.style.transform = `translateY(${offset}px)`
-      clone.style.transform = `translateY(${offset + batchHeight}px)`
+      const snapped = Math.round(offset)
+      batch.style.transform = `translate3d(0, ${snapped}px, 0)`
+      clone.style.transform = `translate3d(0, ${snapped + batchHeight}px, 0)`
     }
 
     const normalize = () => {
