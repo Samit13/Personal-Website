@@ -4,7 +4,7 @@ import Experience from '@/components/sections/Experience'
 import Projects from '@/components/sections/Projects'
 import Coursework from '@/components/sections/Coursework'
 import FooterCTA from '@/components/sections/FooterCTA'
-// Removed Photography section import per request
+import PhotoShowcase from '@/components/sections/PhotoShowcase'
 
 export default function HomePage() {
   return (
@@ -12,8 +12,9 @@ export default function HomePage() {
       <Hero />
       <About />
       <Experience />
-    <Projects />
-    <Coursework />
+  <Projects />
+  <Coursework />
+  <PhotoShowcase />
       <FooterCTA />
     </main>
   )
