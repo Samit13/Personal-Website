@@ -81,27 +81,85 @@ export const PROJECTS: Project[] = [
     ],
   },
   {
-    slug: 'smart-drone',
-    title: 'Smart Drone',
-    desc: 'Autonomous drone with computer vision assisted navigation and waypoint missions.',
+    slug: 'ai-surveillance-drone',
+    title: 'AI Surveillance Drone',
+    desc: 'AI-driven surveillance drone with onboard vision for detection/tracking and autonomous patrol.',
     time: '2025 – 2026',
-    location: 'Personal R&D – State College, PA',
+    location: 'EE497 Project  – State College, PA',
     summary:
-      'Adds vision and autonomy on top of a stable flight stack: object detection, waypoint planning, and assisted landing.',
+      'Edge vision + autonomy on a stable flight stack: detect, track, and patrol defined areas with safety-first controls.',
     tech: ['Python', 'OpenCV', 'TensorFlow Lite', 'Onboard SBC', 'PX4'],
     tags: ['Autonomy', 'Computer Vision', 'Robotics'],
     highlights: [
-      'Onboard CV pipeline for marker detection and landing assist',
-      'Waypoint missions with obstacle-aware path adjustments',
-      'Modular design to swap models and navigation strategies',
+      'Onboard CV pipeline for detection/tracking (edge-optimized)',
+      'Autonomous patrol routes with geo-fence and RTH safety',
+      'Modular model/runtime to swap detectors and trackers',
     ],
     media: [
-      { type: 'image', src: '/placeholder/project-drone-smart.jpg', alt: 'Smart Drone with camera module' },
+      {
+        type: 'video',
+        src: '/projects/ai-surveillance-drone/intro.mp4',
+        poster: '/projects/ai-surveillance-drone/poster.jpg',
+        caption: 'Intro presentation teaser',
+        sources: [
+          { src: '/projects/ai-surveillance-drone/intro.mp4', type: 'video/mp4' },
+          // Optional additional sources for wider support
+          // { src: '/projects/ai-surveillance-drone/intro.webm', type: 'video/webm' },
+        ],
+      },
+      { type: 'image', src: '/placeholder/project-drone-smart.jpg', alt: 'AI Surveillance Drone mockup' },
     ],
     sections: [
-      { title: 'About the Project', paragraphs: ['Built to explore semi-autonomous flight with lightweight models and deterministic behavior suitable for edge devices.'] },
-      { title: 'Features', bullets: ['Marker-based landing assist', 'Waypoint mission runner', 'Swappable detection models'] },
-      { title: 'Technical Implementation', bullets: ['OpenCV preprocessing on SBC', 'TensorFlow Lite inference', 'PX4 control via MAVLink'] },
+      {
+        title: 'About the Project',
+        paragraphs: [
+          'An AI-assisted surveillance drone that can autonomously patrol areas, detect and track targets, and return home safely. Focus on edge inference reliability and deterministic behavior.',
+        ],
+      },
+      {
+        title: 'Project Plan (Template)',
+        bullets: [
+          'Objectives: Autonomous patrol, object/person detection, basic tracking, geo-fence + RTH safety',
+          'Deliverables: Flight-ready prototype, demo video, short technical write-up, and code repo (private/public TBD)',
+          'Success Criteria: Stable hover, successful patrol route, reliable detections (>80% on test cases), clean failsafes',
+        ],
+      },
+      {
+        title: 'Planned Architecture',
+        bullets: [
+          'Airframe + FCU: PX4-based autopilot with position hold and mission execution',
+          'Compute: Onboard SBC (e.g., Pi/Jetson) running OpenCV + TFLite (or ONNXRuntime) for inference',
+          'Perception: Camera → pre-processing → model inference → tracking (e.g., KCF/DeepSORT-lite)',
+          'Navigation: Waypoint mission with patrol loops and on-detection loiter',
+          'Comms: MAVLink to FCU; optional ground station link for status',
+          'Safety: Geo-fence, battery threshold RTL, manual override',
+        ],
+      },
+      {
+        title: 'Milestones & Timeline',
+        bullets: [
+          'M1: Baseline flight (hover, manual, position hold)',
+          'M2: Vision prototype on the bench (live camera to detections)',
+          'M3: Tracking + basic patrol mission',
+          'M4: Integrated flight test with detection-triggered behavior',
+          'M5: Demo polish (stability, logging, video capture)',
+        ],
+      },
+      {
+        title: 'Risks & Mitigations',
+        bullets: [
+          'Compute limits → Use lightweight models (TFLite/INT8) and crop/resize inputs',
+          'False positives → Confidence thresholds + temporal smoothing',
+          'GPS/IMU drift → Conservative mission speeds and tighter failsafes',
+          'Weather/wind → Indoor test harness; schedule outdoor tests with low wind',
+        ],
+      },
+      {
+        title: 'Video Placeholder',
+        paragraphs: [
+          'A project intro/teaser video will appear above as the hero once uploaded. Replace the /projects/ai-surveillance-drone/intro.mp4 and poster.jpg files with the final assets.',
+        ],
+      },
     ],
   },
   // 2024

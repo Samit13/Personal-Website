@@ -46,6 +46,7 @@ export default function Coursework() {
   }
 
   const sectionRef = useRef<HTMLElement | null>(null)
+  const educationRef = useRef<HTMLDivElement | null>(null)
   const stageRef = useRef<HTMLDivElement | null>(null)
   const svgRef = useRef<SVGSVGElement | null>(null)
   const pathRefs = useRef<Record<KindNoEssay, SVGPathElement | null>>({ thesis: null, project: null, assignment: null })
@@ -57,6 +58,29 @@ export default function Coursework() {
   const kinds: KindNoEssay[] = ['thesis', 'project', 'assignment']
 
   const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  // Expand/collapse state for Education panels
+  const [openPSU, setOpenPSU] = useState(false)
+  const [openNA, setOpenNA] = useState(false)
+  const toggleAllEducation = () => {
+    const next = !(openPSU && openNA)
+    setOpenPSU(next)
+    setOpenNA(next)
+  }
+  const psuPanelRef = useRef<HTMLDivElement | null>(null)
+  const naPanelRef = useRef<HTMLDivElement | null>(null)
+  const measurePanel = (el: HTMLDivElement | null) => {
+    if (!el) return
+    const h = el.scrollHeight
+    el.style.setProperty('--h', h + 'px')
+  }
+  useEffect(() => { measurePanel(psuPanelRef.current) }, [openPSU])
+  useEffect(() => { measurePanel(naPanelRef.current) }, [openNA])
+  useEffect(() => {
+    const onResize = () => { measurePanel(psuPanelRef.current); measurePanel(naPanelRef.current) }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   const handleFilterClick = (k: Filter) => {
     if (k === filter) return
@@ -239,6 +263,39 @@ export default function Coursework() {
     })
   }, [filter])
 
+  // Reveal animation for Education timeline
+  useEffect(() => {
+    if (prefersReduced) return
+    const el = educationRef.current
+    if (!el) return
+
+    const items = Array.from(el.querySelectorAll<HTMLElement>('[data-edu-item]'))
+    // Set initial state
+    gsap.set(el, { opacity: 0, y: 22, scale: 0.98, filter: 'blur(6px)' })
+    gsap.set(items, { y: 12, opacity: 0 })
+
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.target !== el) continue
+        if (e.isIntersecting) {
+          gsap.to(el, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.55, ease: 'power3.out' })
+          gsap.to(items, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out', stagger: 0.08, delay: 0.05 })
+        } else if (e.intersectionRatio === 0) {
+          // reset so it can replay if the user scrolls away and back
+          el.style.removeProperty('opacity')
+          el.style.removeProperty('transform')
+          el.style.removeProperty('filter')
+          items.forEach(it => {
+            it.style.removeProperty('opacity')
+            it.style.removeProperty('transform')
+          })
+        }
+      }
+    }, { threshold: [0, 0.25] })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [prefersReduced])
+
   // Scroll-triggered (re)reveal: animate cards every time section re-enters viewport
   useEffect(() => {
     if (prefersReduced) return
@@ -290,6 +347,88 @@ export default function Coursework() {
 
   return (
     <section ref={sectionRef} id="coursework" aria-labelledby="coursework-title" className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+      {/* Education timeline (unique display) */}
+  <div ref={educationRef} className="mb-10 relative glass rounded-2xl p-5 md:p-6 ring-1 ring-white/10 border border-white/5 overflow-hidden">
+        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <h3 id="education-title" className="text-xl font-semibold">Education</h3>
+          <div>
+            <button
+              type="button"
+              aria-controls="edu-psu-panel edu-na-panel"
+              onClick={toggleAllEducation}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 transition"
+            >
+              {(openPSU && openNA) ? 'Hide education details' : 'More about my education'}
+              <span className={`transition-transform ${(openPSU && openNA) ? 'rotate-180' : ''}`} aria-hidden>▾</span>
+            </button>
+          </div>
+        </div>
+        {/* connector removed per request */}
+
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* PSU (left on desktop) */}
+          <div className="flex flex-col gap-3 min-w-0" data-edu-item>
+            <div className="flex items-center gap-4 min-w-0">
+              <img src="/logos/companies/schools/psu.png?v=20251009" alt="Penn State logo" className="h-12 w-12 rounded-full object-cover ring-1 ring-white/15" />
+              <div className="min-w-0">
+                <div className="font-medium">The Pennsylvania State University</div>
+                <div className="text-xs text-white/70">Bachelor of Computer Engineering</div>
+                <div className="text-[11px] uppercase tracking-wide text-white/45 mt-0.5">2022 – 2026</div>
+              </div>
+            </div>
+            {/* master toggle above; per-item button removed */}
+            <div
+              id="edu-psu-panel"
+              ref={psuPanelRef}
+              data-open={openPSU ? 'true' : 'false'}
+              className="edu-panel mt-1 rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/85"
+            >
+              <div className="font-medium mb-1">Highlighted courses</div>
+              <ul className="list-disc pl-5 space-y-0.5">
+                <li>CMPSC 473 Operating Systems</li>
+                <li>CMPEN 431 Computer Architecture</li>
+                <li>CMPEN 362 Communication Networks</li>
+                <li>CMPEN 472 Microprocessors and Embedded Systems</li>
+                <li>CMPSC 465 Data Structures and Algorithms</li>
+                <li>EE 353 Signals and Systems</li>
+                <li>CMPEN 482W Computer Engineering Project Design</li>
+              </ul>w
+              <div className="font-medium mt-3 mb-1">Clubs</div>
+              <ul className="list-disc pl-5 space-y-0.5">
+                <li>Society of Automotive Engineers (SAE) — Chassis Design</li>
+              </ul>
+            </div>
+          </div>
+          {/* NA (right on desktop) */}
+          <div className="flex flex-col gap-3 min-w-0" data-edu-item>
+            <div className="flex items-center gap-4 min-w-0">
+              <img src="/logos/companies/schools/na.png" alt="North Allegheny logo" className="h-12 w-12 rounded-full object-cover ring-1 ring-white/15" />
+              <div className="min-w-0">
+                <div className="font-medium">North Allegheny Senior High School</div>
+                <div className="text-xs text-white/70">High School Diploma</div>
+                <div className="text-[11px] uppercase tracking-wide text-white/45 mt-0.5">2020 – 2022</div>
+              </div>
+            </div>
+            {/* master toggle above; per-item button removed */}
+            <div
+              id="edu-na-panel"
+              ref={naPanelRef}
+              data-open={openNA ? 'true' : 'false'}
+              className="edu-panel mt-1 rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/85"
+            >
+              <div className="font-medium mb-1">Clubs</div>
+              <ul className="list-disc pl-5 space-y-0.5">
+                <li>Coming soon — add clubs, teams, and positions held.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <style jsx>{`
+          .edu-panel { max-height: 0; opacity: 0; transform: translateY(-4px); overflow: hidden; transition: max-height 500ms cubic-bezier(0.22,1,0.36,1), opacity 350ms ease, transform 450ms cubic-bezier(0.22,1,0.36,1); }
+          .edu-panel[data-open="true"] { max-height: var(--h); opacity: 1; transform: translateY(0); }
+        `}</style>
+      </div>
+
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
         <h2 id="coursework-title">Academic Highlights</h2>
         {/* Filter chips */}
@@ -308,6 +447,8 @@ export default function Coursework() {
           ))}
         </div>
       </div>
+
+      
 
       {/* Stage wraps the content and hosts the constellation overlay */}
       <div ref={stageRef} className="relative">

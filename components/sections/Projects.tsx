@@ -94,7 +94,7 @@ export default function Projects() {
             {/* Removed ViewTransition wrapper for plain navigation */}
             <div className="aspect-video w-full overflow-hidden">
               {/* Custom placeholder for in-progress projects */}
-              {(['esotaira-omnidirectional-drone','smart-drone'].includes(p.slug)) ? (
+              {(['esotaira-omnidirectional-drone','ai-surveillance-drone'].includes(p.slug)) ? (
                 <div className="relative h-full w-full flex items-center justify-center bg-gradient-to-br from-white/10 via-white/[0.03] to-white/0 text-center">
                   <span className="text-[11px] md:text-xs tracking-[0.25em] font-semibold text-white/55 select-none">
                     IN&nbsp;PROGRESS

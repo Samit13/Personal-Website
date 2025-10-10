@@ -10,6 +10,8 @@ export default function InterestsChart({ items }: Props) {
   const prefersReduced = useReducedMotion()
   const ref = useRef<HTMLDivElement>(null)
   const [compact, setCompact] = useState(false)
+  const [tip, setTip] = useState<null | { x: number; y: number; text: string }>(null)
+  const tipTimer = useRef<number | null>(null)
   useEffect(() => {
     const onResize = () => setCompact(window.innerWidth < 480)
     onResize()
@@ -102,6 +104,34 @@ export default function InterestsChart({ items }: Props) {
     }))
   }, [sized, compact])
 
+  // Short descriptions for quick popups
+  const desc = useMemo<Record<string, string>>(() => ({
+    'Embedded Systems': 'I build low-level firmware and hardware–software systems.',
+    Photography: 'I like taking aesthetic fun pictures and sometimes stealing other peoples photos for my self.',
+    Traveling: 'USA, Mexico, Canada, ABC islands, India, Germany, Italy, France, Switzerland',
+    'Sports Cars': 'I like how some look and sound.',
+    Driving: 'Therapeutic and enjoy playing F1.',
+    Gym: 'I like working out, but I don’t eat food so nothing happens.',
+    Frisbee: 'Played Ultimate Frisbee in HighSchool and won some state tournament.',
+    Physics: 'I love how everything works, but not the exams…',
+    Investing: 'I don’t know why I like this.',
+    Technology: 'Always exploring new tools and tech.',
+  }), [])
+
+  const showTip = (target: HTMLElement, label: string) => {
+    const root = ref.current
+    if (!root) return
+    const rRoot = root.getBoundingClientRect()
+    const r = target.getBoundingClientRect()
+    // Position slightly above the bubble center
+    const x = r.left - rRoot.left + r.width / 2
+    const y = Math.max(18, r.top - rRoot.top)
+    const text = desc[label] ?? label
+    setTip({ x, y, text })
+    if (tipTimer.current) window.clearTimeout(tipTimer.current)
+    tipTimer.current = window.setTimeout(() => setTip(null), 2000) as unknown as number
+  }
+
   useEffect(() => {
     if (prefersReduced) return
     const root = ref.current
@@ -177,6 +207,10 @@ export default function InterestsChart({ items }: Props) {
                 data-reveal
                 data-delay={it.delay}
                 aria-label={it.label}
+                role="button"
+                tabIndex={0}
+                onClick={(e) => showTip(e.currentTarget as HTMLElement, it.label)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showTip(e.currentTarget as HTMLElement, it.label) } }}
               >
                 <span aria-hidden className="leading-none select-none block" data-icon-size={iconFont}>{it.icon}</span>
                 <span className="mt-1 font-medium text-center leading-tight tracking-tight text-white/80" data-label-size={labelFont}>
@@ -187,8 +221,23 @@ export default function InterestsChart({ items }: Props) {
           )
         })}
       </ul>
+      {tip && (
+        <div
+          className="pointer-events-none absolute z-20 rounded-lg px-3 py-2 bg-white/10 ring-1 ring-white/20 shadow-lg shadow-black/30 backdrop-blur-sm text-[13px] leading-snug edu-tip"
+          role="status"
+          aria-live="polite"
+          ref={(el) => {
+            if (!el) return
+            el.style.setProperty('--tip-x', tip.x + 'px')
+            el.style.setProperty('--tip-y', tip.y + 'px')
+          }}
+        >
+          {tip.text}
+        </div>
+      )}
       <style jsx>{`
         ul[aria-label="Interests"] > li { position:absolute; transform:translate(-50%, -50%); }
+        :global(.edu-tip) { left: var(--tip-x); top: var(--tip-y); transform: translate(-50%, calc(-100% - 10px)); }
       `}</style>
     </div>
   )
