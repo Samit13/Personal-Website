@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Esotaira Tilt Propulsion Controller</title>
+  <style>
+    :root {
+      --bg:#0e1115; --panel:#1c2128; --panel-alt:#13171d; --accent:#2563eb; --accent-alt:#374151; --danger:#dc2626; --ok:#16a34a; --warn:#fbbf24; --text:#f5f7fa; --muted:#8b949e; --radius:22px;
+    }
+    * { box-sizing:border-box; }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;background:var(--bg);color:var(--text);padding:8px 10px 18px;}
+    h1{margin:0 0 4px;font-size:1.45rem;letter-spacing:.5px}
+    p.subtitle{margin:0 0 14px;opacity:.70;font-size:.72rem;line-height:1.25}
+    .card { width:100%; max-width:1180px; margin:0 auto; background:var(--panel); border-radius:16px; padding:18px 22px 24px; box-shadow:0 3px 14px -4px #000c; }
+    .sections { display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); align-items:stretch; }
+    section { background:var(--panel-alt); border:1px solid #2a3038; border-radius:12px; padding:14px 16px 16px; position:relative; display:flex; flex-direction:column; justify-content:flex-start; min-height:170px; }
+    section h2 { margin:0 0 16px; font-size:1.05rem; letter-spacing:.9px; text-transform:uppercase; font-weight:700; opacity:.9; }
+    .config { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:26px; }
+    .config input { flex:1; min-width:260px; background:#0d1116; border:1px solid #2f3943; color:var(--text); padding:12px 14px; font-size:.95rem; border-radius:10px; }
+    .config button { background:var(--accent); color:#fff; border:0; font-weight:600; padding:12px 20px; border-radius:10px; cursor:pointer; font-size:.8rem; letter-spacing:.7px; }
+    .config button.secondary { background:var(--accent-alt); }
+    .row { display:flex; gap:12px; flex-wrap:wrap; }
+    button.action { background:var(--accent); color:#fff; border:0; padding:13px 20px; font-weight:600; letter-spacing:.55px; border-radius:12px; cursor:pointer; font-size:.85rem; transition:.25s; }
+    button.action.secondary { background:var(--accent-alt); }
+    button.action.danger { background:var(--danger); }
+    button.action:disabled { opacity:.45; cursor:not-allowed; }
+    button.action.toggle-led.on { background:var(--ok); }
+    button.action.arm { background:var(--ok); }
+    .status-line { font-size:.78rem; margin-top:12px; min-height:20px; }
+    .status-line.err { color:#f87171; }
+    .status-line.ok { color:#34d399; }
+    label { display:flex; justify-content:space-between; font-size:.72rem; letter-spacing:.85px; font-weight:600; opacity:.85; margin-top:20px; }
+    input[type=range] { width:100%; margin-top:8px; height:26px; }
+    .indicator { width:18px; height:18px; border-radius:50%; background:#444; display:inline-block; margin-right:6px; vertical-align:-3px; box-shadow:0 0 0 4px #222 inset; }
+    .indicator.on { background:var(--ok); box-shadow:0 0 0 4px #0e3d20 inset,0 0 14px #16a34a80; }
+    pre.state { margin:16px 0 0; background:#0d1116; padding:14px 16px; border-radius:12px; font-size:.72rem; line-height:1.4; overflow:auto; }
+    footer { margin-top:40px; font-size:.62rem; opacity:.48; line-height:1.35; }
+    code { background:#111; padding:3px 6px; border-radius:5px; }
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Esotaira Tilt Propulsion</h1>
+    <p class="subtitle">Control Thrust and Tilt</p>
+
+    <div class="config">
+      <input id="hostInput" placeholder="Board address (e.g. 10.0.0.218 or uno-r4.local)" />
+      <button id="saveHost">Save & Test</button>
+      <button id="clearHost" class="secondary">Clear</button>
+    </div>
+    <div id="connectMsg" class="status-line"></div>
+
+    <div class="sections" id="panelGrid">
+      <section id="sec-led">
+        <h2>LED</h2>
+        <button id="btnLedToggle" class="action toggle-led" disabled>Toggle</button>
+        <div style="margin-top:4px;font-size:.55rem"><span class="indicator" id="ledIndicator"></span><span id="ledStateTxt">--</span></div>
+      </section>
+
+      <section id="sec-arm">
+        <h2>ARM</h2>
+        <div class="row">
+          <button id="btnArm" class="action arm" disabled>Arm</button>
+          <button id="btnDisarm" class="action secondary" disabled>Disarm</button>
+        </div>
+        <div style="margin-top:4px;font-size:.55rem;">Armed: <strong id="armedTxt">?</strong></div>
+        <div class="status-line" id="armMsg"></div>
+      </section>
+
+      <section id="sec-thrust">
+        <h2>THRUST</h2>
+        <label>Value <span><span id="thrustVal">0</span>%</span></label>
+        <input id="thrustRange" type="range" min="0" max="100" value="0" disabled title="Thrust %">
+        <div class="status-line" id="thrustMsg"></div>
+      </section>
+
+      <section id="sec-tilt">
+        <h2>TILT</h2>
+        <label>Value <span><span id="tiltVal">0</span>°</span></label>
+        <input id="tiltRange" type="range" min="0" max="90" value="0" disabled title="Tilt degrees">
+        <div class="status-line" id="tiltMsg"></div>
+      </section>
+
+      <section id="sec-state">
+        <h2>STATE</h2>
+        <div class="metrics">
+          <div id="sLed">LED</div><div id="sArmed">ARM</div><div id="sThrust">T%</div><div id="sTilt">TILT</div><div id="sUptime">UP</div>
+        </div>
+        <div class="row" style="margin-top:6px"><button id="btnRefresh" class="action secondary" disabled>Refresh</button></div>
+        <pre id="rawState" class="state">{}</pre>
+      </section>
+    </div>
+
+    <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a id="openController" class="action" href="/projects/esotaira-omnidirectional-drone/controller.html">Open Controller</a>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const hostInput=$('hostInput'), saveBtn=$('saveHost'), clearBtn=$('clearHost');
+    const connectMsg=$('connectMsg');
+    const btnLedToggle=$('btnLedToggle'), ledIndicator=$('ledIndicator'), ledStateTxt=$('ledStateTxt');
+    const btnArm=$('btnArm'), btnDisarm=$('btnDisarm'), armedTxt=$('armedTxt'), armMsg=$('armMsg');
+    const thrustRange=$('thrustRange'), thrustVal=$('thrustVal'), thrustMsg=$('thrustMsg');
+    const tiltRange=$('tiltRange'), tiltVal=$('tiltVal'), tiltMsg=$('tiltMsg');
+    const btnRefresh=$('btnRefresh'), rawState=$('rawState');
+    const sLed=$('sLed'), sArmed=$('sArmed'), sThrust=$('sThrust'), sTilt=$('sTilt'), sUptime=$('sUptime');
+
+    const LS_KEY='vehicle_board_base';
+    let BASE = localStorage.getItem(LS_KEY) || '';
+    if (BASE) hostInput.value = BASE.replace(/^https?:\/\//,'');
+
+    function effectiveBase(){ if(!BASE) return null; return /^https?:\/\//i.test(BASE)? BASE : 'http://' + BASE; }
+    function disableAll(dis){
+      [btnLedToggle, btnArm, btnDisarm, thrustRange, tiltRange, btnRefresh].forEach(el=>{ if(!el) return; el.disabled = dis; });
+    }
+
+    async function api(path, controller){
+      const base = effectiveBase(); if(!base) throw new Error('No base set');
+      const r = await fetch(base + path, {cache:'no-store', signal: controller?.signal});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.json();
+    }
+
+    function updateUI(data){
+      ledIndicator.classList.toggle('on', !!data.led);
+      ledStateTxt.textContent = data.led ? 'ON' : 'OFF';
+      btnLedToggle.classList.toggle('on', !!data.led);
+      btnLedToggle.classList.toggle('off', !data.led);
+
+      armedTxt.textContent = data.armed ? 'YES' : 'NO';
+      sArmed.textContent = data.armed ? 'ARM' : 'SAFE';
+      sLed.textContent = data.led ? 'LED:ON' : 'LED:OFF';
+      sThrust.textContent = data.thrust + '%';
+      sTilt.textContent = data.tilt + '°';
+      sUptime.textContent = (data.uptime/1000).toFixed(0)+'s';
+
+      thrustRange.value = data.thrust; thrustVal.textContent = data.thrust;
+      tiltRange.value = data.tilt; tiltVal.textContent = data.tilt;
+
+      thrustRange.disabled = !data.armed;
+      tiltRange.disabled = false;
+      btnArm.disabled = data.armed;
+      btnDisarm.disabled = !data.armed;
+      btnLedToggle.disabled = false;
+      btnRefresh.disabled = false;
+
+      rawState.textContent = JSON.stringify(data, null, 2);
+    }
+
+    // ---- Streaming/throttled sends while scrubbing ----
+    const THROTTLE_MS = 60; // ~16–20 fps updates; lower for faster
+    let lastThrustSent = 0, lastTiltSent = 0;
+    let thrustTimer = null, tiltTimer = null;
+    let pendingThrust = null, pendingTilt = null;
+    let thrustCtrl = null, tiltCtrl = null; // AbortControllers for in-flight requests
+
+    function scheduleChannel(kind, value){
+      const now = performance.now();
+      if (kind === 'thrust') {
+        if (thrustRange.disabled) return;
+        pendingThrust = value;
+        const remaining = THROTTLE_MS - (now - lastThrustSent);
+        if (remaining <= 0) {
+          if (thrustCtrl) thrustCtrl.abort();
+          thrustCtrl = new AbortController();
+          lastThrustSent = now;
+          thrustMsg.textContent = '';
+          api(`/set?thrust=${pendingThrust}`, thrustCtrl)
+            .then(updateUI)
+            .catch(()=>{}) // ignore aborts/errors during scrub
+            .finally(()=>{ thrustCtrl = null; });
+        } else {
+          clearTimeout(thrustTimer);
+          thrustTimer = setTimeout(()=>scheduleChannel('thrust', pendingThrust), remaining);
+        }
+      } else {
+        pendingTilt = value;
+        const remaining = THROTTLE_MS - (now - lastTiltSent);
+        if (remaining <= 0) {
+          if (tiltCtrl) tiltCtrl.abort();
+          tiltCtrl = new AbortController();
+          lastTiltSent = now;
+          tiltMsg.textContent = '';
+          api(`/set?tilt=${pendingTilt}`, tiltCtrl)
+            .then(updateUI)
+            .catch(()=>{})
+            .finally(()=>{ tiltCtrl = null; });
+        } else {
+          clearTimeout(tiltTimer);
+          tiltTimer = setTimeout(()=>scheduleChannel('tilt', pendingTilt), remaining);
+        }
+      }
+    }
+
+    async function refresh(first=false){
+      try {
+        const d = await api('/state');
+        connectMsg.textContent = 'Connected to ' + effectiveBase(); connectMsg.className='status-line ok';
+        updateUI(d); disableAll(false);
+        if (first) {
+          try {
+            await api('/set?thrust=0&tilt=0');
+            const d2 = await api('/state');
+            updateUI(d2);
+          } catch(_) {}
+        }
+      } catch(e){
+        connectMsg.textContent = 'Connection failed: ' + e.message; connectMsg.className='status-line err';
+        disableAll(true);
+      }
+    }
+
+    // Event handlers
+    saveBtn.onclick = () => { BASE = hostInput.value.trim(); localStorage.setItem(LS_KEY, BASE); connectMsg.textContent='Testing...'; connectMsg.className='status-line'; refresh(true); };
+    clearBtn.onclick = () => { localStorage.removeItem(LS_KEY); BASE=''; hostInput.value=''; connectMsg.textContent='Cleared. Enter board address.'; connectMsg.className='status-line err'; disableAll(true); rawState.textContent='{}'; };
+
+    btnLedToggle.onclick = async () => { try { const d = await api('/toggle'); updateUI(d); } catch(e){ connectMsg.textContent='LED toggle failed '+e.message; } };
+    btnArm.onclick = async () => { try { const d = await api('/arm'); armMsg.textContent='Armed'; updateUI(d); } catch(e){ armMsg.textContent='Arm failed '+e.message; armMsg.className='status-line err'; } };
+    btnDisarm.onclick = async () => { try { const d = await api('/disarm'); armMsg.textContent='Disarmed'; updateUI(d); } catch(e){ armMsg.textContent='Disarm failed '+e.message; armMsg.className='status-line err'; } };
+
+    thrustRange.addEventListener('input', () => {
+      thrustVal.textContent = thrustRange.value;
+      scheduleChannel('thrust', thrustRange.value);
+    });
+    tiltRange.addEventListener('input', () => {
+      tiltVal.textContent = tiltRange.value;
+      scheduleChannel('tilt', tiltRange.value);
+    });
+
+    btnRefresh.onclick = () => refresh(false);
+
+    if (BASE) { refresh(true); } else { connectMsg.textContent='Enter board address then Save & Test.'; connectMsg.className='status-line'; disableAll(true); }
+
+    // Periodic poll (keeps UI in sync even if other clients change state)
+    setInterval(()=> { if(BASE) refresh(false); }, 6000);
+
+    // Optional: cancel any queued sends when pointer leaves sliders
+    ['mouseup','touchend','mouseleave'].forEach(evt=>{
+      tiltRange.addEventListener(evt, ()=>{ clearTimeout(tiltTimer); tiltTimer=null; });
+      thrustRange.addEventListener(evt, ()=>{ clearTimeout(thrustTimer); thrustTimer=null; });
+    });
+  </script>
+</body>
+</html>

@@ -79,6 +79,9 @@ export const PROJECTS: Project[] = [
       { title: 'Features', bullets: ['Multi-axis control firmware', 'Sensor fusion (IMU + baro)', 'Custom flight modes', 'Safety/arming checks'] },
       { title: 'Technical Implementation', bullets: ['PID loops tuned for fast response', 'Interrupt-driven sensor reads', 'Calibrated IMU alignment and filtering', 'Telemetry over UART/USB'] },
     ],
+    downloads: [
+      { label: 'Open Controller', href: '/projects/esotaira-omnidirectional-drone/controller.html' }
+    ],
   },
   {
     slug: 'ai-surveillance-drone',
