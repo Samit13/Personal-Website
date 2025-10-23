@@ -70,34 +70,25 @@ export default function About() {
         {/* Left rail — sticky heading for alignment */}
         <div className="md:col-span-4" data-col="left">
           <div className="md:sticky md:top-24">
-            <h2 id="about-title" data-anim className="scroll-mt-36 md:scroll-mt-48">About Me</h2>
+            <h2 id="about-title" data-anim>About Me</h2>
             <p className="mt-4 text-muted" data-anim>
-I enjoy creating embedded software that reliably and efficiently controls hardware through software.
+            Computer Engineering Student at The Pennsylvania State University.
             </p>
             <div className="mt-6" data-anim>
-              <div className="flex flex-wrap items-center gap-3">
-                <a
-                  href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/Resume.pdf`}
-                  download
+              <a
+                href="/resume.pdf"
+                download
                   className="inline-flex items-center gap-2 rounded-lg px-4 py-2 bg-white/10 hover:bg-white/15 ring-1 ring-white/15 hover:ring-white/25 text-white transition-colors"
-                  aria-label="Download my resume as PDF"
-                >
-                  <span>Download Resume</span>
-                </a>
-                <a
-                  href="mailto:vsamit.palli@gmail.com"
-                  className="inline-flex items-center gap-2 rounded-lg px-4 py-2 bg-gradient-to-r from-pink-500/90 via-rose-500/90 to-orange-400/90 hover:from-pink-500 hover:via-rose-500 hover:to-orange-400 text-white ring-1 ring-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 transition-colors"
-                  aria-label="Send me an email"
-                >
-                  <span>Contact Me</span>
-                </a>
-              </div>
+                aria-label="Download my resume as PDF"
+              >
+                <span>Download Resume</span>
+              </a>
             </div>
           </div>
         </div>
 
         {/* Right — interests bubble chart */}
-        <div className="md:col-span-8 md:-mt-10 lg:-mt-16" data-col="right">
+        <div className="md:col-span-8" data-col="right">
           <InterestsChart items={INTERESTS} />
         </div>
       </div>
