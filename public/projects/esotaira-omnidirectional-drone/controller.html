@@ -38,6 +38,9 @@
     footer { margin-top:40px; font-size:.62rem; opacity:.48; line-height:1.35; }
     code { background:#111; padding:3px 6px; border-radius:5px; }
     .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; }
+    .small-note { margin-top:4px; font-size:.55rem; }
+    .refresh-row { margin-top:6px; }
+    .action-row { margin-top:18px; display:flex; gap:10px; flex-wrap:wrap; }
   </style>
 </head>
 <body>
@@ -56,7 +59,7 @@
       <section id="sec-led">
         <h2>LED</h2>
         <button id="btnLedToggle" class="action toggle-led" disabled>Toggle</button>
-        <div style="margin-top:4px;font-size:.55rem"><span class="indicator" id="ledIndicator"></span><span id="ledStateTxt">--</span></div>
+        <div class="small-note"><span class="indicator" id="ledIndicator"></span><span id="ledStateTxt">--</span></div>
       </section>
 
       <section id="sec-arm">
@@ -65,7 +68,7 @@
           <button id="btnArm" class="action arm" disabled>Arm</button>
           <button id="btnDisarm" class="action secondary" disabled>Disarm</button>
         </div>
-        <div style="margin-top:4px;font-size:.55rem;">Armed: <strong id="armedTxt">?</strong></div>
+        <div class="small-note">Armed: <strong id="armedTxt">?</strong></div>
         <div class="status-line" id="armMsg"></div>
       </section>
 
@@ -88,12 +91,12 @@
         <div class="metrics">
           <div id="sLed">LED</div><div id="sArmed">ARM</div><div id="sThrust">T%</div><div id="sTilt">TILT</div><div id="sUptime">UP</div>
         </div>
-        <div class="row" style="margin-top:6px"><button id="btnRefresh" class="action secondary" disabled>Refresh</button></div>
+        <div class="row refresh-row"><button id="btnRefresh" class="action secondary" disabled>Refresh</button></div>
         <pre id="rawState" class="state">{}</pre>
       </section>
     </div>
 
-    <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+    <div class="action-row">
       <a id="openController" class="action" href="/projects/esotaira-omnidirectional-drone/controller.html">Open Controller</a>
     </div>
   </div>

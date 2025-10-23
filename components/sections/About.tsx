@@ -77,7 +77,7 @@ I enjoy creating embedded software that reliably and efficiently controls hardwa
             <div className="mt-6" data-anim>
               <div className="flex flex-wrap items-center gap-3">
                 <a
-                  href="/Resume.pdf"
+                  href="Resume.pdf"
                   download
                   className="inline-flex items-center gap-2 rounded-lg px-4 py-2 bg-white/10 hover:bg-white/15 ring-1 ring-white/15 hover:ring-white/25 text-white transition-colors"
                   aria-label="Download my resume as PDF"
