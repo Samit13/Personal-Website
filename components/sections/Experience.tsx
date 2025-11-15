@@ -95,7 +95,7 @@ export default function Experience() {
       <div className="relative">
         <header className="mb-4">
           <h2 id="experience-title">Experience</h2>
-          <p className="mt-2 text-muted">Scroll the timeline — tap any card for details.</p>
+          <p className="mt-2 text-muted"></p>
         </header>
 
         <div className="relative grid grid-cols-[8px_1fr] gap-4">

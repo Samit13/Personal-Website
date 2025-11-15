@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 type Interest = { label: string; icon: string }
@@ -10,7 +10,7 @@ export default function InterestsChart({ items }: Props) {
   const prefersReduced = useReducedMotion()
   const ref = useRef<HTMLDivElement>(null)
   const [compact, setCompact] = useState(false)
-  const [tip, setTip] = useState<null | { x: number; y: number; text: string }>(null)
+  const [tip, setTip] = useState<null | { x: number; y: number; text: React.ReactNode }>(null)
   const tipTimer = useRef<number | null>(null)
   useEffect(() => {
     const onResize = () => setCompact(window.innerWidth < 480)
@@ -105,16 +105,25 @@ export default function InterestsChart({ items }: Props) {
   }, [sized, compact])
 
   // Short descriptions for quick popups
-  const desc = useMemo<Record<string, string>>(() => ({
+  const desc = useMemo<Record<string, React.ReactNode>>(() => ({
     'Embedded Systems': 'I build low-level firmware and hardware–software systems.',
-    Photography: 'I like taking aesthetic fun pictures and sometimes stealing other peoples photos for my self.',
+    Photography: (
+      <a
+        href="https://www.instagram.com/samit.shots/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline"
+      >
+        @samit.shots
+      </a>
+    ),
     Traveling: 'USA, Mexico, Canada, ABC islands, India, Germany, Italy, France, Switzerland',
-    'Sports Cars': 'I like how some look and sound.',
-    Driving: 'Therapeutic and enjoy playing F1.',
+    'Sports Cars': 'Audi is a favorite',
+    Driving: 'I find it therapeutic and enjoy playing F1.',
     Gym: 'I like working out, but I don’t eat food so nothing happens.',
-    Frisbee: 'Played Ultimate Frisbee in HighSchool and won some state tournament.',
-    Physics: 'I love how everything works, but not the exams…',
-    Investing: 'I don’t know why I like this.',
+    Frisbee: 'Played Ultimate Frisbee in HighSchool and won a state tournament.',
+    Physics: 'I like how everything works',
+    Investing: 'I hate it',
     Technology: 'Always exploring new tools and tech.',
   }), [])
 
@@ -223,7 +232,7 @@ export default function InterestsChart({ items }: Props) {
       </ul>
       {tip && (
         <div
-          className="pointer-events-none absolute z-20 rounded-lg px-3 py-2 bg-white/10 ring-1 ring-white/20 shadow-lg shadow-black/30 backdrop-blur-sm text-[13px] leading-snug edu-tip"
+          className="absolute z-20 rounded-lg px-3 py-2 bg-white/10 ring-1 ring-white/20 shadow-lg shadow-black/30 backdrop-blur-sm text-[13px] leading-snug edu-tip"
           role="status"
           aria-live="polite"
           ref={(el) => {

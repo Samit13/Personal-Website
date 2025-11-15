@@ -389,10 +389,11 @@ export default function Coursework() {
                 <li>CMPEN 431 Computer Architecture</li>
                 <li>CMPEN 362 Communication Networks</li>
                 <li>CMPEN 472 Microprocessors and Embedded Systems</li>
+                <li>EE 497 Applications to Embedded Systems</li>
                 <li>CMPSC 465 Data Structures and Algorithms</li>
                 <li>EE 353 Signals and Systems</li>
                 <li>CMPEN 482W Computer Engineering Project Design</li>
-              </ul>w
+              </ul>
               <div className="font-medium mt-3 mb-1">Clubs</div>
               <ul className="list-disc pl-5 space-y-0.5">
                 <li>Society of Automotive Engineers (SAE) — Chassis Design</li>
@@ -418,7 +419,18 @@ export default function Coursework() {
             >
               <div className="font-medium mb-1">Clubs</div>
               <ul className="list-disc pl-5 space-y-0.5">
-                <li>Coming soon — add clubs, teams, and positions held.</li>
+                <li>North Allegheny Ultimate Frisbee</li>
+                <li>Key Club - Tutor at Kumon English and Math</li>
+                <li>AP Computer Science Principles</li>
+                <li>AP Computer Science A</li>
+                <li>AP Calculus</li>
+                <li>AP Physics 1</li>
+                <li>AP Psychology</li>
+                <li>Computer Science A/B</li>
+                <li>Robotics 1/2</li>
+                <li>Advanced Game Development</li>
+                <li>Webpage Design</li>
+                <li>Honors Financial Investmenting</li>
               </ul>
             </div>
           </div>
