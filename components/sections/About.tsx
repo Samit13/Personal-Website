@@ -81,8 +81,17 @@ export default function About() {
                   className="inline-flex items-center gap-2 rounded-lg px-4 py-2 bg-white/10 hover:bg-white/15 ring-1 ring-white/15 hover:ring-white/25 text-white transition-colors"
                 aria-label="Download my resume as PDF"
               >
-                <span>Download Resume</span>
+                <span>View Resume</span>
               </a>
+              <div className="mt-3">
+                <a
+                  href="mailto:vsamit.palli@gmail.com"
+                  className="inline-flex items-center gap-2 rounded-lg px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white ring-1 ring-white/10 transition-colors"
+                  aria-label="Email Samit"
+                >
+                  Contact me
+                </a>
+              </div>
             </div>
           </div>
         </div>

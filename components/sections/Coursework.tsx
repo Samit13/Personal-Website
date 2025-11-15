@@ -393,7 +393,13 @@ export default function Coursework() {
                 <li>CMPSC 465 Data Structures and Algorithms</li>
                 <li>EE 353 Signals and Systems</li>
                 <li>CMPEN 482W Computer Engineering Project Design</li>
-                <li>                               </li>
+                <li className="list-none" aria-hidden>
+                  &nbsp;
+                </li>
+                 <li className="list-none" aria-hidden>
+                  &nbsp;
+                </li>
+
 
               </ul>
               <div className="font-medium mt-3 mb-1">Clubs</div>
@@ -419,10 +425,10 @@ export default function Coursework() {
               data-open={openNA ? 'true' : 'false'}
               className="edu-panel mt-1 rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/85"
             >
-              <div className="font-medium mb-1">Clubs</div>
+
+
+              <div className="font-medium mb-1">Highlighted courses</div>
               <ul className="list-disc pl-5 space-y-0.5">
-                <li>North Allegheny Ultimate Frisbee</li>
-                <li>Key Club - Tutor at Kumon English and Math</li>
                 <li>AP Computer Science Principles</li>
                 <li>AP Computer Science A</li>
                 <li>AP Calculus</li>
@@ -432,7 +438,13 @@ export default function Coursework() {
                 <li>Robotics 1/2</li>
                 <li>Advanced Game Development</li>
                 <li>Webpage Design</li>
-                <li>Honors Financial Investmenting</li>
+                <li>Honors Financial Investing</li>
+              </ul>
+
+              <div className="font-medium mt-3 mb-1">Clubs</div>
+              <ul className="list-disc pl-5 space-y-0.5">
+                <li>North Allegheny Ultimate Frisbee</li>
+                <li>Key Club - Tutor at Kumon English and Math</li>
               </ul>
             </div>
           </div>
