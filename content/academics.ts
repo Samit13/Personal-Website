@@ -73,19 +73,19 @@ export const featuredAcademics: AcademicItem[] = [
 
     <h2>Results and Analysis</h2>
   <h3><em>EDP</em></h3>
-    <figure class="chart"><img src="/academics/cmpen-431-design-space-exploration/edp.png" alt="EDP results chart" /></figure>
+    <figure class="chart"><img src="/academics/cmpen-431-design-space-exploration/EDP.png" alt="EDP results chart" /></figure>
       <p>The early spike in the <em>EDP</em> plot shows the initial phase to explore inefficient configurations, but as more iterations were evaluated, the heuristic started to converge toward simpler and low energy efficient values. The best <em>EDP</em> configuration achieved the lowest value on benchmark 1 and the highest on benchmark 4.</p>
 
   <h3><em>ED<sup>2</sup>P</em></h3>
-  <figure class="chart"><img src="/academics/cmpen-431-design-space-exploration/ed2p.png" alt="ED²P results chart" /></figure>
+  <figure class="chart"><img src="/academics/cmpen-431-design-space-exploration/ED2P.png" alt="ED²P results chart" /></figure>
       <p>The early spike in the <em>ED<sup>2</sup>P</em> plot shows the initial phase to explore inefficient configuration, but as more iterations were evaluated, the heuristic started to converge toward high throughput designs. The best <em>ED<sup>2</sup>P</em> configuration prioritized a wider out of order processor achieving the lowest value on benchmark 1 and the highest on benchmark 0.</p>
 
   <h3><em>EDAP</em></h3>
-  <figure class="chart"><img src="/academics/cmpen-431-design-space-exploration/edap.png" alt="EDAP results chart" /></figure>
+  <figure class="chart"><img src="/academics/cmpen-431-design-space-exploration/EDAP.png" alt="EDAP results chart" /></figure>
       <p><em>EDAP</em> normalized geomean had a spiky start but as more iterations were evaluated, the heuristic started to converge toward a minimized <em>EDAP</em> around <strong>1.07 × 10<sup>−8</sup> J s mm<sup>2</sup></strong>. The best <em>EDAP</em> configuration used a narrow in order processor and low indexed dimensions to minimize a physical footprint without a huge loss in performance. This configuration achieved the lowest value on benchmark 1 and the highest on benchmark 4.</p>
 
   <h3><em>ED<sup>2</sup>AP</em></h3>
-  <figure class="chart"><img src="/academics/cmpen-431-design-space-exploration/ed2ap.png" alt="ED²AP results chart" /></figure>
+  <figure class="chart"><img src="/academics/cmpen-431-design-space-exploration/ED2AP.png" alt="ED²AP results chart" /></figure>
       <p>Similar to the other optimizations <em>ED<sup>2</sup>AP</em>, the normalized geomean had a spiky start but as more iterations were evaluated, the heuristic started to converge toward a minimized <em>ED<sup>2</sup>AP</em> around <strong>1.87 × 10<sup>−8</sup> J s<sup>2</sup> mm<sup>2</sup></strong>. The best <em>ED<sup>2</sup>AP</em> configuration which factors in energy, performance, and area resulted in a narrow in order processor with scattered HW configurations. It achieved the lowest value on benchmark 1 and the highest on benchmark 3.</p>
 
   <p>All of the optimizations were normalized to the baseline <code>(0, 0, 0, 0, 0, 0, 5, 0, 5, 0, 2, 2, 2, 3, 0, 0, 3, 0)</code>.</p>

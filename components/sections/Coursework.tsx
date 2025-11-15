@@ -393,6 +393,8 @@ export default function Coursework() {
                 <li>CMPSC 465 Data Structures and Algorithms</li>
                 <li>EE 353 Signals and Systems</li>
                 <li>CMPEN 482W Computer Engineering Project Design</li>
+                <li>                               </li>
+
               </ul>
               <div className="font-medium mt-3 mb-1">Clubs</div>
               <ul className="list-disc pl-5 space-y-0.5">
