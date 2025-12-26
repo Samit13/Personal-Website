@@ -18,6 +18,10 @@ export type ProjectSection = {
   bullets?: string[]
   // Optional representative image for this section
   image?: MediaImage
+  // Optional additional images for a section (rendered below the primary image)
+  images?: MediaImage[]
+  // Optional credits for the section (names or short attributions)
+  credits?: string[]
 }
 
 export type ProjectDownload = {
@@ -34,6 +38,8 @@ export type Project = {
   tech: string[]
   // Optional: tags for skills and tools used (display chips in UI)
   tags?: string[]
+  // Optional: team members involved in the project
+  team?: { name: string; major?: string; role?: string; photo?: string }[]
   // Optional: image for the project card on the home page
   cardImage?: string
   // Timeline / when the project was primarily developed (displayed in UI)
@@ -60,27 +66,94 @@ export const PROJECTS: Project[] = [
     slug: 'esotaira-omnidirectional-drone',
     title: 'Esotaira Omnidirectional Drone',
     desc: 'Experimental multi-axis drone platform with custom control firmware and advanced stabilization.',
-  time: '2025 – 2026',
-    location: 'Capstone / Research – State College, PA',
+  time: 'Fall 2025',
+    location: 'State College, PA',
     summary:
       'A research prototype focusing on precise multi-directional maneuvering, featuring sensor fusion and bespoke flight modes for confined or complex environments.',
     tech: ['STM32', 'C/C++', 'PX4/ArduPilot (custom)', 'Sensor Fusion', 'PID', 'IMU', 'ESC', 'CAD'],
-    tags: ['Flight Control', 'Sensor Fusion', 'Embedded', 'Real-time'],
+    tags: ['C++', 'Firmware Development', 'UAV Robotics', 'Control Systems', 'Electrical Design', 'System Integration', 'Soldering', 'Mechanical Assistance', 'Technical Communication', 'Hardware Integration'],
+    team: [
+      { name: 'Ky-Anh Nguyen', major: 'Electrical Engineering' },
+      { name: 'Dylan DeCelle', major: 'Mechanical Engineering' },
+      { name: 'John Macdonald', major: 'Mechanical Engineering' },
+      { name: 'Samit Madatanapalli', major: 'Computer Engineering' },
+      { name: 'Peniel Padillo', major: 'Engineering Science' },
+      { name: 'Hamid Shah', major: 'Computer Science' },
+      // Sponsors & advisors (appear under team in UI)
+      { name: 'Hunter Howard', role: 'Esotaira Sponsor' },
+      { name: 'Justin Carr', role: 'Unmanned Systems of America' },
+      { name: 'Paul Mittan', role: 'Director of Engineering Leadership Development' },
+    ],
     highlights: [
       'Custom flight controller firmware with multi-axis stabilization loops (PID)',
       'Sensor fusion with IMU + barometer; soft-fail handling and safe arming',
       'Configurable flight modes for hover, path follow, and tight-space translation',
     ],
     media: [
-      { type: 'image', src: '/placeholder/project-drone-esotaira.jpg', alt: 'Esotaira Omnidemensial Drone prototype' },
+      {
+        type: 'video',
+        src: '/projects/esotaira-omnidirectional-drone/herovideoesotaria.mp4',
+        caption: 'Esotaira prototype hero',
+        sources: [
+          { src: '/projects/esotaira-omnidirectional-drone/herovideoesotaria.mp4', type: 'video/mp4' },
+        ],
+      },
+      {
+        type: 'video',
+        src: '/projects/esotaira-omnidirectional-drone/IMG_3910.mp4',
+        caption: 'Additional Esotaira clip',
+        sources: [
+          { src: '/projects/esotaira-omnidirectional-drone/IMG_3910.mp4', type: 'video/mp4' },
+        ],
+      },
     ],
     sections: [
-      { title: 'About the Project', paragraphs: ['An experimental drone platform aimed at precision and stability in constrained spaces. Focused on control loops, sensor fusion, and robust fail-safes.'] },
-      { title: 'Features', bullets: ['Multi-axis control firmware', 'Sensor fusion (IMU + baro)', 'Custom flight modes', 'Safety/arming checks'] },
-      { title: 'Technical Implementation', bullets: ['PID loops tuned for fast response', 'Interrupt-driven sensor reads', 'Calibrated IMU alignment and filtering', 'Telemetry over UART/USB'] },
-    ],
-    downloads: [
-      { label: 'Open Controller', href: '/projects/esotaira-omnidirectional-drone/controller.html' }
+      { title: 'About the Project', paragraphs: ['The Esotaira Tilt Propulsion project focuses on developing a 90° tilt mechanism that enables UAVs to transition between traditional and omnidirectional flight. The final system integrates high precision mechanical components with real time firmware to ensure stable and accurate control under active thrust.'] },
+      {
+        title: 'Mechanical Design',
+        paragraphs: [
+          'The mechanical goal of this project was to build a rigid tilting assembly that stays stable while the motors are running at high speeds. While the full UAV concept utilizes 12 propellers, our team was specifically responsible for the four central modules that provide the primary 0–90° tilt range for omnidirectional maneuvering.',
+          'Module Construction & Materials — To keep the design lightweight but strong, we used Onyx 3D-printed parts (carbon-fiber reinforced nylon). My role involved the fitting and finishing of these printed components to ensure the gears moved smoothly. Each module was built to be completely modular and met the strict weight requirement of under 0.50 lb per unit.',
+          'Safety & Testing Enclosure — Because we were testing live high-speed propellers, we built a custom Testing Box to keep the team safe. The enclosure features a solid wood base and walls made of epoxy-glass sheets, which are incredibly impact-resistant and clear for easy observation. This rig allowed us to push our "middle 4" propellers to full throttle while testing the 0–90° transitions, ensuring the mechanical stops and locking held up under near real-world stress.'
+        ],
+        image: { type: 'image', src: '/projects/esotaira-omnidirectional-drone/mechanical.png', alt: 'Mechanical testing box and tilt module', caption: 'Testing rig and central tilt module' },
+        credits: ['Ky-Anh Nguyen', 'Dylan DeCelle', 'John Macdonald'],
+      },
+      {
+        title: 'Electrical Design',
+        paragraphs: [
+          'The electrical system provides the power and control signals needed to move the tilt actuators and spin the motors. I shared the responsibility of designing and integrating all electrical components with Ky-Anh Nguyen to ensure the system remained stable and responsive, even when the motors were running at full speed.',
+          '- Soldered & Heat-Shrunk: Every connection was soldered and used heat-shrink tubing for permanent, professional-grade durability.',
+          '- Strategic Routing: Wires were carefully organized and tied down to stay clear of the moving gears and tilting mounts.',
+          '- Manual Interface: We designed a control board with dual potentiometers, allowing us to manually adjust both thrust and tilt angle at the same time during testing.',
+          '- Dedicated Housing: We integrated a central protective case to keep the Arduino and battery safe from the mechanical movement of the modules.',
+
+
+        ],
+
+        image: { type: 'image', src: '/projects/esotaira-omnidirectional-drone/electrical.png', alt: 'Electrical layout and prototype PCB', caption: 'Wiring and control board' },
+        images: [
+          { type: 'image', src: '/projects/esotaira-omnidirectional-drone/circuit_diagram.png', alt: 'Circuit diagram', caption: 'Circuit schematic' },
+        ],
+        credits: ['Ky-Anh Nguyen', 'Samit Madatanapalli'],
+      },
+      
+      {
+        title: 'Firmware Design',
+        paragraphs: [
+          'I developed the C++ firmware that acts as the system\'s central logic, synchronizing mechanical tilt with motor thrust. The primary focus was maintaining high-precision control and system stability during the intense vibrations of active propulsion.',
+          '- Signal Processing: Implemented input filtering and smoothing to eliminate electrical noise, ensuring fluid motion and a positional accuracy of ±0.5°.',
+          '- Motion Profiling: Integrated slew rate limiting to govern transition speeds, protecting the 3D-printed gears from sudden mechanical stress.',
+          '- Vibration Stability: Developed deadband logic and software thresholds to keep the actuators stable and silent when no user input is detected.',
+          '- Power Optimization: Designed a motor-management routine that balances holding torque with heat reduction, keeping the mechanism locked during high-thrust maneuvers.',
+          '- Safety Constraints: Hardcoded operational limits to prevent over-rotation, protecting the internal wiring and mechanical stop-points.',
+        ],
+        image: { type: 'image', src: '/projects/esotaira-omnidirectional-drone/firmware.png', alt: 'Firmware architecture and logs', caption: 'Firmware overview' },
+        images: [
+          { type: 'image', src: '/projects/esotaira-omnidirectional-drone/context_diagram.png', alt: 'Firmware context diagram', caption: 'Context diagram' },
+        ],
+        credits: ['Samit Madatanapalli'],
+      },
     ],
   },
   {

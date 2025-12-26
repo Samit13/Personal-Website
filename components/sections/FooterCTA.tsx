@@ -4,7 +4,7 @@ export default function FooterCTA() {
       <div className="glass rounded-2xl p-6 md:p-7">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="text-center md:text-left">
-            <h2 className="text-2xl md:text-3xl font-semibold">Open to high-value, impactful projects and research partnerships.</h2>
+            <h2 className="text-2xl md:text-3xl font-semibold">Open to impactful projects and research opportunities.</h2>
           </div>
 
           <div className="flex items-center justify-center gap-3">

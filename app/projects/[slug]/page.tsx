@@ -28,6 +28,9 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   const instructions = findSection('Instructions')
   const features = findSection('Features')
   const technical = findSection('Technical Implementation')
+  const mechanical = findSection('Mechanical Design')
+  const electrical = findSection('Electrical Design')
+  const firmware = findSection('Firmware Design')
   const challenges = findSection('Challenges & Solutions')
   const techs = findSection('Technologies Used')
   const downloadSec = findSection('Download & Play')
@@ -35,6 +38,9 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   // Choose a small preview media for the About right column
   const previewMedia = sideMedia.find((m) => m.type === 'image' || m.type === 'video')
   const galleryMedia = sideMedia.filter((m) => m !== previewMedia)
+  // Team grouping: students (have major) and sponsors/advisors (have role but no major)
+  const teamMembers = proj.team?.filter((m) => m.major) ?? []
+  const sponsors = proj.team?.filter((m) => !m.major && m.role) ?? []
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16 md:py-24">
@@ -53,9 +59,14 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
         <section aria-label="Project hero" className="mb-10">
           {(() => {
             const heroHeights = (proj as any).heroHeights as { base: string; md?: string } | undefined
-            const baseHeight = heroHeights?.base || 'h-[36vh]'
-            const mdHeight = heroHeights?.md || 'md:h-[42vh]'
+            let baseHeight = heroHeights?.base || 'h-[36vh]'
+            let mdHeight = heroHeights?.md || 'md:h-[42vh]'
             const heightClasses = `${baseHeight} ${mdHeight}`
+            // Slightly reduce the hero height for the Esotaira project for a less-dominant video
+            if (params.slug === 'esotaira-omnidirectional-drone') {
+              baseHeight = heroHeights?.base || 'h-[30vh]'
+              mdHeight = heroHeights?.md || 'md:h-[36vh]'
+            }
             
             // We inline the repeated hero branches below but swap class names dynamically
             if (params.slug === 'ai-fitness-tracker') {
@@ -172,6 +183,43 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                       ))}
                     </div>
                   ) : null}
+                  {proj.team?.length ? (
+                    <div className="mt-4">
+                      {/* Students */}
+                      {teamMembers.length ? (
+                        <>
+                          <h3 className="text-sm font-semibold mb-3">Team</h3>
+                          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                            {teamMembers.map((m) => (
+                              <div key={m.name} className="rounded-xl border border-white/6 bg-transparent p-0">
+                                <div className="px-3 py-2">
+                                  <div className="text-sm font-semibold text-fg/90">{m.name}</div>
+                                  {m.major ? <div className="text-xs text-white/60 mt-1">{m.major}</div> : null}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      ) : null}
+
+                      {/* Sponsors & Advisors */}
+                      {sponsors.length ? (
+                        <div className="mt-4">
+                          <h4 className="text-sm font-semibold mb-2">Sponsors & Advisors</h4>
+                          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                            {sponsors.map((s) => (
+                              <div key={s.name} className="rounded-lg border border-white/6 bg-transparent p-0">
+                                <div className="px-3 py-2">
+                                  <div className="text-sm font-semibold text-fg/90">{s.name}</div>
+                                  {s.role ? <div className="text-xs text-white/60 mt-1">{s.role}</div> : null}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
                 {params.slug === 'ai-fitness-tracker' ? (
                   <figure className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.03] p-0 w-fit mx-auto">
@@ -209,10 +257,10 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           {/* Instructions + Controls will be rendered at the bottom */}
 
           {/* Collapsible: Features, Technical, Challenges, Technologies */}
-          {(features || technical || challenges || techs) ? (
+          {(features || technical || mechanical || electrical || firmware || challenges || techs) ? (
             <Reveal as="section" className="mb-10">
               <div className="space-y-3">
-                {[features, technical, challenges, techs].filter(Boolean).map((sec, idx) => (
+                {[mechanical, electrical, firmware, features, technical, challenges, techs].filter(Boolean).map((sec, idx) => (
                   <details key={`acc-${(sec as any)!.title}-${idx}`} className="group rounded-xl border border-white/10 bg-white/[0.04] open:bg-white/[0.06] p-0 overflow-hidden">
                     <summary className="cursor-pointer list-none select-none px-4 py-4 flex items-center justify-between">
                       <span className="text-lg md:text-2xl font-semibold">{(sec as any)!.title}</span>
@@ -220,23 +268,73 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                     </summary>
                     <div className="grid grid-rows-[0fr] group-open:grid-rows-[1fr] transition-all duration-500">
                       <div className="overflow-hidden px-4 pb-4">
-                        {(sec as any)!.paragraphs?.map((p: string, i: number) => (
-                          <p key={`acc-p-${i}`} className="text-base md:text-[17px] leading-relaxed text-fg/90 mb-2">{p}</p>
-                        ))}
-                        {(sec as any)!.bullets?.length ? (
-                          <ul className="mt-3 space-y-2 text-base md:text-[17px] text-fg/90 list-disc list-inside">
-                            {(sec as any)!.bullets.map((b: string, k: number) => (
-                              <li key={`acc-b-${k}`}>{b}</li>
+                        {/* Primary image (or first image) shown on the right when there is text; additional images render below */}
+                        {(((sec as any)!.image ?? (sec as any)!.images?.[0]) && ((sec as any)!.paragraphs?.length || (sec as any)!.bullets?.length)) ? (
+                          <div className="grid gap-6 md:grid-cols-2 items-start">
+                            <div className="prose prose-invert max-w-none text-fg/90">
+                              {(sec as any)!.paragraphs?.map((p: string, i: number) => (
+                                <p key={`acc-p-${i}`} className="text-base md:text-[17px] leading-relaxed mb-2">{p}</p>
+                              ))}
+                              {(sec as any)!.bullets?.length ? (
+                                <ul className="mt-3 space-y-2 text-base md:text-[17px] list-disc list-inside">
+                                  {(sec as any)!.bullets.map((b: string, k: number) => (
+                                    <li key={`acc-b-${k}`}>{b}</li>
+                                  ))}
+                                </ul>
+                              ) : null}
+                            </div>
+                            <div className="not-prose flex justify-end md:justify-center">
+                              <img
+                                src={(sec as any)!.image?.src ?? (sec as any)!.images?.[0]?.src}
+                                alt={(sec as any)!.image?.alt ?? (sec as any)!.images?.[0]?.alt ?? ''}
+                                className="w-full h-auto object-cover rounded-lg border border-white/10 bg-white/5 max-w-sm md:max-w-md lg:max-w-lg"
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          /* Fallback: original single-column rendering */
+                          <>
+                            {(sec as any)!.paragraphs?.map((p: string, i: number) => (
+                              <p key={`acc-p-${i}`} className="text-base md:text-[17px] leading-relaxed text-fg/90 mb-2">{p}</p>
                             ))}
-                          </ul>
+                            {(sec as any)!.bullets?.length ? (
+                              <ul className="mt-3 space-y-2 text-base md:text-[17px] text-fg/90 list-disc list-inside">
+                                {(sec as any)!.bullets.map((b: string, k: number) => (
+                                  <li key={`acc-b-${k}`}>{b}</li>
+                                ))}
+                              </ul>
+                            ) : null}
+                            {(sec as any)!.image ?? (sec as any)!.images?.[0] ? (
+                              <div className="mt-4 flex justify-center not-prose">
+                                <img
+                                  src={(sec as any)!.image?.src ?? (sec as any)!.images?.[0]?.src}
+                                  alt={(sec as any)!.image?.alt ?? (sec as any)!.images?.[0]?.alt ?? ''}
+                                  className={`w-full h-auto object-cover rounded-lg border border-white/10 bg-white/5 ${['Features','Technical Implementation','Mechanical Design','Electrical Design','Firmware Design'].includes((sec as any)!.title) ? 'max-w-3xl md:max-w-4xl' : 'max-w-sm md:max-w-md'}`}
+                                />
+                              </div>
+                            ) : null}
+                          </>
+                        )}
+
+                        {/* Additional images (if any) appear full-width below the primary content */}
+                        {(sec as any)!.images?.length ? (
+                          <div className="mt-4 grid gap-4">
+                            {(sec as any)!.images.map((img: any, i: number) => (
+                              <div key={`sec-img-${i}`} className="flex justify-center not-prose">
+                                <img
+                                  src={img.src}
+                                  alt={img.alt || ''}
+                                  className="w-full h-auto object-cover rounded-lg border border-white/10 bg-white/5 max-w-3xl md:max-w-4xl"
+                                />
+                                {img.caption ? <p className="sr-only">{img.caption}</p> : null}
+                              </div>
+                            ))}
+                          </div>
                         ) : null}
-                        {(sec as any)!.image ? (
-                          <div className="mt-4 flex justify-center not-prose">
-                            <img
-                              src={(sec as any)!.image.src}
-                              alt={(sec as any)!.image.alt || ''}
-                              className={`w-full h-auto object-cover rounded-lg border border-white/10 bg-white/5 ${['Features','Technical Implementation'].includes((sec as any)!.title) ? 'max-w-3xl md:max-w-4xl' : 'max-w-sm md:max-w-md'}`}
-                            />
+                        {/* Credits (muted) */}
+                        {(sec as any)!.credits?.length ? (
+                          <div className="mt-3 text-sm text-white/60">
+                            <span className="font-medium text-white/80">Credit:</span> {(sec as any)!.credits.join(', ')}
                           </div>
                         ) : null}
                       </div>

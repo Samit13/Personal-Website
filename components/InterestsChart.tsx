@@ -117,7 +117,7 @@ export default function InterestsChart({ items }: Props) {
         @samit.shots
       </a>
     ),
-    Traveling: 'USA, Mexico, Canada, ABC islands, India, Germany, Italy, France, Switzerland',
+    Traveling: 'USA, Mexico, Canada, ABC islands, Costa Rica, India, Germany, Italy, France, Switzerland',
     'Sports Cars': 'Audi is a favorite',
     Driving: 'I find it therapeutic and enjoy playing F1.',
     Gym: 'I like working out, but I don’t eat food so nothing happens.',

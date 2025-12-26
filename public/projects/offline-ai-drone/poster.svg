@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <rect width="100%" height="100%" fill="#0b0b0b"/>
+  <g fill="#e5e7eb" font-family="Inter, Arial, sans-serif">
+    <text x="60" y="120" font-size="44" font-weight="700">Offline AI Drone — Poster</text>
+    <text x="60" y="160" font-size="18" fill="#9ca3af">Demo poster placeholder</text>
+    <rect x="60" y="200" width="1040" height="380" rx="10" fill="#0f172a" stroke="#111827" stroke-width="2" />
+    <text x="80" y="260" font-size="16">Poster PDF is available at /projects/offline-ai-drone/Poster.pdf</text>
+  </g>
+</svg>
