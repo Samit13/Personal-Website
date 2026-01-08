@@ -34,6 +34,20 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   const challenges = findSection('Challenges & Solutions')
   const techs = findSection('Technologies Used')
   const downloadSec = findSection('Download & Play')
+  // Render any additional, unspecified sections (e.g., "How It Works") below
+  const knownSectionTitles = [
+    'About the Project',
+    'Instructions',
+    'Features',
+    'Technical Implementation',
+    'Mechanical Design',
+    'Electrical Design',
+    'Firmware Design',
+    'Challenges & Solutions',
+    'Technologies Used',
+    'Download & Play',
+  ]
+  const extraSections = proj.sections?.filter((s) => !knownSectionTitles.map((t) => t.toLowerCase()).includes(s.title.toLowerCase())) ?? []
 
   // Choose a small preview media for the About right column
   const previewMedia = sideMedia.find((m) => m.type === 'image' || m.type === 'video')
@@ -239,15 +253,17 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                   </figure>
                 ) : previewMedia ? (
                   <div className="rounded-xl overflow-hidden border border-white/10 bg-white/5">
-                    {previewMedia.type === 'image' ? (
-                      <img src={previewMedia.src} alt={(previewMedia as any).alt || ''} className="w-full h-auto object-cover" />
-                    ) : previewMedia.type === 'video' ? (
-                      <video className="w-full h-auto" poster={(previewMedia as any).poster} controls preload="metadata">
-                        {(previewMedia as any).sources?.length
-                          ? (previewMedia as any).sources.map((s: any, i: number) => <source key={`pv-${i}`} src={s.src} type={s.type} />)
-                          : <source src={previewMedia.src} />}
-                      </video>
-                    ) : null}
+                        {previewMedia.type === 'image' ? (
+                          <img src={previewMedia.src} alt={(previewMedia as any).alt || ''} className="w-full h-auto object-cover" />
+                        ) : previewMedia.type === 'video' ? (
+                          <div className="w-full flex justify-center">
+                            <video className="w-full max-w-sm md:max-w-md h-auto rounded-md" poster={(previewMedia as any).poster} controls preload="metadata">
+                              {(previewMedia as any).sources?.length
+                                ? (previewMedia as any).sources.map((s: any, i: number) => <source key={`pv-${i}`} src={s.src} type={s.type} />)
+                                : <source src={previewMedia.src} />}
+                            </video>
+                          </div>
+                        ) : null}
                   </div>
                 ) : null}
               </div>
@@ -272,9 +288,20 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                         {(((sec as any)!.image ?? (sec as any)!.images?.[0]) && ((sec as any)!.paragraphs?.length || (sec as any)!.bullets?.length)) ? (
                           <div className="grid gap-6 md:grid-cols-2 items-start">
                             <div className="prose prose-invert max-w-none text-fg/90">
-                              {(sec as any)!.paragraphs?.map((p: string, i: number) => (
-                                <p key={`acc-p-${i}`} className="text-base md:text-[17px] leading-relaxed mb-2">{p}</p>
-                              ))}
+                              {(sec as any)!.paragraphs?.map((p: string, i: number) => {
+                                const m = /^([^:]+):\s*(.*)$/.exec(p)
+                                if (m) {
+                                  return (
+                                    <div key={`acc-p-${i}`} className="mb-2">
+                                      <h3 className="text-sm font-semibold mb-1">{m[1]}</h3>
+                                      <p className="text-base md:text-[17px] leading-relaxed">{m[2]}</p>
+                                    </div>
+                                  )
+                                }
+                                return (
+                                  <p key={`acc-p-${i}`} className="text-base md:text-[17px] leading-relaxed mb-2">{p}</p>
+                                )
+                              })}
                               {(sec as any)!.bullets?.length ? (
                                 <ul className="mt-3 space-y-2 text-base md:text-[17px] list-disc list-inside">
                                   {(sec as any)!.bullets.map((b: string, k: number) => (
@@ -294,9 +321,20 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                         ) : (
                           /* Fallback: original single-column rendering */
                           <>
-                            {(sec as any)!.paragraphs?.map((p: string, i: number) => (
-                              <p key={`acc-p-${i}`} className="text-base md:text-[17px] leading-relaxed text-fg/90 mb-2">{p}</p>
-                            ))}
+                            {(sec as any)!.paragraphs?.map((p: string, i: number) => {
+                              const m = /^([^:]+):\s*(.*)$/.exec(p)
+                              if (m) {
+                                return (
+                                  <div key={`acc-p-${i}`} className="mb-2">
+                                    <h3 className="text-sm font-semibold mb-1">{m[1]}</h3>
+                                    <p className="text-base md:text-[17px] leading-relaxed text-fg/90">{m[2]}</p>
+                                  </div>
+                                )
+                              }
+                              return (
+                                <p key={`acc-p-${i}`} className="text-base md:text-[17px] leading-relaxed text-fg/90 mb-2">{p}</p>
+                              )
+                            })}
                             {(sec as any)!.bullets?.length ? (
                               <ul className="mt-3 space-y-2 text-base md:text-[17px] text-fg/90 list-disc list-inside">
                                 {(sec as any)!.bullets.map((b: string, k: number) => (
@@ -334,7 +372,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                         {/* Credits (muted) */}
                         {(sec as any)!.credits?.length ? (
                           <div className="mt-3 text-sm text-white/60">
-                            <span className="font-medium text-white/80">Credit:</span> {(sec as any)!.credits.join(', ')}
+                            <span className="font-medium text-white/80">Team Lead:</span> {(sec as any)!.credits.join(', ')}
                           </div>
                         ) : null}
                       </div>
@@ -390,6 +428,40 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                   }
                   return null
                 })}
+              </div>
+            </Reveal>
+          ) : null}
+
+          {/* Render any extra custom sections (e.g., "How It Works", "Video Demo") */}
+          {extraSections.length ? (
+            <Reveal as="section" className="mb-10">
+              <div className="space-y-8">
+                {extraSections.map((sec, idx) => (
+                  <div key={`extra-${idx}`} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 md:p-6">
+                    <h2 className="text-xl font-semibold mb-3">{sec.title}</h2>
+                    {sec.paragraphs?.map((p, i) => (
+                      <p key={`extra-p-${i}`} className="text-fg/90 mb-2">{p}</p>
+                    ))}
+                    {sec.bullets?.length ? (
+                      <ul className="mt-2 list-disc list-inside space-y-2 text-fg/90">
+                        {sec.bullets.map((b, k) => (
+                          <li key={`extra-b-${k}`}>{b}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {/* Inline images if provided */}
+                    {(sec.image || sec.images?.length) ? (
+                      <div className="mt-4 grid gap-4">
+                        {(sec.image ? [sec.image] : sec.images)?.map((img: any, i: number) => (
+                          <div key={`extra-img-${i}`} className="flex justify-center not-prose">
+                            <img src={img.src} alt={img.alt || ''} className="w-full h-auto object-cover rounded-lg border border-white/10 bg-white/5 max-w-3xl" />
+                            {img.caption ? <p className="sr-only">{img.caption}</p> : null}
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
               </div>
             </Reveal>
           ) : null}

@@ -108,16 +108,16 @@ export const PROJECTS: Project[] = [
       },
     ],
     sections: [
-      { title: 'About the Project', paragraphs: ['The Esotaira Tilt Propulsion project focuses on developing a 90° tilt mechanism that enables UAVs to transition between traditional and omnidirectional flight. The final system integrates high precision mechanical components with real time firmware to ensure stable and accurate control under active thrust.'] },
+      { title: 'About the Project', paragraphs: ['The Esotaira Tilt Propulsion project focuses on developing a 180° tilt mechanism that enables UAVs to transition between traditional and omnidirectional flight. The final system integrates high precision mechanical components with real time firmware to ensure stable and accurate control under active thrust.'] },
       {
         title: 'Mechanical Design',
         paragraphs: [
-          'The mechanical goal of this project was to build a rigid tilting assembly that stays stable while the motors are running at high speeds. While the full UAV concept utilizes 12 propellers, our team was specifically responsible for the four central modules that provide the primary 0–90° tilt range for omnidirectional maneuvering.',
+          'The mechanical goal of this project was to build a rigid tilting assembly that stays stable while the motors are running at high speeds. While the full UAV concept utilizes 12 propellers, our team was specifically responsible for the four central modules that provide the primary 0–180° tilt range for omnidirectional maneuvering.',
           'Module Construction & Materials — To keep the design lightweight but strong, we used Onyx 3D-printed parts (carbon-fiber reinforced nylon). My role involved the fitting and finishing of these printed components to ensure the gears moved smoothly. Each module was built to be completely modular and met the strict weight requirement of under 0.50 lb per unit.',
-          'Safety & Testing Enclosure — Because we were testing live high-speed propellers, we built a custom Testing Box to keep the team safe. The enclosure features a solid wood base and walls made of epoxy-glass sheets, which are incredibly impact-resistant and clear for easy observation. This rig allowed us to push our "middle 4" propellers to full throttle while testing the 0–90° transitions, ensuring the mechanical stops and locking held up under near real-world stress.'
+          'Safety & Testing Enclosure — Because we were testing live high-speed propellers, we built a custom Testing Box to keep the team safe. The enclosure features a solid wood base and walls made of epoxy-glass sheets, which are incredibly impact-resistant and clear for easy observation. This rig allowed us to push our "middle 4" propellers to full throttle while testing the 0–180° transitions, ensuring the mechanical stops and locking held up under near real-world stress.'
         ],
         image: { type: 'image', src: '/projects/esotaira-omnidirectional-drone/mechanical.png', alt: 'Mechanical testing box and tilt module', caption: 'Testing rig and central tilt module' },
-        credits: ['Ky-Anh Nguyen', 'Dylan DeCelle', 'John Macdonald'],
+        credits: ['Dylan DeCelle', 'John Macdonald', 'Ky-Anh Nguyen'],
       },
       {
         title: 'Electrical Design',
@@ -135,7 +135,7 @@ export const PROJECTS: Project[] = [
         images: [
           { type: 'image', src: '/projects/esotaira-omnidirectional-drone/circuit_diagram.png', alt: 'Circuit diagram', caption: 'Circuit schematic' },
         ],
-        credits: ['Ky-Anh Nguyen', 'Samit Madatanapalli'],
+        credits: ['Samit Madatanapalli', 'Ky-Anh Nguyen'],
       },
       
       {
@@ -159,81 +159,57 @@ export const PROJECTS: Project[] = [
   {
     slug: 'ai-surveillance-drone',
     title: 'AI Surveillance Drone',
-    desc: 'AI-driven surveillance drone with onboard vision for detection/tracking and autonomous patrol.',
-    time: '2025 – 2026',
-    location: 'EE497 Project  – State College, PA',
-    summary:
-      'Edge vision + autonomy on a stable flight stack: detect, track, and patrol defined areas with safety-first controls.',
-    tech: ['Python', 'OpenCV', 'TensorFlow Lite', 'Onboard SBC', 'PX4'],
-    tags: ['Autonomy', 'Computer Vision', 'Robotics'],
+    desc: 'This project is an offline object detection system that uses a DIY drone and a Raspberry Pi to identify objects without an internet connection. It is designed to work in remote or restricted areas where cloud services are unavailable.',
+    time: '2024–2025',
+    location: 'Personal Project · Remote / Field Tests',
+    summary: 'Offline object detection on a DIY drone using a Raspberry Pi for edge inference (YOLO).',
+    tech: ['Raspberry Pi 5', 'Python', 'OpenCV', 'YOLO (TFLite)', 'Touchscreen UI'],
+    tags: ['Edge AI', 'Computer Vision', 'Robotics', 'Offline'],
     highlights: [
-      'Onboard CV pipeline for detection/tracking (edge-optimized)',
-      'Autonomous patrol routes with geo-fence and RTH safety',
-      'Modular model/runtime to swap detectors and trackers',
+      'Offline object detection (people & vehicles) processed on-device',
+      'Raspberry Pi 5 runs YOLO-based model for real-time inference',
+      'Touchscreen display with live bounding boxes and confidence scores',
     ],
     media: [
       {
         type: 'video',
-        src: '/projects/ai-surveillance-drone/intro.mp4',
-        poster: '/projects/ai-surveillance-drone/poster.jpg',
-        caption: 'Intro presentation teaser',
-        sources: [
-          { src: '/projects/ai-surveillance-drone/intro.mp4', type: 'video/mp4' },
-          // Optional additional sources for wider support
-          // { src: '/projects/ai-surveillance-drone/intro.webm', type: 'video/webm' },
-        ],
+        src: '/projects/offline-ai-drone/demo.mp4',
+        poster: '/projects/offline-ai-drone/poster.jpg',
+        caption: 'Demo: offline object detection on the Pi',
+        sources: [{ src: '/projects/offline-ai-drone/demo.mp4', type: 'video/mp4' }],
       },
-      { type: 'image', src: '/placeholder/project-drone-smart.jpg', alt: 'AI Surveillance Drone mockup' },
+      { type: 'image', src: '/projects/offline-ai-drone/presentation.HEIC', alt: 'Presentation HEIC' },
     ],
+    body: 'This project is an offline object detection system that uses a DIY drone and a Raspberry Pi to identify objects without an internet connection. It is designed to work in remote or restricted areas where cloud services are unavailable.\n+2',
     sections: [
       {
-        title: 'About the Project',
+        title: 'How It Works',
         paragraphs: [
-          'An AI-assisted surveillance drone that can autonomously patrol areas, detect and track targets, and return home safely. Focus on edge inference reliability and deterministic behavior.',
+          'Capture: A quadrotor drone captures live video footage.',
+          '+2',
+          'Process: A Raspberry Pi 5 runs a local AI model (YOLO) to identify objects in the video.',
+          '+1',
+          'Display: A touchscreen shows the processed video with bounding boxes around detected objects.',
+          '+2',
+          'Offline: The system uses physical connections and local processing to remove all reliance on the cloud.',
+          '+1',
+          '[Insert Video Demo Here]',
+          'The model identifies people and vehicles in real-time with confidence scores, processed entirely on the local hardware.',
         ],
       },
       {
-        title: 'Project Plan (Template)',
-        bullets: [
-          'Objectives: Autonomous patrol, object/person detection, basic tracking, geo-fence + RTH safety',
-          'Deliverables: Flight-ready prototype, demo video, short technical write-up, and code repo (private/public TBD)',
-          'Success Criteria: Stable hover, successful patrol route, reliable detections (>80% on test cases), clean failsafes',
-        ],
-      },
-      {
-        title: 'Planned Architecture',
-        bullets: [
-          'Airframe + FCU: PX4-based autopilot with position hold and mission execution',
-          'Compute: Onboard SBC (e.g., Pi/Jetson) running OpenCV + TFLite (or ONNXRuntime) for inference',
-          'Perception: Camera → pre-processing → model inference → tracking (e.g., KCF/DeepSORT-lite)',
-          'Navigation: Waypoint mission with patrol loops and on-detection loiter',
-          'Comms: MAVLink to FCU; optional ground station link for status',
-          'Safety: Geo-fence, battery threshold RTL, manual override',
-        ],
-      },
-      {
-        title: 'Milestones & Timeline',
-        bullets: [
-          'M1: Baseline flight (hover, manual, position hold)',
-          'M2: Vision prototype on the bench (live camera to detections)',
-          'M3: Tracking + basic patrol mission',
-          'M4: Integrated flight test with detection-triggered behavior',
-          'M5: Demo polish (stability, logging, video capture)',
-        ],
-      },
-      {
-        title: 'Risks & Mitigations',
-        bullets: [
-          'Compute limits → Use lightweight models (TFLite/INT8) and crop/resize inputs',
-          'False positives → Confidence thresholds + temporal smoothing',
-          'GPS/IMU drift → Conservative mission speeds and tighter failsafes',
-          'Weather/wind → Indoor test harness; schedule outdoor tests with low wind',
-        ],
-      },
-      {
-        title: 'Video Placeholder',
+        title: 'Engineering Workaround',
         paragraphs: [
-          'A project intro/teaser video will appear above as the hero once uploaded. Replace the /projects/ai-surveillance-drone/intro.mp4 and poster.jpg files with the final assets.',
+          "Because the drone's video stream was locked within a proprietary app, I engineered a workaround to bridge the footage from a mobile device to the Raspberry Pi via a USB connection. This allowed the software to access the stream for real-time analysis without needing the internet.",
+          '+1',
+        ],
+      },
+      {
+        title: 'Future Improvements',
+        bullets: [
+          'Processing Power: Adding a dedicated GPU or TPU for faster, more accurate AI models.',
+          'Automated Reports: Creating logs that summarize what was detected and when to save review time.',
+          'Direct Streaming: Using open-source drones to stream video directly to the Pi without a middle device.',
         ],
       },
     ],

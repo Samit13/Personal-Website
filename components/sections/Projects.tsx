@@ -93,8 +93,16 @@ export default function Projects() {
           >
             {/* Removed ViewTransition wrapper for plain navigation */}
             <div className="aspect-video w-full overflow-hidden">
-              {/* Custom placeholder for in-progress projects */}
-              {(['esotaira-omnidirectional-drone','ai-surveillance-drone'].includes(p.slug)) ? (
+              {/* Custom placeholder: show a representative image for Esotaira, keep IN PROGRESS for others */}
+              {p.slug === 'esotaira-omnidirectional-drone' ? (
+                <img
+                  src="/projects/esotaira-omnidirectional-drone/mechanical.png"
+                  alt=""
+                  className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform"
+                  loading={i < 3 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              ) : (['ai-surveillance-drone'].includes(p.slug) ? (
                 <div className="relative h-full w-full flex items-center justify-center bg-gradient-to-br from-white/10 via-white/[0.03] to-white/0 text-center">
                   <span className="text-[11px] md:text-xs tracking-[0.25em] font-semibold text-white/55 select-none">
                     IN&nbsp;PROGRESS
@@ -105,7 +113,7 @@ export default function Projects() {
                 <img src={p.cardImage} alt="" className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform" loading={i < 3 ? 'eager' : 'lazy'} decoding="async" />
               ) : (
                 <div className="h-full w-full bg-gradient-to-br from-white/10 to-white/0 group-hover:scale-[1.02] transition-transform" />
-              )}
+              ))}
             </div>
             <div className="p-5">
               <h3 className="text-xl font-semibold">{p.title}</h3>
