@@ -18,9 +18,19 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
     : []
   const firstVideoIdx = typedMedia.findIndex((m) => m.type === 'video')
   const firstImageIdx = typedMedia.findIndex((m) => m.type === 'image')
-  const heroIndex = firstVideoIdx !== -1 ? firstVideoIdx : 0
-  const hero = typedMedia[heroIndex]
-  const sideMedia = typedMedia.filter((_, idx) => idx !== heroIndex)
+  let heroIndex = firstVideoIdx !== -1 ? firstVideoIdx : 0
+  // Special-case: use presentation.HEIC as hero for offline-ai-drone
+  if (params.slug === 'ai-surveillance-drone') {
+    const presIdx = typedMedia.findIndex((m) => m.type === 'image' && (m as any).src?.includes('presentation.HEIC'))
+    if (presIdx !== -1) heroIndex = presIdx
+  }
+  let hero = typedMedia[heroIndex]
+  let sideMedia = typedMedia.filter((_, idx) => idx !== heroIndex)
+  // For the AI Surveillance Drone page, hide video media from the main preview/gallery
+  // and hide the presentation image (we'll show the PDF instead in the About column)
+  const displaySideMedia = params.slug === 'ai-surveillance-drone'
+    ? sideMedia.filter((m) => m.type !== 'video' && !(m.type === 'image' && (m as any).src?.includes('presentation.HEIC')) && m.type !== 'embed')
+    : sideMedia
 
   // Helper: pick sections by title
   const findSection = (title: string) => proj.sections?.find((s) => s.title.toLowerCase() === title.toLowerCase())
@@ -50,8 +60,8 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   const extraSections = proj.sections?.filter((s) => !knownSectionTitles.map((t) => t.toLowerCase()).includes(s.title.toLowerCase())) ?? []
 
   // Choose a small preview media for the About right column
-  const previewMedia = sideMedia.find((m) => m.type === 'image' || m.type === 'video')
-  const galleryMedia = sideMedia.filter((m) => m !== previewMedia)
+  const previewMedia = displaySideMedia.find((m) => m.type === 'image' || m.type === 'video')
+  const galleryMedia = displaySideMedia.filter((m) => m !== previewMedia)
   // Team grouping: students (have major) and sponsors/advisors (have role but no major)
   const teamMembers = proj.team?.filter((m) => m.major) ?? []
   const sponsors = proj.team?.filter((m) => !m.major && m.role) ?? []
@@ -251,6 +261,14 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                       priority
                     />
                   </figure>
+                ) : params.slug === 'ai-surveillance-drone' ? (
+                  <div className="rounded-xl overflow-hidden border border-white/10 bg-white/5 p-4 w-fit ml-auto">
+                    {/* Show Poster PDF on the right of intro/tags */}
+                    <div className="not-prose text-right">
+                      <a href="/projects/offline-ai-drone/Poster.pdf" target="_blank" rel="noreferrer" className="inline-flex items-center rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm mb-2">Open full PDF</a>
+                      <iframe src="/projects/offline-ai-drone/Poster.pdf" title="Poster (PDF)" className="w-[600px] h-[600px] rounded-md border ml-auto" />
+                    </div>
+                  </div>
                 ) : previewMedia ? (
                   <div className="rounded-xl overflow-hidden border border-white/10 bg-white/5">
                         {previewMedia.type === 'image' ? (
@@ -266,6 +284,29 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                         ) : null}
                   </div>
                 ) : null}
+              </div>
+            </Reveal>
+          ) : null}
+
+          {/* Embed any PDF media (e.g., Poster.pdf) below sections */}
+          {params.slug !== 'ai-surveillance-drone' && ((proj.media as any[]) ?? []).filter((m: any) => m.type === 'embed' && typeof m.src === 'string' && m.src.toLowerCase().endsWith('.pdf')).length ? (
+            <Reveal as="section" className="mb-10">
+              <h2 className="sr-only">Documents</h2>
+              <div className="space-y-4">
+                {((proj.media as any[]) ?? []).filter((m: any) => m.type === 'embed' && typeof m.src === 'string' && m.src.toLowerCase().endsWith('.pdf')).map((m: any, i: number) => (
+                  <div key={`pdf-${i}`} className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                    <h3 className="text-lg font-semibold mb-2">{m.title || 'Document'}</h3>
+                    <div className="not-prose grid gap-4 md:grid-cols-2 items-start">
+                      <div>
+                        <p className="text-fg/90 mb-2">{m.title || 'Document'}</p>
+                        <a href={m.src} className="inline-flex items-center text-sm rounded-md border border-white/10 bg-white/5 px-3 py-2" target="_blank" rel="noreferrer">Open full PDF</a>
+                      </div>
+                      <div className="flex justify-end">
+                        <iframe src={m.src} title={m.title || `doc-${i}`} className="w-full max-w-sm h-[420px] rounded-md border ml-auto" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </Reveal>
           ) : null}
@@ -436,32 +477,55 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           {extraSections.length ? (
             <Reveal as="section" className="mb-10">
               <div className="space-y-8">
-                {extraSections.map((sec, idx) => (
-                  <div key={`extra-${idx}`} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 md:p-6">
-                    <h2 className="text-xl font-semibold mb-3">{sec.title}</h2>
-                    {sec.paragraphs?.map((p, i) => (
-                      <p key={`extra-p-${i}`} className="text-fg/90 mb-2">{p}</p>
-                    ))}
-                    {sec.bullets?.length ? (
-                      <ul className="mt-2 list-disc list-inside space-y-2 text-fg/90">
-                        {sec.bullets.map((b, k) => (
-                          <li key={`extra-b-${k}`}>{b}</li>
-                        ))}
-                      </ul>
-                    ) : null}
-                    {/* Inline images if provided */}
-                    {(sec.image || sec.images?.length) ? (
-                      <div className="mt-4 grid gap-4">
-                        {(sec.image ? [sec.image] : sec.images)?.map((img: any, i: number) => (
-                          <div key={`extra-img-${i}`} className="flex justify-center not-prose">
-                            <img src={img.src} alt={img.alt || ''} className="w-full h-auto object-cover rounded-lg border border-white/10 bg-white/5 max-w-3xl" />
-                            {img.caption ? <p className="sr-only">{img.caption}</p> : null}
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                ))}
+                      {extraSections.map((sec, idx) => (
+                        <div key={`extra-${idx}`} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 md:p-6">
+                          <h2 className="text-2xl md:text-3xl font-semibold mb-3">{sec.title}</h2>
+                          {sec.paragraphs?.map((p, i) => {
+                            // Special marker: render demo video when the paragraph equals the placeholder
+                            if (p.trim() === '[Insert Video Demo Here]') {
+                              return (
+                                <div key={`extra-vid-${i}`} className="mb-4">
+                                  <video className="w-full rounded-md" poster="/projects/offline-ai-drone/poster.jpg" controls preload="metadata">
+                                    <source src="/projects/offline-ai-drone/demo.mp4" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                  </video>
+                                </div>
+                              )
+                            }
+                            const m = /^([^:]+):\s*(.*)$/.exec(p)
+                            if (m) {
+                              return (
+                                <p key={`extra-p-${i}`} className="text-fg/90 mb-2">
+                                  <span className="font-semibold">{m[1]}:</span>
+                                  {' '}
+                                  <span>{m[2]}</span>
+                                </p>
+                              )
+                            }
+                            return (
+                              <p key={`extra-p-${i}`} className="text-fg/90 mb-2">{p}</p>
+                            )
+                          })}
+                          {sec.bullets?.length ? (
+                            <ul className="mt-2 list-disc list-inside space-y-2 text-fg/90">
+                              {sec.bullets.map((b, k) => (
+                                <li key={`extra-b-${k}`}>{b}</li>
+                              ))}
+                            </ul>
+                          ) : null}
+                          {/* Inline images if provided */}
+                          {(sec.image || sec.images?.length) ? (
+                            <div className="mt-4 grid gap-4">
+                              {(sec.image ? [sec.image] : sec.images)?.map((img: any, i: number) => (
+                                <div key={`extra-img-${i}`} className="flex justify-center not-prose">
+                                  <img src={img.src} alt={img.alt || ''} className="w-full h-auto object-cover rounded-lg border border-white/10 bg-white/5 max-w-3xl" />
+                                  {img.caption ? <p className="sr-only">{img.caption}</p> : null}
+                                </div>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                      ))}
               </div>
             </Reveal>
           ) : null}
