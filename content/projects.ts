@@ -183,7 +183,7 @@ export const PROJECTS: Project[] = [
         caption: 'Demo: offline object detection on the Pi',
         sources: [{ src: '/projects/offline-ai-drone/demo.mp4', type: 'video/mp4' }],
       },
-      { type: 'image', src: '/projects/offline-ai-drone/presentation.HEIC', alt: 'Presentation HEIC' },
+      { type: 'image', src: '/projects/offline-ai-drone/presentation.jpg', alt: 'Presentation HEIC' },
       { type: 'embed', src: '/projects/offline-ai-drone/Poster.pdf', title: 'Poster (PDF)' },
     ],
     body: 'This project is an offline object detection system that uses a DIY drone and a Raspberry Pi to identify objects without an internet connection. It is designed to work in remote or restricted areas where cloud services are unavailable.',

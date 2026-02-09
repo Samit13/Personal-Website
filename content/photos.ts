@@ -13,3 +13,4 @@ export const curatedPhotos: string[] = [
 // Maximum counts used by the showcase (change if you add more variety)
 export const MAX_MOSAIC = 6
 export const MAX_RECENT = 12
+

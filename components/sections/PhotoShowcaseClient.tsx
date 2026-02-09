@@ -9,11 +9,8 @@ export default function PhotoShowcaseClient({ data }: Props) {
   const prefersReduced = useReducedMotion()
   const rootRef = useRef<HTMLDivElement | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
-  // Build mosaic list: combine curated + a few recent extras to reach at least 10-12 items
-  const extrasNeeded = Math.max(0, 12 - data.mosaic.length)
-  const filler = data.recent.slice(-extrasNeeded)
-  const mosaic = [...data.mosaic, ...filler]
-  const all = mosaic
+  // Build full image list: curated mosaic first, then all recent images (include every photo)
+  const all = useMemo(() => [...data.mosaic, ...data.recent], [data])
 
   // Reveal animation via IntersectionObserver
   useEffect(() => {
@@ -217,7 +214,7 @@ export default function PhotoShowcaseClient({ data }: Props) {
       wrap.removeEventListener('touchend', onTouchEnd)
       wrap.removeEventListener('touchcancel', onTouchEnd)
     }
-  }, [prefersReduced, mosaic.length, columnCount])
+  }, [prefersReduced, all.length, columnCount])
 
   // Build waterfall columns using responsive state (already initialized above)
   const makeColumns = (imgs: string[], count: number) => {
@@ -225,7 +222,7 @@ export default function PhotoShowcaseClient({ data }: Props) {
     imgs.forEach((src, i) => cols[i % count].push(src))
     return cols
   }
-  const columns = useMemo(() => makeColumns(mosaic, columnCount), [mosaic, columnCount])
+  const columns = useMemo(() => makeColumns(all, columnCount), [all, columnCount])
   const renderColumnSet = (keyPrefix: string) => (
     <div className="flex gap-8 md:gap-10" key={keyPrefix}>
       {columns.map((col, ci) => (

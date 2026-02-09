@@ -24,8 +24,8 @@ export default async function PhotoShowcase() {
   // Curated mosaic: only include files that actually exist
   const mosaic = curatedPhotos.filter(f => all.includes(f)).slice(0, MAX_MOSAIC)
   const mosaicSet = new Set(mosaic)
-  // Recent (excluding curated) - take last N (assuming numeric ascending = chronological)
-  const recentCandidates = all.filter(f => !mosaicSet.has(f)).slice(-MAX_RECENT)
+  // Recent (excluding curated) - include all remaining photos from public/photos
+  const recentCandidates = all.filter(f => !mosaicSet.has(f))
   // Map to public paths
   const toUrl = (n: string) => `/photos/${n}`
   const data: ShowcaseData = {

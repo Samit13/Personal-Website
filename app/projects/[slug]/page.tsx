@@ -21,7 +21,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   let heroIndex = firstVideoIdx !== -1 ? firstVideoIdx : 0
   // Special-case: use presentation.HEIC as hero for offline-ai-drone
   if (params.slug === 'ai-surveillance-drone') {
-    const presIdx = typedMedia.findIndex((m) => m.type === 'image' && (m as any).src?.includes('presentation.HEIC'))
+    const presIdx = typedMedia.findIndex((m) => m.type === 'image' && (m as any).src?.includes('presentation.jpg'))
     if (presIdx !== -1) heroIndex = presIdx
   }
   let hero = typedMedia[heroIndex]
@@ -29,7 +29,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   // For the AI Surveillance Drone page, hide video media from the main preview/gallery
   // and hide the presentation image (we'll show the PDF instead in the About column)
   const displaySideMedia = params.slug === 'ai-surveillance-drone'
-    ? sideMedia.filter((m) => m.type !== 'video' && !(m.type === 'image' && (m as any).src?.includes('presentation.HEIC')) && m.type !== 'embed')
+    ? sideMedia.filter((m) => m.type !== 'video' && !(m.type === 'image' && (m as any).src?.includes('presentation.jpg')) && m.type !== 'embed')
     : sideMedia
 
   // Helper: pick sections by title
