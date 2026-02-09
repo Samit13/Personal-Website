@@ -393,12 +393,17 @@ export default function Coursework() {
                 <li>CMPSC 465 Data Structures and Algorithms</li>
                 <li>EE 353 Signals and Systems</li>
                 <li>CMPEN 482W Computer Engineering Project Design</li>
+                <li>CMPEN 416 Digital Integrated Circuits</li>
+                <li>CMPEN 443 Computer Security</li>
+
 
 
               </ul>
               <div className="font-medium mt-3 mb-1">Clubs</div>
               <ul className="list-disc pl-5 space-y-0.5">
                 <li>Society of Automotive Engineers (SAE) — Chassis Design</li>
+                <li>South Asian Student Association (SASA) — Member</li>
+
               </ul>
             </div>
           </div>
