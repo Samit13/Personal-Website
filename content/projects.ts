@@ -132,9 +132,6 @@ export const PROJECTS: Project[] = [
         ],
 
         image: { type: 'image', src: '/projects/esotaira-omnidirectional-drone/electrical.png', alt: 'Electrical layout and prototype PCB', caption: 'Wiring and control board' },
-        images: [
-          { type: 'image', src: '/projects/esotaira-omnidirectional-drone/circuit_diagram.png', alt: 'Circuit diagram', caption: 'Circuit schematic' },
-        ],
         credits: ['Samit Madatanapalli', 'Ky-Anh Nguyen'],
       },
       
@@ -149,9 +146,6 @@ export const PROJECTS: Project[] = [
           '- Safety Constraints: Hardcoded operational limits to prevent over-rotation, protecting the internal wiring and mechanical stop-points.',
         ],
         image: { type: 'image', src: '/projects/esotaira-omnidirectional-drone/firmware.png', alt: 'Firmware architecture and logs', caption: 'Firmware overview' },
-        images: [
-          { type: 'image', src: '/projects/esotaira-omnidirectional-drone/context_diagram.png', alt: 'Firmware context diagram', caption: 'Context diagram' },
-        ],
         credits: ['Samit Madatanapalli'],
       },
     ],
